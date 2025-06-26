@@ -1,10 +1,12 @@
+package Server;
+
 import java.io.*;
 import java.net.*;
 import java.time.LocalDateTime;
 
 public class Client {
 
-    private static final String SERVER_IP = "26.228.105.146"; // Đổi thành IP máy chủ Radmin VPN
+    private static final String SERVER_IP = "26.228.105.146"; // Đổi thành IP máy chủ Radmin VPN (Đổi thành IP của máy chạy Sever)
     private static final int SERVER_PORT = 12345;
 
     private static final int COMPUTER_ID = 2;
