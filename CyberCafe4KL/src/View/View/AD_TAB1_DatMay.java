@@ -232,7 +232,7 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
         pnlCNLayout.setHorizontalGroup(
             pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCNLayout.createSequentialGroup()
-                .addGap(65, 65, 65)
+                .addGap(55, 55, 55)
                 .addGroup(pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblDX)
                     .addComponent(lblOrder)
@@ -243,7 +243,7 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
                     .addComponent(lblTKhoan)
                     .addComponent(lblID)
                     .addComponent(lblMT))
-                .addGap(65, 65, 65))
+                .addGap(70, 70, 70))
         );
         pnlCNLayout.setVerticalGroup(
             pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

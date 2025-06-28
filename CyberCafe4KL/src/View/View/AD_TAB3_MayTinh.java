@@ -85,7 +85,6 @@ public class AD_TAB3_MayTinh extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1500, 780));
         setResizable(false);
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         pnlMain.setBackground(new java.awt.Color(51, 51, 255));
         pnlMain.setMaximumSize(new java.awt.Dimension(1500, 780));
@@ -149,7 +148,7 @@ public class AD_TAB3_MayTinh extends javax.swing.JFrame {
         pnlCNLayout.setHorizontalGroup(
             pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCNLayout.createSequentialGroup()
-                .addGap(65, 65, 65)
+                .addGap(60, 60, 60)
                 .addGroup(pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblDX)
                     .addComponent(lblOrder)
@@ -160,7 +159,7 @@ public class AD_TAB3_MayTinh extends javax.swing.JFrame {
                     .addComponent(lblTKhoan)
                     .addComponent(lblID)
                     .addComponent(lblMT))
-                .addGap(65, 65, 65))
+                .addGap(70, 70, 70))
         );
         pnlCNLayout.setVerticalGroup(
             pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -181,7 +180,7 @@ public class AD_TAB3_MayTinh extends javax.swing.JFrame {
                 .addComponent(lblTKe)
                 .addGap(40, 40, 40)
                 .addComponent(lblTKhoan)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 211, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblDX)
                 .addGap(32, 32, 32))
         );
@@ -230,7 +229,7 @@ public class AD_TAB3_MayTinh extends javax.swing.JFrame {
             pnlCNNgangLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCNNgangLayout.createSequentialGroup()
                 .addGap(2, 2, 2)
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addGap(2, 2, 2))
         );
         pnlCNNgangLayout.setVerticalGroup(
@@ -248,7 +247,7 @@ public class AD_TAB3_MayTinh extends javax.swing.JFrame {
         txtSDM.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
         txtSDM.setForeground(new java.awt.Color(255, 255, 255));
         txtSDM.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        txtSDM.setText("ORDER SẢN PHẨM");
+        txtSDM.setText("QUẢN LÝ MÁY TÍNH");
 
         cbxLoaiSP.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tất cả", "Service", "Foods and Drinks" }));
         cbxLoaiSP.addActionListener(new java.awt.event.ActionListener() {
@@ -403,7 +402,7 @@ public class AD_TAB3_MayTinh extends javax.swing.JFrame {
                 .addGap(2, 2, 2)
                 .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlMainLayout.createSequentialGroup()
-                        .addComponent(pnlCNNgang, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(pnlCNNgang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(2, 2, 2))
                     .addGroup(pnlMainLayout.createSequentialGroup()
                         .addComponent(pnlMainSDM, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -419,7 +418,16 @@ public class AD_TAB3_MayTinh extends javax.swing.JFrame {
                 .addGap(2, 2, 2))
         );
 
-        getContentPane().add(pnlMain, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1500, 780));
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(pnlMain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(pnlMain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
