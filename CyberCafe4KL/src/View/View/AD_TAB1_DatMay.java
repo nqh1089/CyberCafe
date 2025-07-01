@@ -123,7 +123,6 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
         tblOrder = new javax.swing.JTable();
         txtOrder = new javax.swing.JLabel();
         pnlButton = new javax.swing.JPanel();
-        btnBM = new javax.swing.JButton();
         btnTT = new javax.swing.JButton();
         btnTTK = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
@@ -705,14 +704,6 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
 
         pnlButton.setBackground(new java.awt.Color(44, 44, 62));
 
-        btnBM.setBackground(new java.awt.Color(204, 255, 255));
-        btnBM.setText("Bật máy");
-        btnBM.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBMActionPerformed(evt);
-            }
-        });
-
         btnTT.setBackground(new java.awt.Color(204, 255, 255));
         btnTT.setText("Thanh toán");
         btnTT.addActionListener(new java.awt.event.ActionListener() {
@@ -733,21 +724,18 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
         pnlButton.setLayout(pnlButtonLayout);
         pnlButtonLayout.setHorizontalGroup(
             pnlButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlButtonLayout.createSequentialGroup()
-                .addGap(53, 53, 53)
-                .addComponent(btnBM, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlButtonLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnTT, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnTTK, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(100, 100, 100))
         );
         pnlButtonLayout.setVerticalGroup(
             pnlButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlButtonLayout.createSequentialGroup()
                 .addContainerGap(18, Short.MAX_VALUE)
                 .addGroup(pnlButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnBM, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnTT, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnTTK, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(17, 17, 17))
@@ -888,10 +876,6 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnBMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBMActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnBMActionPerformed
-
     private void btnTTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTTActionPerformed
 
     }//GEN-LAST:event_btnTTActionPerformed
@@ -910,7 +894,6 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnBM;
     private javax.swing.JButton btnTT;
     private javax.swing.JButton btnTTK;
     private javax.swing.JLabel jLabel1;
