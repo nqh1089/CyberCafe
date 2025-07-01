@@ -11,14 +11,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-public class TAB2_QR extends javax.swing.JFrame {
+public class QR extends javax.swing.JFrame {
 
     private String maHD;
     private String nguoiTao;
     private int tongTienSP, giamGia, thanhToan;
     private JTable tblChiTiet;
 
-    public TAB2_QR(String maHD, String nguoiTao, int tongTienSP, int giamGia, int thanhToan, JTable tblChiTiet) {
+    public QR(String maHD, String nguoiTao, int tongTienSP, int giamGia, int thanhToan, JTable tblChiTiet) {
         initComponents();
         setLocationRelativeTo(null);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -57,7 +57,7 @@ public class TAB2_QR extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        pnlMain.setBackground(new java.awt.Color(255, 248, 225));
+        pnlMain.setBackground(new java.awt.Color(30, 30, 47));
         pnlMain.setMaximumSize(new java.awt.Dimension(400, 400));
         pnlMain.setMinimumSize(new java.awt.Dimension(400, 400));
         pnlMain.setPreferredSize(new java.awt.Dimension(400, 400));
@@ -87,7 +87,7 @@ public class TAB2_QR extends javax.swing.JFrame {
             .addGap(0, 340, Short.MAX_VALUE)
         );
 
-        pnlMain.add(pnlQR, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, -1, 290));
+        pnlMain.add(pnlQR, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, -1, 290));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

@@ -3,6 +3,7 @@ package View.View;
 import View.Code.TAB1_Slidebar;
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 
 public class AD_TAB2_Order extends javax.swing.JFrame {
 
@@ -38,7 +39,10 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         tableOrder.setSelectionBackground(new Color(60, 60, 90));
         tableOrder.setGridColor(new Color(70, 70, 90));
 
-        tableOrder.getTableHeader().setBackground(nenToi);
+        //Căn giữa tiêu đề bảng
+        DefaultTableCellRenderer centerRenderer = (DefaultTableCellRenderer) tableOrder.getTableHeader().getDefaultRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
         tableOrder.getTableHeader().setForeground(TitleDen);  // Màu chữ tiêu đề
 
         jScrollPane4.getViewport().setBackground(nenToi);
@@ -269,6 +273,8 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
             }
         });
 
+        pnlSP.setBackground(new java.awt.Color(30, 30, 47));
+
         javax.swing.GroupLayout pnlSPLayout = new javax.swing.GroupLayout(pnlSP);
         pnlSP.setLayout(pnlSPLayout);
         pnlSPLayout.setHorizontalGroup(
@@ -386,6 +392,7 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         jLabel20.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel20.setText("-----------------------------------------------------------");
 
+        tableOrder.setBackground(new java.awt.Color(30, 30, 47));
         tableOrder.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, "", null},
