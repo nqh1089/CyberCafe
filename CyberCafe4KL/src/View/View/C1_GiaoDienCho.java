@@ -15,7 +15,7 @@ public class C1_GiaoDienCho extends JFrame {
     public C1_GiaoDienCho() {
         this.setUndecorated(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+
         // Panel nền có GIF
         BackgroundPanel bgPanel = new BackgroundPanel();
         bgPanel.setLayout(null);
@@ -160,20 +160,21 @@ public class C1_GiaoDienCho extends JFrame {
         private final ImageIcon gifIcon;
 
         public BackgroundPanel() {
-            gifIcon = new ImageIcon("J:/SU25/BL2/img/backgroundCB4KL.gif");
+            gifIcon = new ImageIcon("J:/SU25/BL2/img/0701.gif");
         }
 
         @Override
         protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Graphics2D g2 = (Graphics2D) g;
-
-            // Tăng chất lượng khi scale
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-
+            super.paintComponent(g); 
             if (gifIcon != null) {
-                g2.drawImage(gifIcon.getImage(), 0, 0, getWidth(), getHeight(), this);
+                Graphics2D g2d = (Graphics2D) g;
+
+                // ✅ Bật khử răng cưa, làm mượt khi phóng to
+                g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                g2d.drawImage(gifIcon.getImage(), 0, 0, getWidth(), getHeight(), this);
             }
         }
     }
