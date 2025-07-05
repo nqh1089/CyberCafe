@@ -4,16 +4,16 @@ USE CYBERCAFE4KL
 GO
 
 CREATE TABLE Account
-(
+( 
 	IDAccount INT PRIMARY KEY,
 	NameAccount VARCHAR(50) UNIQUE NOT NULL,
 	PWAccount VARCHAR(50) NOT NULL,
-	RoleAccount VARCHAR(50) CHECK (RoleAccount IN ('CLIENT', 'ADMIN', 'BOSS')) DEFAULT 'CLIENT'
+	RoleAccount VARCHAR(50) CHECK (RoleAccount IN ('CLIENT', 'ADMIN', 'BOSS')) DEFAULT 'CLIENT',
 	-- CLIENT / ADMIN / BOSS
 	CCCD VARCHAR(12) UNIQUE NOT NULL,
 	-- Nếu 1 ngày đẹp trời nào đó, nhà nước tăng số cccd lên 13 ký tự thì cũng không sao cả, ALTER TABLE cân hết 
 	PhoneNumber VARCHAR(10) UNIQUE NULL,
-	Email VARCHAR(50) UNIQUE NULL,
+	Email VARCHAR(50) NULL,
 	Sex NVARCHAR(3) NULL,
 	-- 'Nam', 'Nữ'
 	OnlineStatus BIT DEFAULT 0 NOT NULL,
@@ -86,12 +86,12 @@ GO
 CREATE TABLE Computer
 (
 	IDComputer INT PRIMARY KEY,
-	TypeComputer VARCHAR(50) NOT NULL,
+	NameComputer VARCHAR(50) NOT NULL,
 	PricePerMinute MONEY NOT NULL CHECK(PricePerMinute >= 0) DEFAULT 200,
-	CPU VARCHAR(50) NOT NULL,
-	RAM VARCHAR(50) NOT NULL,
-	GPU VARCHAR(50) NOT NULL,
-	Monitor VARCHAR(50) NOT NULL,
+	CPU VARCHAR(50) NULL,
+	RAM VARCHAR(50) NULL,
+	GPU VARCHAR(50) NULL,
+	Monitor VARCHAR(50) NULL,
 	ComputerStatus BIT DEFAULT 1 NOT NULL,
 	-- 1: Available ||  0: In Use / Maintenance
 );
@@ -199,28 +199,24 @@ CREATE TABLE InvoiceDetail
 	IDFood INT FOREIGN KEY REFERENCES FoodDrink(IDFood),
 	Quantity INT NOT NULL CHECK (Quantity > 0),
 	UnitPrice MONEY NOT NULL CHECK (UnitPrice >= 0),
-	TotalPrice AS (Quantity * UnitPrice) PERSISTED,
+	TotalPrice MONEY NOT NULL CHECK (TotalPrice >= 0) DEFAULT 0,
 	-- Tính toán tổng giá trị của mặt hàng
 	TotalAmount MONEY NOT NULL CHECK (TotalAmount >= 0) DEFAULT 0
-	-- Tổng giá trị của hóa đơn
 );
+GO
 
+INSERT INTO Computer
+	(IDComputer, NameComputer, PricePerMinute, CPU, RAM, GPU, Monitor, ComputerStatus)
+VALUES
+	(1, 'MÁY 01', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 1),
+	(2, 'MÁY 02', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 0),
+	(3, 'MÁY 03', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 1),
+	(4, 'MÁY 04', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 0),
+	(5, 'MÁY 05', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 1),
+	(6, 'MÁY 06', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 1),
+	(7, 'MÁY 07', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 0),
+	(8, 'MÁY 08', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 1);
+GO
 
-
-
-INSERT INTO Computer (IDComputer, NameComputer, PricePerMinute, ComputerStatus, Note)
-VALUES 
-(1, 'MÁY 01', 200, 1, N'Máy trống'),
-(2, 'MÁY 02', 200, 0, N'Đang sử dụng'),
-(3, 'MÁY 03', 200, 1, N'Máy trống'),
-(4, 'MÁY 04', 200, 0, N'Đang sử dụng'),
-(5, 'MÁY 05', 200, 1, N'Máy trống'),
-(6, 'MÁY 06', 200, 1, N'Máy trống'),
-(7, 'MÁY 07', 200, 0, N'Đang sử dụng'),
-(8, 'MÁY 08', 200, 1, N'Máy trống');
-
-SELECT * FROM Computer
-
-
-
-
+SELECT *
+FROM Computer
