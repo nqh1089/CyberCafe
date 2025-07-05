@@ -1,10 +1,12 @@
 package ViewAD.View;
 
+import ViewAD.Code.TAB1_ClickMay;
 import ViewAD.Code.TAB1_LoadSDM;
 import ViewAD.Code.TAB1_Slidebar;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 public class AD_TAB1_DatMay extends javax.swing.JFrame {
 
@@ -12,7 +14,18 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
         initComponents();
         SetIconSlidebar();
         SetTableOrder();
-        TAB1_LoadSDM.LoadSoDoMay(pnlSDM);
+        TAB1_LoadSDM.LoadSoDoMay(
+                pnlSDM,
+                lblTenMay, lblTrangThai,
+                lblTimeStart, lblTimeEnd, lblTimeUsed,
+                lblTamTinh, jLabel12, tblOrder
+        );
+        TAB1_ClickMay handler = new TAB1_ClickMay(
+                lblTenMay, lblTrangThai,
+                lblTimeStart, lblTimeEnd, lblTimeUsed,
+                lblTamTinh, jLabel12, tblOrder
+        );
+        handler.resetThongTinMayChuaChon();
 
         setTitle("CyberCafe_4KL");
 
@@ -39,20 +52,30 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
         Color ChuTrang = Color.WHITE;
         Color TitleDen = Color.BLACK;
 
+        // Không được chỉnh sửa
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[][]{},
+                new String[]{"Tên", "Đơn giá", "Số lượng", "Thành tiền"}
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // tất cả ô đều không cho sửa
+            }
+        };
+        tblOrder.setModel(model);
+
         tblOrder.setBackground(nenToi);
-        tblOrder.setForeground(ChuTrang);  // Màu chữ trong bảng
+        tblOrder.setForeground(ChuTrang);
         tblOrder.setSelectionBackground(new Color(60, 60, 90));
         tblOrder.setGridColor(new Color(70, 70, 90));
 
-        //Căn giữa tiêu đề bảng
+        // Căn giữa tiêu đề bảng
         DefaultTableCellRenderer centerRenderer = (DefaultTableCellRenderer) tblOrder.getTableHeader().getDefaultRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-
-        tblOrder.getTableHeader().setForeground(TitleDen);  // Màu chữ tiêu đề
+        tblOrder.getTableHeader().setForeground(TitleDen);
 
         jScrollPane2.getViewport().setBackground(nenToi);
         jScrollPane2.setBackground(nenToi);
-
     }
 
     @SuppressWarnings("unchecked")

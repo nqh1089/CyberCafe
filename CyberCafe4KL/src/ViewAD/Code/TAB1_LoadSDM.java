@@ -9,7 +9,16 @@ import javax.swing.*;
 
 public class TAB1_LoadSDM {
 
-    public static void LoadSoDoMay(JPanel pnlSDM) {
+    public static void LoadSoDoMay(JPanel pnlSDM,
+                                   JLabel lblTenMay,
+                                   JLabel lblTrangThai,
+                                   JLabel lblTimeStart,
+                                   JLabel lblTimeEnd,
+                                   JLabel lblTimeUsed,
+                                   JLabel lblTamTinh,
+                                   JLabel lblTongTien,
+                                   JTable tblOrder) {
+
         ArrayList<Computer> dsMay = LayDanhSachMay();
 
         long tong = dsMay.size();
@@ -19,7 +28,6 @@ public class TAB1_LoadSDM {
         pnlSDM.removeAll();
         pnlSDM.setBackground(new Color(30, 30, 47));
 
-        // Tiêu đề
         JLabel lblTitle = new JLabel("SƠ ĐỒ MÁY", SwingConstants.CENTER);
         lblTitle.setBounds(0, 25, 797, 30);
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
@@ -30,8 +38,8 @@ public class TAB1_LoadSDM {
         int labelW = 220;
         int gap = 40;
         int totalWidth = 3 * labelW + 2 * gap;
-        int startX = (797 - totalWidth) / 2 + 40; // căn giữa 3 lbl, đẩy qua phải 40px
-        int yThongKe = 80; // khoảng cách dòng giữa Title với thống kê
+        int startX = (797 - totalWidth) / 2 + 40;
+        int yThongKe = 80;
 
         JLabel lblTong = createStatLabel("icTSM.png", "Tổng số máy: " + tong, startX, yThongKe);
         JLabel lblTrong = createStatLabel("Inactive.png", "Máy đang trống: " + trong, startX + labelW + gap, yThongKe);
@@ -41,15 +49,18 @@ public class TAB1_LoadSDM {
         pnlSDM.add(lblTrong);
         pnlSDM.add(lblDangDung);
 
-        // Sơ đòo máy
+        // Tạo handler xử lý click
+        TAB1_ClickMay clickHandler = new TAB1_ClickMay(lblTenMay, lblTrangThai, lblTimeStart, lblTimeEnd, lblTimeUsed, lblTamTinh, lblTongTien, tblOrder);
+
+        // Vẽ sơ đồ máy
         int cols = 5;
         int itemW = 90, itemH = 90;
-        int gapX = 150; // khoảng cách ngang
-        int gapY = 150; // giãn dòng máy
+        int gapX = 150;
+        int gapY = 150;
         int panelWidth = 797;
         int widthAll = (cols - 1) * gapX + itemW;
         int offsetX = (panelWidth - widthAll) / 2;
-        int startY = yThongKe + 90; // khoảng cách bên dưới thống kê
+        int startY = yThongKe + 90;
 
         int i = 0;
         for (Computer may : dsMay) {
@@ -60,7 +71,7 @@ public class TAB1_LoadSDM {
 
             JLabel lblMay = new JLabel(
                 may.ten,
-                LoadIcon(may.trangThai == 1 ? "Inactive.png" : "Active.png", 72), // Kích cỡ icon = 72
+                LoadIcon(may.trangThai == 1 ? "Inactive.png" : "Active.png", 72),
                 JLabel.CENTER
             );
             lblMay.setBounds(x, y, itemW, itemH);
@@ -68,6 +79,9 @@ public class TAB1_LoadSDM {
             lblMay.setVerticalTextPosition(JLabel.BOTTOM);
             lblMay.setForeground(Color.WHITE);
             lblMay.setFont(new Font("Segoe UI", Font.BOLD, 12));
+            lblMay.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            lblMay.addMouseListener(clickHandler.getClickHandler(may.ten));
             pnlSDM.add(lblMay);
             i++;
         }
