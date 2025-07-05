@@ -1,4 +1,4 @@
-package View.Code;
+package ViewC.Code;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

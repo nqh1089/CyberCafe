@@ -1,4 +1,4 @@
-package View.Code;
+package ViewAD.Code;
 
 import Controller.DAO;
 import java.awt.BorderLayout;

@@ -1,4 +1,4 @@
-package View.Code;
+package ViewAD.Code;
 
 import Controller.DBConnection;
 import java.awt.*;
@@ -109,7 +109,7 @@ public class TAB1_LoadSDM {
 
     private static ArrayList<Computer> LayDanhSachMay() {
         ArrayList<Computer> ds = new ArrayList<>();
-        try (Connection conn = DBConnection.connect()) {
+        try (Connection conn = DBConnection.getConnection()) {
             if (conn == null) {
                 System.out.println("Không thể kết nối DB");
                 return ds;

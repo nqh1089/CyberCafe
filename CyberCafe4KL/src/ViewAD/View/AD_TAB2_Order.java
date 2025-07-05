@@ -1,16 +1,34 @@
-package View.View;
+package ViewAD.View;
 
-import View.Code.TAB1_Slidebar;
-import java.awt.*;
+import Controller.DAO;
+import Controller.DBConnection;
+import Model.Products;
+import ViewAD.Code.TAB1_Slidebar;
+import ViewAD.Code.TAB2_CardSP;
+import java.sql.Connection;
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.util.List;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.table.DefaultTableModel;
 
 public class AD_TAB2_Order extends javax.swing.JFrame {
+
+    private List<Products> danhSachSanPham;
 
     public AD_TAB2_Order() {
         initComponents();
         SetIconSlidebar();
         SetTableOrder();
+        danhSachSanPham = getAllProducts();
+        hienThiSanPham(danhSachSanPham);
+
+        ((DefaultTableModel) tableOrder.getModel()).setRowCount(0);
+
     }
 
     private void SetIconSlidebar() {
@@ -47,6 +65,45 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
 
         jScrollPane4.getViewport().setBackground(nenToi);
         jScrollPane4.setBackground(nenToi);
+    }
+
+    public List<Products> getAllProducts() {
+        List<Products> danhSach = new ArrayList<>();
+        String sql = "SELECT IDFood, NameFood, Price, Category, ImageFood, Available FROM FoodDrink WHERE Available = 1";
+
+        try (
+                Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Products sp = new Products();
+                sp.setId(rs.getInt("IDFood"));
+                sp.setTenSP(rs.getString("NameFood"));
+                sp.setGia(rs.getInt("Price"));
+                sp.setLoaiSP(rs.getString("Category"));
+                sp.setHinhAnh(rs.getString("ImageFood"));
+                sp.setTrangThai(rs.getInt("Available")); // 1: còn bán
+
+                danhSach.add(sp);
+            }
+        } catch (Exception e) {
+            System.out.println("Lỗi lấy sản phẩm: " + e.getMessage());
+        }
+
+        return danhSach;
+    }
+
+    private void hienThiSanPham(List<Products> ds) {
+        pnlSP.removeAll();
+
+        // Hiển thị dạng lưới 2 cột, khoảng cách 10px
+        pnlSP.setLayout(new GridLayout(0, 2, 10, 10));
+
+        for (Products sp : ds) {
+            JPanel card = TAB2_CardSP.taoCard(sp, tableOrder, jTextField1, jTextField2, jTextField3);
+            pnlSP.add(card);
+        }
+
+        pnlSP.revalidate();
+        pnlSP.repaint();
     }
 
     @SuppressWarnings("unchecked")
@@ -260,13 +317,13 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
 
         pnlSDM.setBackground(new java.awt.Color(30, 30, 47));
 
-        txtSDM.setBackground(new java.awt.Color(255, 255, 255));
+        txtSDM.setBackground(new java.awt.Color(204, 255, 255));
         txtSDM.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
-        txtSDM.setForeground(new java.awt.Color(255, 255, 255));
+        txtSDM.setForeground(new java.awt.Color(204, 255, 255));
         txtSDM.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         txtSDM.setText("ORDER SẢN PHẨM");
 
-        cbxLoaiSP.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tất cả", "Service", "Foods and Drinks" }));
+        cbxLoaiSP.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tất cả", "Đồ ăn", "Đồ uống", "Gói nạp" }));
         cbxLoaiSP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbxLoaiSPActionPerformed(evt);
@@ -411,6 +468,11 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
 
         jTextField1.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jTextField1.setText("jTextField1");
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
 
         jTextField2.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jTextField2.setText("jTextField2");
@@ -424,7 +486,7 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
 
         txtMaNV1.setForeground(new java.awt.Color(204, 255, 255));
         txtMaNV1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        txtMaNV1.setText("[Mấy số #]");
+        txtMaNV1.setText("[Máy số #]");
 
         javax.swing.GroupLayout pnlSDM1Layout = new javax.swing.GroupLayout(pnlSDM1);
         pnlSDM1.setLayout(pnlSDM1Layout);
@@ -558,8 +620,25 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
     }//GEN-LAST:event_btnTTActionPerformed
 
     private void cbxLoaiSPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxLoaiSPActionPerformed
+        String loai = cbxLoaiSP.getSelectedItem().toString();
+        if (loai.equals("Tất cả")) {
+            hienThiSanPham(danhSachSanPham);
+            return;
+        }
 
+        List<Products> loc = new ArrayList<>();
+        for (Products sp : danhSachSanPham) {
+            if (sp.getLoaiSP().equalsIgnoreCase(loai)) {
+                loc.add(sp);
+            }
+        }
+
+        hienThiSanPham(loc);
     }//GEN-LAST:event_cbxLoaiSPActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {

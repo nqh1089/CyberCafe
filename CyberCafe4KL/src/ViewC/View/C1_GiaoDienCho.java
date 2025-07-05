@@ -1,4 +1,4 @@
-package View.View;
+package ViewC.View;
 
 import javax.swing.*;
 import java.awt.*;
@@ -154,7 +154,7 @@ public class C1_GiaoDienCho extends JFrame {
         }
     }
 
-    // ✅ Panel nền dùng ảnh GIF
+    // Panel nền dùng ảnh GIF
     class BackgroundPanel extends JPanel {
 
         private final ImageIcon gifIcon;
@@ -169,7 +169,7 @@ public class C1_GiaoDienCho extends JFrame {
             if (gifIcon != null) {
                 Graphics2D g2d = (Graphics2D) g;
 
-                // ✅ Bật khử răng cưa, làm mượt khi phóng to
+                // Bật khử răng cưa, làm mượt khi phóng to
                 g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
                 g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

@@ -1,6 +1,6 @@
-package View.View;
+package ViewAD.View;
 
-import View.Code.TAB1_Slidebar;
+import ViewAD.Code.TAB1_Slidebar;
 import java.awt.*;
 import java.time.LocalDate;
 import javax.swing.*;
@@ -256,7 +256,7 @@ public class AD_TAB5_ThongKe extends javax.swing.JFrame {
         txtSDM.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
         txtSDM.setForeground(new java.awt.Color(255, 255, 255));
         txtSDM.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        txtSDM.setText("QUẢN LÝ HÓA ĐƠN");
+        txtSDM.setText("THỐNG KÊ");
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tháng 6" }));
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
