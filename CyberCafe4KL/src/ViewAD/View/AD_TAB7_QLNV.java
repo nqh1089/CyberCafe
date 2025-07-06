@@ -1,13 +1,14 @@
 package ViewAD.View;
 
+import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 
-public class AD_TAB6_QLTK extends javax.swing.JFrame {
+public class AD_TAB7_QLNV extends javax.swing.JFrame {
 
-    public AD_TAB6_QLTK() {
+    public AD_TAB7_QLNV() {
         initComponents();
         SetIconSlidebar();
         SetTableOrder();
@@ -26,6 +27,12 @@ public class AD_TAB6_QLTK extends javax.swing.JFrame {
 
         TAB1_Slidebar.SetLabelIcon(lblChat, "icChat.png", "");
         TAB1_Slidebar.SetLabelIcon(lblTB, "icTB.png", "");
+        
+        setTitle("CyberCafe4KL_Quản lý Nhân viên");
+        CN_btnSlideBar.ganSuKienSlideBar(
+                lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan, lblDX,
+                this
+        );
 
     }
 
@@ -75,12 +82,10 @@ public class AD_TAB6_QLTK extends javax.swing.JFrame {
         txtSDM = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblSanPham = new javax.swing.JTable();
-        pnlTSHD = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        lblTSHD = new javax.swing.JLabel();
-        pnlTTTD = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        lblTTTD = new javax.swing.JLabel();
+        txtFind = new javax.swing.JTextField();
+        btnTim = new javax.swing.JButton();
+        btnSua = new javax.swing.JButton();
+        btnThem = new javax.swing.JButton();
 
         jScrollPane1.setViewportView(jTree1);
 
@@ -249,7 +254,7 @@ public class AD_TAB6_QLTK extends javax.swing.JFrame {
         txtSDM.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
         txtSDM.setForeground(new java.awt.Color(255, 255, 255));
         txtSDM.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        txtSDM.setText("QUẢN LÝ HÓA ĐƠN");
+        txtSDM.setText("QUẢN LÝ NHÂN VIÊN");
 
         jScrollPane2.setBackground(new java.awt.Color(30, 30, 47));
         jScrollPane2.setForeground(new java.awt.Color(30, 30, 47));
@@ -273,60 +278,27 @@ public class AD_TAB6_QLTK extends javax.swing.JFrame {
         tblSanPham.setSelectionBackground(new java.awt.Color(30, 30, 47));
         jScrollPane2.setViewportView(tblSanPham);
 
-        pnlTSHD.setBackground(new java.awt.Color(255, 255, 255));
+        txtFind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtFindActionPerformed(evt);
+            }
+        });
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("100");
+        btnTim.setText("Tìm");
 
-        lblTSHD.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTSHD.setText("[TỔNG SỐ HD]");
+        btnSua.setText("Sửa");
+        btnSua.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSuaActionPerformed(evt);
+            }
+        });
 
-        javax.swing.GroupLayout pnlTSHDLayout = new javax.swing.GroupLayout(pnlTSHD);
-        pnlTSHD.setLayout(pnlTSHDLayout);
-        pnlTSHDLayout.setHorizontalGroup(
-            pnlTSHDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlTSHDLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addComponent(lblTSHD, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
-        );
-        pnlTSHDLayout.setVerticalGroup(
-            pnlTSHDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlTSHDLayout.createSequentialGroup()
-                .addContainerGap(12, Short.MAX_VALUE)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblTSHD)
-                .addGap(12, 12, 12))
-        );
-
-        pnlTTTD.setBackground(new java.awt.Color(255, 255, 255));
-
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("100");
-
-        lblTTTD.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTTTD.setText("[TỔNG TIỀN THU ĐƯỢC]");
-
-        javax.swing.GroupLayout pnlTTTDLayout = new javax.swing.GroupLayout(pnlTTTD);
-        pnlTTTD.setLayout(pnlTTTDLayout);
-        pnlTTTDLayout.setHorizontalGroup(
-            pnlTTTDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(lblTTTD, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
-        );
-        pnlTTTDLayout.setVerticalGroup(
-            pnlTTTDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlTTTDLayout.createSequentialGroup()
-                .addContainerGap(12, Short.MAX_VALUE)
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblTTTD)
-                .addGap(12, 12, 12))
-        );
+        btnThem.setText("Thêm");
+        btnThem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnThemActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout pnlSDMLayout = new javax.swing.GroupLayout(pnlSDM);
         pnlSDM.setLayout(pnlSDMLayout);
@@ -340,24 +312,30 @@ public class AD_TAB6_QLTK extends javax.swing.JFrame {
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1259, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 2, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(pnlSDMLayout.createSequentialGroup()
-                .addGap(360, 360, 360)
-                .addComponent(pnlTSHD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSDMLayout.createSequentialGroup()
+                .addGap(88, 88, 88)
+                .addComponent(txtFind, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnTim, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnSua, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(pnlTTTD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(88, 88, 88))
         );
         pnlSDMLayout.setVerticalGroup(
             pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlSDMLayout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addComponent(txtSDM)
+                .addGap(37, 37, 37)
+                .addGroup(pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnTim)
+                    .addComponent(txtFind, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnThem)
+                    .addComponent(btnSua))
                 .addGap(18, 18, 18)
-                .addGroup(pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(pnlTSHD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pnlTTTD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 527, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -413,18 +391,31 @@ public class AD_TAB6_QLTK extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void txtFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFindActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtFindActionPerformed
+
+    private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
+
+    }//GEN-LAST:event_btnSuaActionPerformed
+
+    private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
+
+    }//GEN-LAST:event_btnThemActionPerformed
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AD_TAB6_QLTK().setVisible(true);
+                new AD_TAB7_QLNV().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel6;
+    private javax.swing.JButton btnSua;
+    private javax.swing.JButton btnThem;
+    private javax.swing.JButton btnTim;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -440,16 +431,13 @@ public class AD_TAB6_QLTK extends javax.swing.JFrame {
     private javax.swing.JLabel lblTB;
     private javax.swing.JLabel lblTKe;
     private javax.swing.JLabel lblTKhoan;
-    private javax.swing.JLabel lblTSHD;
-    private javax.swing.JLabel lblTTTD;
     private javax.swing.JPanel pnlCN;
     private javax.swing.JPanel pnlCNNgang;
     private javax.swing.JPanel pnlMain;
     private javax.swing.JPanel pnlMainSDM;
     private javax.swing.JPanel pnlSDM;
-    private javax.swing.JPanel pnlTSHD;
-    private javax.swing.JPanel pnlTTTD;
     private javax.swing.JTable tblSanPham;
+    private javax.swing.JTextField txtFind;
     private javax.swing.JLabel txtSDM;
     // End of variables declaration//GEN-END:variables
 }

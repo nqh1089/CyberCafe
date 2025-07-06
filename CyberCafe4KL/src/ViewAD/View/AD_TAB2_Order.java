@@ -3,6 +3,7 @@ package ViewAD.View;
 import Controller.DAO;
 import Controller.DBConnection;
 import Model.Products;
+import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
 import ViewAD.Code.TAB2_CardSP;
 import java.sql.Connection;
@@ -28,7 +29,12 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         hienThiSanPham(danhSachSanPham);
 
         ((DefaultTableModel) tableOrder.getModel()).setRowCount(0);
-
+        
+        setTitle("CyberCafe4KL_Order");
+        CN_btnSlideBar.ganSuKienSlideBar(
+                lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan, lblDX,
+                this
+        );
     }
 
     private void SetIconSlidebar() {

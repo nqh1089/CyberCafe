@@ -1,5 +1,6 @@
 package ViewAD.View;
 
+import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_ClickMay;
 import ViewAD.Code.TAB1_LoadSDM;
 import ViewAD.Code.TAB1_Slidebar;
@@ -27,7 +28,11 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
         );
         handler.resetThongTinMayChuaChon();
 
-        setTitle("CyberCafe_4KL");
+        setTitle("CyberCafe4KL_Đặt Máy");
+        CN_btnSlideBar.ganSuKienSlideBar(
+                lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan, lblDX,
+                this
+        );
 
     }
 

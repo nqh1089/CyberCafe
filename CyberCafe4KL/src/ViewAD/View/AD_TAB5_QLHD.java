@@ -1,16 +1,23 @@
 package ViewAD.View;
 
+import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 
-public class AD_TAB4_QLHD extends javax.swing.JFrame {
+public class AD_TAB5_QLHD extends javax.swing.JFrame {
 
-    public AD_TAB4_QLHD() {
+    public AD_TAB5_QLHD() {
         initComponents();
         SetIconSlidebar();
         SetTableOrder();
+        
+        setTitle("CyberCafe4KL_Quản lý Hóa đơn");
+        CN_btnSlideBar.ganSuKienSlideBar(
+                lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan, lblDX,
+                this
+        );
     }
 
     private void SetIconSlidebar() {
@@ -417,7 +424,7 @@ public class AD_TAB4_QLHD extends javax.swing.JFrame {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AD_TAB4_QLHD().setVisible(true);
+                new AD_TAB5_QLHD().setVisible(true);
             }
         });
     }

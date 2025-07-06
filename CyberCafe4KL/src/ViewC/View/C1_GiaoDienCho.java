@@ -1,5 +1,9 @@
 package ViewC.View;
 
+import ViewC.Code.CN_LoginMay;
+import ViewC.Code.CN_BienToanCuc;
+import ViewC.Code.CN_LayTenMayTheoIP;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -15,8 +19,8 @@ public class C1_GiaoDienCho extends JFrame {
     public C1_GiaoDienCho() {
         this.setUndecorated(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        CN_LayTenMayTheoIP.ganThongTinMay();
 
-        // Panel nền có GIF
         BackgroundPanel bgPanel = new BackgroundPanel();
         bgPanel.setLayout(null);
         this.setContentPane(bgPanel);
@@ -25,8 +29,8 @@ public class C1_GiaoDienCho extends JFrame {
         int W = screen.width;
         int H = screen.height;
 
-        // Label máy + thời gian (góc phải trên)
-        lblMay = new JLabel("MÁY 01, ĐANG LẤY THỜI GIAN...");
+        // Label hiển thị tên máy + thời gian
+        lblMay = new JLabel("ĐANG XÁC ĐỊNH MÁY...");
         lblMay.setFont(new Font("Monospaced", Font.PLAIN, 18));
         lblMay.setForeground(Color.CYAN);
         lblMay.setSize(400, 30);
@@ -35,17 +39,15 @@ public class C1_GiaoDienCho extends JFrame {
         bgPanel.add(lblMay);
         CapNhatThoiGian();
 
-        // Panel login
+        // Panel login nổi
         panelLogin = new JPanel(null);
         panelLogin.setBounds(W / 2 - 200, H / 2 - 150, 400, 300);
         panelLogin.setBackground(new Color(30, 30, 47));
-        panelLogin.setBorder(BorderFactory.createLineBorder(new Color(0, 255, 255), 3, true)); // Viền neon
+        panelLogin.setBorder(BorderFactory.createLineBorder(new Color(0, 255, 255), 3, true));
         panelLogin.setVisible(false);
         bgPanel.add(panelLogin);
-
         KhoiTaoLogin(panelLogin);
 
-        // Click màn hình → hiện login
         bgPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -53,7 +55,6 @@ public class C1_GiaoDienCho extends JFrame {
             }
         });
 
-        // Full màn hình
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         if (gd.isFullScreenSupported()) {
             gd.setFullScreenWindow(this);
@@ -65,13 +66,11 @@ public class C1_GiaoDienCho extends JFrame {
 
     private void CapNhatThoiGian() {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
-        String tenMay = "MÁY 01"; // Có thể lấy từ DB
-
         dongHo = new Timer(1000, e -> {
             String timeStr = sdf.format(new Date());
+            String tenMay = CN_BienToanCuc.TenMay.equals("") ? "MÁY ???" : CN_BienToanCuc.TenMay;
             lblMay.setText(tenMay + ", " + timeStr);
         });
-
         dongHo.start();
     }
 
@@ -83,7 +82,6 @@ public class C1_GiaoDienCho extends JFrame {
         panelLogin.add(lblTitle);
 
         JLabel lblUser = new JLabel("User name:");
-        lblUser.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         lblUser.setForeground(Color.WHITE);
         lblUser.setBounds(100, 60, 200, 20);
         panelLogin.add(lblUser);
@@ -93,7 +91,6 @@ public class C1_GiaoDienCho extends JFrame {
         panelLogin.add(txtUser);
 
         JLabel lblPass = new JLabel("Password:");
-        lblPass.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         lblPass.setForeground(Color.WHITE);
         lblPass.setBounds(100, 115, 200, 20);
         panelLogin.add(lblPass);
@@ -107,26 +104,36 @@ public class C1_GiaoDienCho extends JFrame {
         panelLogin.add(btnLogin);
 
         btnLogin.addActionListener(e -> {
-            String user = txtUser.getText();
+            String user = txtUser.getText().trim();
             String pass = new String(txtPass.getPassword());
 
-            if (user.equals("admin") && pass.equals("123")) {
+            boolean ketQua = CN_LoginMay.loginMay(user, pass);
+            if (ketQua) {
                 if (timer15s != null) {
                     timer15s.stop();
                 }
+
+                // Reset form
+                txtUser.setText("");
+                txtPass.setText("");
                 panelLogin.setVisible(false);
+
                 JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
-                // TODO: mở giao diện chính
+
+                // Mở menu client sau đăng nhập
+                new C2_Menu().setVisible(true);
+                this.dispose(); // Tắt giao diện chờ
             } else {
-                JOptionPane.showMessageDialog(this, "Sai tài khoản hoặc mật khẩu");
+                JOptionPane.showMessageDialog(this, "Sai tài khoản hoặc máy không hợp lệ!");
             }
         });
 
-        // Nếu gõ phím → reset 15s
         KeyAdapter resetTimer = new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                Reset15sTimer();
+                if (timer15s != null && timer15s.isRunning()) {
+                    timer15s.restart();
+                }
             }
         };
         txtUser.addKeyListener(resetTimer);
@@ -135,45 +142,26 @@ public class C1_GiaoDienCho extends JFrame {
 
     private void HienThiLogin() {
         panelLogin.setVisible(true);
-
         if (timer15s != null && timer15s.isRunning()) {
             timer15s.stop();
         }
-
-        timer15s = new Timer(15000, e -> {
-            panelLogin.setVisible(false);
-        });
-
+        timer15s = new Timer(15000, e -> panelLogin.setVisible(false));
         timer15s.setRepeats(false);
         timer15s.start();
     }
 
-    private void Reset15sTimer() {
-        if (timer15s != null && timer15s.isRunning()) {
-            timer15s.restart();
-        }
-    }
-
-    // Panel nền dùng ảnh GIF
     class BackgroundPanel extends JPanel {
 
-        private final ImageIcon gifIcon;
-
-        public BackgroundPanel() {
-            gifIcon = new ImageIcon("J:/SU25/BL2/img/0701.gif");
-        }
+        private final ImageIcon gifIcon = new ImageIcon("J:/SU25/BL2/img/0701.gif");
 
         @Override
         protected void paintComponent(Graphics g) {
-            super.paintComponent(g); 
+            super.paintComponent(g);
             if (gifIcon != null) {
                 Graphics2D g2d = (Graphics2D) g;
-
-                // Bật khử răng cưa, làm mượt khi phóng to
                 g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
                 g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
                 g2d.drawImage(gifIcon.getImage(), 0, 0, getWidth(), getHeight(), this);
             }
         }
@@ -208,11 +196,10 @@ public class C1_GiaoDienCho extends JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_formMouseClicked
     public static void main(String[] args) {
-        java.awt.EventQueue.invokeLater(() -> {
-            new C1_GiaoDienCho(); // KHÔNG cần gọi setVisible nữa
-        });
+        java.awt.EventQueue.invokeLater(() -> new C1_GiaoDienCho());
     }
+}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-}
+

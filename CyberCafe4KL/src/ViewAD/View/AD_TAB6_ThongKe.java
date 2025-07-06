@@ -1,17 +1,24 @@
 package ViewAD.View;
 
+import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
 import java.awt.*;
 import java.time.LocalDate;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 
-public class AD_TAB5_ThongKe extends javax.swing.JFrame {
+public class AD_TAB6_ThongKe extends javax.swing.JFrame {
 
-    public AD_TAB5_ThongKe() {
+    public AD_TAB6_ThongKe() {
         initComponents();
         SetIconSlidebar();
         LoadComboBoxThang();
+        
+        setTitle("CyberCafe4KL_Thống kê");
+        CN_btnSlideBar.ganSuKienSlideBar(
+                lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan, lblDX,
+                this
+        );
     }
 
     private void SetIconSlidebar() {
@@ -604,7 +611,7 @@ public class AD_TAB5_ThongKe extends javax.swing.JFrame {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AD_TAB5_ThongKe().setVisible(true);
+                new AD_TAB6_ThongKe().setVisible(true);
             }
         });
     }
