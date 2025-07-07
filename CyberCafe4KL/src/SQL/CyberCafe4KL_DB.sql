@@ -1,10 +1,16 @@
-CREATE DATABASE CYBERCAFE4KL
+-- USE master
+-- GO
+-- ALTER DATABASE CyberCafe4KL SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+-- DROP DATABASE CyberCafe4KL;
+-- GO
+
+CREATE DATABASE CyberCafe4KL
 GO
-USE CYBERCAFE4KL
+USE CyberCafe4KL
 GO
 
 CREATE TABLE Account
-( 
+(
 	IDAccount INT PRIMARY KEY,
 	NameAccount VARCHAR(50) UNIQUE NOT NULL,
 	PWAccount VARCHAR(50) NOT NULL,
@@ -14,7 +20,7 @@ CREATE TABLE Account
 	-- Nếu 1 ngày đẹp trời nào đó, nhà nước tăng số cccd lên 13 ký tự thì cũng không sao cả, ALTER TABLE cân hết 
 	PhoneNumber VARCHAR(10) UNIQUE NULL,
 	Email VARCHAR(50) NULL,
-	Sex NVARCHAR(3) NULL,
+	Gender NVARCHAR(3) NULL,
 	-- 'Nam', 'Nữ'
 	OnlineStatus BIT DEFAULT 0 NOT NULL,
 	-- 1: Online - 0: Offline 
@@ -32,12 +38,12 @@ CREATE PROC SP_AddAccount
 	@CCCD VARCHAR(12),
 	@PhoneNumber VARCHAR(10),
 	@Email VARCHAR(50),
-	@Sex NVARCHAR(3),
+	@Gender NVARCHAR(3),
 	@OnlineStatus BIT,
 	@AccountStatus BIT
 AS
 BEGIN
-	IF (@IDAccount IS NULL OR @NameAccount IS NULL OR @PWAccount IS NULL OR @RoleAccount IS NULL OR @CCCD IS NULL OR @PhoneNumber IS NULL OR @Email IS NULL OR @Sex IS NULL OR @AccountStatus IS NULL OR @OnlineStatus IS NULL)
+	IF (@IDAccount IS NULL OR @NameAccount IS NULL OR @PWAccount IS NULL OR @RoleAccount IS NULL OR @CCCD IS NULL OR @PhoneNumber IS NULL OR @Email IS NULL OR @Gender IS NULL OR @AccountStatus IS NULL OR @OnlineStatus IS NULL)
 		PRINT N'VUI LÒNG NHẬP ĐỦ THÔNG TIN'
 	ELSE IF EXISTS (SELECT *
 	FROM Account
@@ -62,22 +68,62 @@ BEGIN
 	ELSE 
 		BEGIN
 		INSERT INTO Account
-			(IDAccount, NameAccount, PWAccount, RoleAccount, CCCD, PhoneNumber, Email, Sex, OnlineStatus, AccountStatus)
+			(IDAccount, NameAccount, PWAccount, RoleAccount, CCCD, PhoneNumber, Email, Gender, OnlineStatus, AccountStatus)
 		VALUES
-			(@IDAccount, @NameAccount, @PWAccount, @RoleAccount, @CCCD, @PhoneNumber, @Email, @Sex, @OnlineStatus, @AccountStatus)
+			(@IDAccount, @NameAccount, @PWAccount, @RoleAccount, @CCCD, @PhoneNumber, @Email, @Gender, @OnlineStatus, @AccountStatus)
 	END
 END
 GO
+
 EXEC SP_AddAccount 1, N'mkhoixyz', N'1234', N'BOSS', N'030208003266', N'0382526800', '', N'Nam', 0, 1;
 EXEC SP_AddAccount 2, N'catzpat', N'1234', N'ADMIN', N'012345678999', N'0123456789', '', N'Nam', 0, 1;
 EXEC SP_AddAccount 3, N'nqh1089', N'1234', N'ADMIN', N'012345678998', N'0987654321', '', N'Nam', 0, 1;
 EXEC SP_AddAccount 4, N'bnah07', N'1234', N'ADMIN', N'012345678997', N'0987654322', '', N'Nữ', 0, 1;
 GO
 
+
+CREATE PROC SP_DangKyNhanhClient
+	@NameAccount VARCHAR(50),
+	@PhoneNumber VARCHAR(10),
+	@Gender NVARCHAR(3),
+	@CCCD VARCHAR(12)
+AS
+BEGIN
+	IF EXISTS (SELECT 1
+	FROM Account
+	WHERE NameAccount = @NameAccount)
+		RETURN 1;
+	-- trùng tài khoản
+
+	IF EXISTS (SELECT 1
+	FROM Account
+	WHERE PhoneNumber = @PhoneNumber)
+		RETURN 2;
+	-- trùng SĐT
+
+	IF EXISTS (SELECT 1
+	FROM Account
+	WHERE CCCD = @CCCD)
+		RETURN 3;
+	-- trùng CCCD
+
+	DECLARE @ID INT = (SELECT ISNULL(MAX(IDAccount), 0) + 1
+	FROM Account);
+
+	INSERT INTO Account
+		(IDAccount, NameAccount, PWAccount, RoleAccount, CCCD, PhoneNumber, Gender)
+	VALUES
+		(@ID, @NameAccount, 'khach123', 'CLIENT', @CCCD, @PhoneNumber, @Gender);
+
+	RETURN 0;
+-- thành công
+END
+
+GO
 CREATE VIEW V_Account
 AS
 	SELECT
-		IDAccount, NameAccount, RoleAccount, CCCD, PhoneNumber, Email, Sex,
+		IDAccount, NameAccount, RoleAccount, CCCD, PhoneNumber, Email, Gender,
 		OnlineStatus, AccountStatus, FORMAT(Created_at, 'dd/MM/yyyy HH:mm:ss') AS Created_at
 	FROM Account;
 GO
@@ -92,10 +138,13 @@ CREATE TABLE Computer
 	RAM VARCHAR(50) NULL,
 	GPU VARCHAR(50) NULL,
 	Monitor VARCHAR(50) NULL,
-	ComputerStatus BIT DEFAULT 1 NOT NULL,
+	IPRadmin VARCHAR(20) NULL,
+	-- Set IP máy
+	ComputerStatus BIT DEFAULT 1 NOT NULL
 	-- 1: Available ||  0: In Use / Maintenance
 );
 GO
+
 CREATE VIEW V_ComputerStatus
 AS
 	SELECT
@@ -112,16 +161,18 @@ GO
 
 CREATE TABLE ComputerUsage
 (
-	IDUsage INT PRIMARY KEY,
+	IDUsage INT IDENTITY(1,1) PRIMARY KEY,
 	IDAccount INT FOREIGN KEY REFERENCES Account(IDAccount),
 	IDComputer INT FOREIGN KEY REFERENCES Computer(IDComputer),
 	StartTime DATETIME DEFAULT GETDATE(),
 	EndTime DATETIME,
 	TotalTime AS DATEDIFF(MINUTE, StartTime, EndTime),
-	Cost MONEY,
+	Cost MONEY
 	-- Tổng tiền = phút chơi * đơn giá máy
 );
+
 GO
+
 CREATE TABLE LogAccess
 (
 	IDLog INT IDENTITY(1,1) PRIMARY KEY,
@@ -133,12 +184,11 @@ GO
 
 CREATE TABLE FoodDrink
 (
-	IDFood INT PRIMARY KEY,
+	IDFood INT IDENTITY(1,1) PRIMARY KEY,
 	NameFood NVARCHAR(100) NOT NULL,
 	ImageFood NVARCHAR(255) NOT NULL,
 	Price MONEY NOT NULL CHECK (Price >= 0) DEFAULT 0,
 	Category NVARCHAR(50),
-	-- Đồ ăn, Đồ uống, Combo
 	Available BIT DEFAULT 1
 	-- 1: Còn hàng, còn bán, 0: Hết hàng, không bán nữa
 );
@@ -179,6 +229,7 @@ CREATE TABLE Message
 	-- 0: chưa đọc, 1: đã đọc
 );
 GO
+
 -- Bảng Hóa Đơn
 CREATE TABLE Invoice
 (
@@ -205,18 +256,81 @@ CREATE TABLE InvoiceDetail
 );
 GO
 
+
+
+
+USE CyberCafe4KL
+GO
+
 INSERT INTO Computer
-	(IDComputer, NameComputer, PricePerMinute, CPU, RAM, GPU, Monitor, ComputerStatus)
+	(IDComputer, NameComputer, PricePerMinute, CPU, RAM, GPU, Monitor, IPRadmin, ComputerStatus)
 VALUES
-	(1, 'MÁY 01', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 1),
-	(2, 'MÁY 02', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 0),
-	(3, 'MÁY 03', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 1),
-	(4, 'MÁY 04', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 0),
-	(5, 'MÁY 05', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 1),
-	(6, 'MÁY 06', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 1),
-	(7, 'MÁY 07', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 0),
-	(8, 'MÁY 08', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', 1);
+	(1, 'MÁY 01', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', '26.221.185.213', 1), -- nqh
+	(2, 'MÁY 02', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', '26.144.233.207', 1), -- minhkhoi
+	(3, 'MÁY 03', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', '26.228.105.146', 1), -- namkhanh
+	(4, 'MÁY 04', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', NULL, 1), -- baohan
+	(5, 'MÁY 05', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', NULL, 0),
+	(6, 'MÁY 06', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', NULL, 1),
+	(7, 'MÁY 07', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', NULL, 1),
+	(8, 'MÁY 08', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', NULL, 0),
+	(9, 'MÁY 09', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', NULL, 1),
+	(10, 'MÁY 10', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', NULL, 0);
+	-- 0 = Đang hoạt động
+	-- 1 = Máy trống
 GO
 
 SELECT *
 FROM Computer
+
+
+INSERT INTO FoodDrink (NameFood, ImageFood, Price, Category, Available) VALUES
+-- ĐỒ UỐNG
+(N'Sting Tài nộc quá nớn', 'dSting.jpg', 12000, N'Đồ uống', 1),
+(N'Coca-Cola', 'dCoca.jpg', 10000, N'Đồ uống', 1),
+(N'Trà xanh hạ hỏa', 'd0do.jpg', 9000, N'Đồ uống', 1),
+(N'Giống Coca nhưng là Pépsi', 'dPepsi.jpg', 10000, N'Đồ uống', 1),
+(N'Nước tinh khiết', 'dNuocLoc.jpg', 8000, N'Đồ uống', 1),
+
+-- ĐỒ ĂN
+(N'Mì tôm 2 trứng', 'fM2T.jpg', 12000, N'Đồ ăn', 1),
+(N'Mì đặc biệt', 'fMDB.jpg', 10000, N'Đồ ăn', 1),
+(N'Mì kay', 'fMK.jpg', 9000, N'Đồ ăn', 1),
+
+-- GÓI NẠP THẺ
+(N'Gói nạp 50.000 VNĐ', '50.jpg', 50000, N'Gói nạp', 1),
+(N'Gói nạp 100.000 VNĐ', '100.jpg', 100000, N'Gói nạp', 1),
+(N'Gói nạp 200.000 VNĐ', '200.jpg', 200000, N'Gói nạp', 1),
+(N'Gói nạp 500.000 VNĐ', '500.jpg', 500000, N'Gói nạp', 1);
+GO
+
+SELECT *
+FROM FoodDrink
+
+
+-- 1. Tạo tài khoản test cho máy 02
+IF NOT EXISTS (SELECT * FROM Account WHERE IDAccount = 200)
+BEGIN
+    INSERT INTO Account (IDAccount, NameAccount, PWAccount, RoleAccount, CCCD, PhoneNumber, Email, Gender, OnlineStatus, AccountStatus)
+    VALUES (200, 'testmay02', '1234', 'CLIENT', '999999999999', '0999999999', 'test@may02.com', N'Nam', 1, 1);
+END
+
+-- 2. Log đang dùng máy 02
+INSERT INTO LogAccess (IDComputer, ThoiGianBatDau, IDAccount)
+VALUES (2, DATEADD(MINUTE, -20, GETDATE()), 200); -- dùng từ 20 phút trước
+
+-- 3. Tạo đơn hàng
+IF NOT EXISTS (SELECT * FROM OrderFood WHERE IDOrder = 302)
+BEGIN
+    INSERT INTO OrderFood (IDOrder, IDAccount)
+    VALUES (302, 200);
+END
+
+-- 4. Lấy ID món Sting & Mì đặc biệt
+DECLARE @idSting INT = (SELECT TOP 1 IDFood FROM FoodDrink WHERE NameFood LIKE N'Sting%');
+DECLARE @idMiDB INT = (SELECT TOP 1 IDFood FROM FoodDrink WHERE NameFood = N'Mì đặc biệt');
+
+-- 5. Thêm chi tiết đơn hàng
+INSERT INTO OrderDetail (IDOrder, IDFood, Quantity, TotalPrice)
+VALUES 
+(302, @idSting, 1, 12000),
+(302, @idMiDB, 2, 20000); -- mỗi cái 10k, tổng 20k
