@@ -45,7 +45,7 @@ public class C2_ClientIcons {
                 lbl.setVerticalTextPosition(JLabel.BOTTOM);
                 lbl.setForeground(Color.WHITE);
                 lbl.setFont(new Font("Segoe UI", Font.BOLD, 12));
-                lbl.setName(names[i]); // 👈 Gán name để xử lý click
+                lbl.setName(names[i]);
                 itemPanel.add(lbl, BorderLayout.CENTER);
             } else {
                 System.err.println("Không tìm thấy icon: " + iconFiles[i]);

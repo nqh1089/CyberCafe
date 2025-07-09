@@ -35,6 +35,7 @@ public class TAB2_QR extends javax.swing.JFrame {
         this.tblChiTiet = tblChiTiet;
         this.formOrder = formOrder;
 
+        this.setResizable(false);
         AnhQR();
     }
 

@@ -2,7 +2,7 @@ package ViewC.View;
 
 import Controller.DBConnection;
 import ViewC.Code.CN_BienToanCuc;
-import ViewAD.Code.CB_SetImage;
+import ViewC.Code.C2_SetImage;
 import ViewC.Code.C2_ClientIcons;
 
 import javax.swing.*;
@@ -19,7 +19,7 @@ public class C2_Menu extends JFrame {
         initComponents();
         LoadThongTinMay();
         C2_ClientIcons.LoadIcons(pnlCN);
-        CB_SetImage.SetPanelBackgroundTLQL(pnlTLQL);
+        C2_SetImage.SetPanelBackgroundTLQL(pnlTLQL);
         addEventHandlers();
         
         this.setResizable(false); // Không cho phóng to

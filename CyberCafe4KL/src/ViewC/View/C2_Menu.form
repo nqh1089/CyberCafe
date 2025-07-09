@@ -134,14 +134,12 @@
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Group type="103" alignment="0" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="lblTaiKhoan" max="32767" attributes="0"/>
-                                  <Component id="lblTrangThai" max="32767" attributes="0"/>
-                                  <Component id="lblGioBatDau" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="lblThoiGianSD" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="lblThoiGianConLai" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
-                                  <Component id="lblChiPhiDV" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
-                              </Group>
+                              <Component id="lblTaiKhoan" max="32767" attributes="0"/>
+                              <Component id="lblTrangThai" max="32767" attributes="0"/>
+                              <Component id="lblGioBatDau" alignment="0" max="32767" attributes="0"/>
+                              <Component id="lblThoiGianSD" alignment="0" max="32767" attributes="0"/>
+                              <Component id="lblThoiGianConLai" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
+                              <Component id="lblChiPhiDV" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
                               <Component id="lblChiPhiGio" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>

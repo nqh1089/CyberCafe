@@ -132,16 +132,16 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
     }
 
     private void HienThongTinHoaDon() {
-        // 1. Hiển thị ngày giờ hiện tại
+        // Hiển thị ngày giờ hiện tại
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         lblNgayGio.setText(now.format(fmt));
 
-        // 2. Lấy mã hóa đơn mới từ DB
+        // Lấy mã hóa đơn mới từ DB
         String maHD = LayMaHoaDonMoi();
         lblMaHD.setText(maHD);
 
-        // 3. Gọi tên tài khoản đăng nhập hiện tại
+        // Gọi tên tài khoản đăng nhập hiện tại
         String ten = CN_TaiKhoanDangNhap.getTenTaiKhoan();
         lblMaNV.setText("NV: " + ten);
     }
@@ -167,20 +167,20 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
     }
 
     public void resetSauKhiThanhToan() {
-        // 1. Reset bảng order
+        // Reset bảng order
         ((DefaultTableModel) tableOrder.getModel()).setRowCount(0);
 
-        // 2. Reset các ô tổng tiền
+        // Reset các ô tổng tiền
         jTextField1.setText("0");
         jTextField2.setText("0");
         jTextField3.setText("0");
 
-        // 3. Reset card sản phẩm (lấy lại từ DB)
-        danhSachSanPham = getAllProducts();      // Lấy lại toàn bộ sản phẩm từ DB
-        hienThiSanPham(danhSachSanPham);         // Hiển thị lại card sản phẩm
+        // Reset card sản phẩm (lấy lại từ DB)
+        danhSachSanPham = getAllProducts();
+        hienThiSanPham(danhSachSanPham);
 
-        // 4. Reset thông tin hóa đơn: ngày giờ, mã HD mới, nhân viên
-        HienThongTinHoaDon();                    // Gọi lại hàm cũ đã xử lý sẵn
+        // Reset thông tin hóa đơn: ngày giờ, mã HD mới, nhân viên
+        HienThongTinHoaDon();
     }
 
     @SuppressWarnings("unchecked")
@@ -686,18 +686,14 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnThanhToanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThanhToanActionPerformed
-        try {
-            String maHD = lblMaHD.getText().trim();
-            String nguoiTao = CN_TaiKhoanDangNhap.getTenTaiKhoan().trim();
+        String maHD = lblMaHD.getText().trim();
+        String nguoiTao = CN_TaiKhoanDangNhap.getTenTaiKhoan().trim();
 
-            int tongTienSP = Integer.parseInt(jTextField1.getText().replace(".", "").trim());
-            int giamGia = Integer.parseInt(jTextField2.getText().replace(".", "").trim());
-            int thanhToan = Integer.parseInt(jTextField3.getText().replace(".", "").trim());
+        int tongTienSP = Integer.parseInt(jTextField1.getText().replace(".", "").trim());
+        int giamGia = Integer.parseInt(jTextField2.getText().replace(".", "").trim());
+        int thanhToan = Integer.parseInt(jTextField3.getText().replace(".", "").trim());
 
-            new TAB2_QR(maHD, nguoiTao, tongTienSP, giamGia, thanhToan, tableOrder, this).setVisible(true);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi: Giá trị tiền không hợp lệ. Hãy kiểm tra lại các ô tổng tiền.");
-        }
+        new TAB2_QR(maHD, nguoiTao, tongTienSP, giamGia, thanhToan, tableOrder, this).setVisible(true);
     }//GEN-LAST:event_btnThanhToanActionPerformed
 
     private void cbxLoaiSPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxLoaiSPActionPerformed
@@ -718,16 +714,9 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
     }//GEN-LAST:event_cbxLoaiSPActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
-    public static void main(String args[]) {
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new AD_TAB2_Order().setVisible(true);
-            }
-        });
-    }
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnThanhToan;

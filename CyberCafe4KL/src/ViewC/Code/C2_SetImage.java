@@ -1,9 +1,9 @@
-package ViewAD.Code;
+package ViewC.Code;
 
 import java.awt.*;
 import javax.swing.*;
 
-public class CB_SetImage {
+public class C2_SetImage {
 
     public static void SetPanelBackgroundTLQL(JPanel panel) {
         SwingUtilities.invokeLater(() -> {
@@ -15,7 +15,7 @@ public class CB_SetImage {
                 panel.setSize(width, height);  // ép kích thước
 
                 // Load ảnh từ đường dẫn tuyệt đối
-                ImageIcon icon = new ImageIcon("J:/SU25/BL2/img/imgTLQL.jpg");
+                ImageIcon icon = new ImageIcon("E:/SU25/BL2/img/imgTLQL.jpg");
                 Image img = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
                 JLabel lbl = new JLabel(new ImageIcon(img));
 
