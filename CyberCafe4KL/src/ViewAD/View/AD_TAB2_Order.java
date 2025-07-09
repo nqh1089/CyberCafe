@@ -3,9 +3,12 @@ package ViewAD.View;
 import Controller.DAO;
 import Controller.DBConnection;
 import Model.Products;
+import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
 import ViewAD.Code.TAB2_CardSP;
+import ViewAD.Code.TAB2_QR;
+import ViewC.Code.CN_BienToanCuc;
 import java.sql.Connection;
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -15,6 +18,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javax.swing.table.DefaultTableModel;
 
 public class AD_TAB2_Order extends javax.swing.JFrame {
@@ -27,14 +32,28 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         SetTableOrder();
         danhSachSanPham = getAllProducts();
         hienThiSanPham(danhSachSanPham);
+        HienThongTinHoaDon();
 
         ((DefaultTableModel) tableOrder.getModel()).setRowCount(0);
-        
+
+        lblID.setText("Xin chào, " + CN_TaiKhoanDangNhap.getTenTaiKhoan());
         setTitle("CyberCafe4KL_Order");
         CN_btnSlideBar.ganSuKienSlideBar(
                 lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan, lblDX,
                 this
         );
+
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("ID"); // <- Ẩn cột này
+        model.addColumn("Tên sản phẩm");
+        model.addColumn("Đơn giá");
+        model.addColumn("Số lượng");
+        model.addColumn("Thành tiền");
+
+        tableOrder.setModel(model);
+        tableOrder.getColumnModel().getColumn(0).setMinWidth(0);
+        tableOrder.getColumnModel().getColumn(0).setMaxWidth(0);
+
     }
 
     private void SetIconSlidebar() {
@@ -112,6 +131,58 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         pnlSP.repaint();
     }
 
+    private void HienThongTinHoaDon() {
+        // 1. Hiển thị ngày giờ hiện tại
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        lblNgayGio.setText(now.format(fmt));
+
+        // 2. Lấy mã hóa đơn mới từ DB
+        String maHD = LayMaHoaDonMoi();
+        lblMaHD.setText(maHD);
+
+        // 3. Gọi tên tài khoản đăng nhập hiện tại
+        String ten = CN_TaiKhoanDangNhap.getTenTaiKhoan();
+        lblMaNV.setText("NV: " + ten);
+    }
+
+    private String LayMaHoaDonMoi() {
+        String maMoi = "HĐ1"; // mặc định nếu DB rỗng
+        try (Connection conn = DBConnection.getConnection()) {
+            if (conn != null) {
+                String sql = "SELECT MAX(IDOrder) AS MaxID FROM OrderFood";
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    int max = rs.getInt("MaxID");
+                    if (!rs.wasNull()) {
+                        maMoi = "HĐ" + (max + 1);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Lỗi lấy mã hóa đơn mới: " + e.getMessage());
+        }
+        return maMoi;
+    }
+
+    public void resetSauKhiThanhToan() {
+        // 1. Reset bảng order
+        ((DefaultTableModel) tableOrder.getModel()).setRowCount(0);
+
+        // 2. Reset các ô tổng tiền
+        jTextField1.setText("0");
+        jTextField2.setText("0");
+        jTextField3.setText("0");
+
+        // 3. Reset card sản phẩm (lấy lại từ DB)
+        danhSachSanPham = getAllProducts();      // Lấy lại toàn bộ sản phẩm từ DB
+        hienThiSanPham(danhSachSanPham);         // Hiển thị lại card sản phẩm
+
+        // 4. Reset thông tin hóa đơn: ngày giờ, mã HD mới, nhân viên
+        HienThongTinHoaDon();                    // Gọi lại hàm cũ đã xử lý sẵn
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -120,7 +191,6 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         jTree1 = new javax.swing.JTree();
         pnlMain = new javax.swing.JPanel();
         pnlCN = new javax.swing.JPanel();
-        lblID = new javax.swing.JLabel();
         lblDX = new javax.swing.JLabel();
         lblTKhoan = new javax.swing.JLabel();
         lblTKe = new javax.swing.JLabel();
@@ -129,6 +199,7 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         lblSP = new javax.swing.JLabel();
         lblOrder = new javax.swing.JLabel();
         lblDM = new javax.swing.JLabel();
+        lblID = new javax.swing.JLabel();
         pnlCNNgang = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         lblTB = new javax.swing.JLabel();
@@ -142,22 +213,21 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         pnlMainTTM = new javax.swing.JPanel();
         pnlSDM1 = new javax.swing.JPanel();
         pnlButton = new javax.swing.JPanel();
-        btnTT = new javax.swing.JButton();
+        btnThanhToan = new javax.swing.JButton();
         jLabel17 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         lblNgayGio = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
-        lblMaHoaDon = new javax.swing.JLabel();
+        lblMaHD = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
         tableOrder = new javax.swing.JTable();
         jLabel22 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
-        txtMaNV = new javax.swing.JLabel();
+        lblMaNV = new javax.swing.JLabel();
         jTextField3 = new javax.swing.JTextField();
-        txtMaNV1 = new javax.swing.JLabel();
 
         jScrollPane1.setViewportView(jTree1);
 
@@ -177,11 +247,6 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         pnlCN.setMinimumSize(new java.awt.Dimension(219, 780));
         pnlCN.setPreferredSize(new java.awt.Dimension(219, 780));
         pnlCN.setRequestFocusEnabled(false);
-
-        lblID.setBackground(new java.awt.Color(255, 255, 255));
-        lblID.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
-        lblID.setForeground(new java.awt.Color(204, 255, 255));
-        lblID.setText("[ID Admin]");
 
         lblDX.setBackground(new java.awt.Color(204, 255, 255));
         lblDX.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
@@ -223,6 +288,12 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         lblDM.setForeground(new java.awt.Color(204, 255, 255));
         lblDM.setText("Đặt máy");
 
+        lblID.setBackground(new java.awt.Color(255, 255, 255));
+        lblID.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        lblID.setForeground(new java.awt.Color(204, 255, 255));
+        lblID.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblID.setText("[ID Admin]");
+
         javax.swing.GroupLayout pnlCNLayout = new javax.swing.GroupLayout(pnlCN);
         pnlCN.setLayout(pnlCNLayout);
         pnlCNLayout.setHorizontalGroup(
@@ -237,16 +308,16 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
                     .addComponent(lblHD)
                     .addComponent(lblTKe)
                     .addComponent(lblTKhoan)
-                    .addComponent(lblID)
                     .addComponent(lblMT))
-                .addGap(70, 70, 70))
+                .addContainerGap(87, Short.MAX_VALUE))
+            .addComponent(lblID, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
         );
         pnlCNLayout.setVerticalGroup(
             pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCNLayout.createSequentialGroup()
-                .addGap(37, 37, 37)
+                .addGap(53, 53, 53)
                 .addComponent(lblID)
-                .addGap(100, 100, 100)
+                .addGap(84, 84, 84)
                 .addComponent(lblDM)
                 .addGap(40, 40, 40)
                 .addComponent(lblOrder)
@@ -403,11 +474,11 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
 
         pnlButton.setBackground(new java.awt.Color(44, 44, 62));
 
-        btnTT.setBackground(new java.awt.Color(204, 255, 255));
-        btnTT.setText("Thanh toán");
-        btnTT.addActionListener(new java.awt.event.ActionListener() {
+        btnThanhToan.setBackground(new java.awt.Color(204, 255, 255));
+        btnThanhToan.setText("Thanh toán");
+        btnThanhToan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTTActionPerformed(evt);
+                btnThanhToanActionPerformed(evt);
             }
         });
 
@@ -417,14 +488,14 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
             pnlButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlButtonLayout.createSequentialGroup()
                 .addGap(171, 171, 171)
-                .addComponent(btnTT, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnThanhToan, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlButtonLayout.setVerticalGroup(
             pnlButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlButtonLayout.createSequentialGroup()
                 .addContainerGap(18, Short.MAX_VALUE)
-                .addComponent(btnTT, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnThanhToan, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(17, 17, 17))
         );
 
@@ -447,9 +518,9 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         jLabel19.setForeground(new java.awt.Color(204, 255, 255));
         jLabel19.setText("Tổng tiền giảm:");
 
-        lblMaHoaDon.setForeground(new java.awt.Color(204, 255, 255));
-        lblMaHoaDon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblMaHoaDon.setText("[Mã Hóa Đơn]");
+        lblMaHD.setForeground(new java.awt.Color(204, 255, 255));
+        lblMaHD.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblMaHD.setText("[Mã Hóa Đơn]");
 
         jLabel20.setForeground(new java.awt.Color(204, 255, 255));
         jLabel20.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -483,16 +554,12 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         jTextField2.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jTextField2.setText("jTextField2");
 
-        txtMaNV.setForeground(new java.awt.Color(204, 255, 255));
-        txtMaNV.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        txtMaNV.setText("[Mã Nhân Viên]");
+        lblMaNV.setForeground(new java.awt.Color(204, 255, 255));
+        lblMaNV.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblMaNV.setText("[Mã Nhân Viên]");
 
         jTextField3.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jTextField3.setText("jTextField3");
-
-        txtMaNV1.setForeground(new java.awt.Color(204, 255, 255));
-        txtMaNV1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        txtMaNV1.setText("[Máy số #]");
 
         javax.swing.GroupLayout pnlSDM1Layout = new javax.swing.GroupLayout(pnlSDM1);
         pnlSDM1.setLayout(pnlSDM1Layout);
@@ -528,13 +595,12 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSDM1Layout.createSequentialGroup()
                         .addGroup(pnlSDM1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtMaNV, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblMaHoaDon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblMaNV, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblMaHD, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnlSDM1Layout.createSequentialGroup()
                                 .addComponent(lblNgayGio, javax.swing.GroupLayout.PREFERRED_SIZE, 438, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtMaNV1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())))
         );
         pnlSDM1Layout.setVerticalGroup(
@@ -542,14 +608,12 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
             .addGroup(pnlSDM1Layout.createSequentialGroup()
                 .addGap(26, 26, 26)
                 .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addComponent(lblNgayGio)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblMaHoaDon)
+                .addComponent(lblMaHD)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtMaNV)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtMaNV1)
+                .addComponent(lblMaNV)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -621,9 +685,20 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnTTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTTActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnTTActionPerformed
+    private void btnThanhToanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThanhToanActionPerformed
+        try {
+            String maHD = lblMaHD.getText().trim();
+            String nguoiTao = CN_TaiKhoanDangNhap.getTenTaiKhoan().trim();
+
+            int tongTienSP = Integer.parseInt(jTextField1.getText().replace(".", "").trim());
+            int giamGia = Integer.parseInt(jTextField2.getText().replace(".", "").trim());
+            int thanhToan = Integer.parseInt(jTextField3.getText().replace(".", "").trim());
+
+            new TAB2_QR(maHD, nguoiTao, tongTienSP, giamGia, thanhToan, tableOrder, this).setVisible(true);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Lỗi: Giá trị tiền không hợp lệ. Hãy kiểm tra lại các ô tổng tiền.");
+        }
+    }//GEN-LAST:event_btnThanhToanActionPerformed
 
     private void cbxLoaiSPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxLoaiSPActionPerformed
         String loai = cbxLoaiSP.getSelectedItem().toString();
@@ -655,7 +730,7 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnTT;
+    private javax.swing.JButton btnThanhToan;
     private javax.swing.JComboBox<String> cbxLoaiSP;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
@@ -677,7 +752,8 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
     private javax.swing.JLabel lblHD;
     private javax.swing.JLabel lblID;
     private javax.swing.JLabel lblMT;
-    private javax.swing.JLabel lblMaHoaDon;
+    private javax.swing.JLabel lblMaHD;
+    private javax.swing.JLabel lblMaNV;
     private javax.swing.JLabel lblNgayGio;
     private javax.swing.JLabel lblOrder;
     private javax.swing.JLabel lblSP;
@@ -694,8 +770,6 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
     private javax.swing.JPanel pnlSDM1;
     private javax.swing.JPanel pnlSP;
     private javax.swing.JTable tableOrder;
-    private javax.swing.JLabel txtMaNV;
-    private javax.swing.JLabel txtMaNV1;
     private javax.swing.JLabel txtSDM;
     // End of variables declaration//GEN-END:variables
 }

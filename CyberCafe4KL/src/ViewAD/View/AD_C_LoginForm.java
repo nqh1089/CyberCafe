@@ -1,16 +1,18 @@
 package ViewAD.View;
 
+import Controller.DBConnection;
+import ViewAD.Code.CN_TaiKhoanDangNhap;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.ResultSet;
 import javax.swing.JOptionPane;
-import java.sql.CallableStatement;
-
 
 public class AD_C_LoginForm extends javax.swing.JFrame {
 
     public AD_C_LoginForm() {
         initComponents();
+        this.setResizable(false); // Không cho phóng to
+        setTitle("CyberCafe4KL");
     }
 
     @SuppressWarnings("unchecked")
@@ -177,44 +179,49 @@ public class AD_C_LoginForm extends javax.swing.JFrame {
     }//GEN-LAST:event_cbShowActionPerformed
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        
-    }//GEN-LAST:event_btnLoginActionPerformed
+        String name = txtName.getText().trim();
+        String pw = new String(txtPW.getPassword()).trim();
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AD_C_LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AD_C_LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AD_C_LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AD_C_LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        if (name.isEmpty() || pw.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin.");
+            return;
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
 
-        /* Create and display the form */
+        try (Connection conn = DBConnection.getConnection()) {
+            if (conn == null) {
+                JOptionPane.showMessageDialog(this, "Không thể kết nối CSDL.");
+                return;
+            }
+
+            String sql = "SELECT * FROM Account WHERE NameAccount = ? AND PWAccount = ? AND AccountStatus = 1";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, name);
+            ps.setString(2, pw);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String role = rs.getString("RoleAccount");
+
+                if (role.equalsIgnoreCase("ADMIN") || role.equalsIgnoreCase("BOSS")) {
+                    // Gán tên tài khoản vào class chung
+                    CN_TaiKhoanDangNhap.setTenTaiKhoan(name);
+
+                    // Mở giao diện TAB1
+                    new ViewAD.View.AD_TAB1_DatMay().setVisible(true);
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Tài khoản không có quyền truy cập.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Sai tên đăng nhập hoặc mật khẩu.");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi đăng nhập: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnLoginActionPerformed
+    public static void main(String args[]) {
+
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new AD_C_LoginForm().setVisible(true);

@@ -1,0 +1,190 @@
+package ViewAD.Code;
+
+import Controller.DBConnection;
+import ViewAD.View.AD_TAB2_Order;
+import java.awt.BorderLayout;
+import java.awt.Image;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import java.sql.ResultSet;
+
+public class TAB2_QR extends javax.swing.JFrame {
+
+    private String maHD;
+    private String nguoiTao;
+    private int tongTienSP;
+    private int giamGia;
+    private int thanhToan;
+    private JTable tblChiTiet;
+    private AD_TAB2_Order formOrder;
+
+    public TAB2_QR(String maHD, String nguoiTao, int tongTienSP, int giamGia, int thanhToan,
+            JTable tblChiTiet, AD_TAB2_Order formOrder) {
+        initComponents();
+        this.maHD = maHD;
+        this.nguoiTao = nguoiTao;
+        this.tongTienSP = tongTienSP;
+        this.giamGia = giamGia;
+        this.thanhToan = thanhToan;
+        this.tblChiTiet = tblChiTiet;
+        this.formOrder = formOrder;
+
+        AnhQR();
+    }
+
+    private void AnhQR() {
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getResource("/Assets/Products/QR.jpg"));
+
+            Image img = icon.getImage().getScaledInstance(pnlQR.getWidth(), pnlQR.getHeight(), Image.SCALE_SMOOTH);
+            JLabel lblQR = new JLabel(new ImageIcon(img));
+            pnlQR.removeAll();
+            pnlQR.setLayout(new BorderLayout());
+            pnlQR.add(lblQR, BorderLayout.CENTER);
+            pnlQR.revalidate();
+            pnlQR.repaint();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Không thể hiển thị mã QR.");
+        }
+    }
+
+    private boolean LuuHoaDonVaoDB() {
+        try (Connection conn = DBConnection.getConnection()) {
+            if (conn == null) {
+                return false;
+            }
+
+            // Lấy IDAccount từ tên tài khoản
+            int idAccount = layIDAccount(nguoiTao);
+            if (idAccount == -1) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy tài khoản.");
+                return false;
+            }
+
+            // 1. Lưu OrderFood
+            String insertOrder = "INSERT INTO OrderFood (IDOrder, IDAccount, OrderTime) VALUES (?, ?, ?)";
+            PreparedStatement ps1 = conn.prepareStatement(insertOrder);
+            ps1.setInt(1, Integer.parseInt(maHD.replace("HĐ", "")));
+            ps1.setInt(2, idAccount);
+            ps1.setString(3, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            ps1.executeUpdate();
+
+            // 2. Lưu OrderDetail
+            String insertDetail = "INSERT INTO OrderDetail (IDOrder, IDFood, Quantity, TotalPrice) VALUES (?, ?, ?, ?)";
+            PreparedStatement ps2 = conn.prepareStatement(insertDetail);
+
+            for (int i = 0; i < tblChiTiet.getRowCount(); i++) {
+                int idFood = Integer.parseInt(tblChiTiet.getValueAt(i, 0).toString()); // cột 0: ID sản phẩm
+                int quantity = Integer.parseInt(tblChiTiet.getValueAt(i, 3).toString().replace(".", "")); // cột 3: số lượng
+                int total = Integer.parseInt(tblChiTiet.getValueAt(i, 4).toString().replace(".", "")); // cột 4: thành tiền
+
+                ps2.setInt(1, Integer.parseInt(maHD.replace("HĐ", "")));
+                ps2.setInt(2, idFood);
+                ps2.setInt(3, quantity);
+                ps2.setInt(4, total);
+                ps2.addBatch();
+            }
+
+            ps2.executeBatch();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Lỗi lưu hóa đơn: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private int layIDAccount(String tenTK) {
+        try (Connection conn = DBConnection.getConnection()) {
+            String sql = "SELECT IDAccount FROM Account WHERE NameAccount = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, tenTK);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("IDAccount");
+            }
+        } catch (Exception e) {
+            System.out.println("Lỗi lấy IDAccount: " + e.getMessage());
+        }
+        return -1;
+    }
+
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        pnlMain = new javax.swing.JPanel();
+        btnDone = new javax.swing.JButton();
+        pnlQR = new javax.swing.JPanel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        pnlMain.setBackground(new java.awt.Color(30, 30, 47));
+        pnlMain.setMaximumSize(new java.awt.Dimension(400, 400));
+        pnlMain.setMinimumSize(new java.awt.Dimension(400, 400));
+        pnlMain.setPreferredSize(new java.awt.Dimension(400, 400));
+        pnlMain.setRequestFocusEnabled(false);
+        pnlMain.setVerifyInputWhenFocusTarget(false);
+        pnlMain.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        btnDone.setText("Hoàn tất");
+        btnDone.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDoneActionPerformed(evt);
+            }
+        });
+        pnlMain.add(btnDone, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 340, 110, -1));
+
+        pnlQR.setMaximumSize(new java.awt.Dimension(340, 340));
+        pnlQR.setMinimumSize(new java.awt.Dimension(340, 340));
+
+        javax.swing.GroupLayout pnlQRLayout = new javax.swing.GroupLayout(pnlQR);
+        pnlQR.setLayout(pnlQRLayout);
+        pnlQRLayout.setHorizontalGroup(
+            pnlQRLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 340, Short.MAX_VALUE)
+        );
+        pnlQRLayout.setVerticalGroup(
+            pnlQRLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 340, Short.MAX_VALUE)
+        );
+
+        pnlMain.add(pnlQR, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, -1, 290));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(pnlMain, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(pnlMain, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoneActionPerformed
+        if (LuuHoaDonVaoDB()) {
+            JOptionPane.showMessageDialog(this, "Đã lưu hóa đơn thành công.");
+            if (formOrder != null) {
+                formOrder.resetSauKhiThanhToan();
+            }
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Lưu hóa đơn thất bại.");
+        }
+    }//GEN-LAST:event_btnDoneActionPerformed
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDone;
+    private javax.swing.JPanel pnlMain;
+    private javax.swing.JPanel pnlQR;
+    // End of variables declaration//GEN-END:variables
+}

@@ -1,5 +1,6 @@
 package ViewAD.View;
 
+import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_ClickMay;
 import ViewAD.Code.TAB1_LoadSDM;
@@ -28,6 +29,7 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
         );
         handler.resetThongTinMayChuaChon();
 
+        lblID.setText("Xin chào, " + CN_TaiKhoanDangNhap.getTenTaiKhoan());
         setTitle("CyberCafe4KL_Đặt Máy");
         CN_btnSlideBar.ganSuKienSlideBar(
                 lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan, lblDX,
@@ -151,7 +153,6 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
         tblOrder = new javax.swing.JTable();
         txtOrder = new javax.swing.JLabel();
         pnlButton = new javax.swing.JPanel();
-        btnTT = new javax.swing.JButton();
         btnTTK = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
@@ -178,6 +179,7 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
         lblID.setBackground(new java.awt.Color(255, 255, 255));
         lblID.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
         lblID.setForeground(new java.awt.Color(204, 255, 255));
+        lblID.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblID.setText("[ID Admin]");
 
         lblDX.setBackground(new java.awt.Color(204, 255, 255));
@@ -234,16 +236,18 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
                     .addComponent(lblHD)
                     .addComponent(lblTKe)
                     .addComponent(lblTKhoan)
-                    .addComponent(lblID)
                     .addComponent(lblMT))
-                .addGap(70, 70, 70))
+                .addGap(82, 87, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlCNLayout.createSequentialGroup()
+                .addComponent(lblID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         pnlCNLayout.setVerticalGroup(
             pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCNLayout.createSequentialGroup()
-                .addGap(37, 37, 37)
+                .addGap(53, 53, 53)
                 .addComponent(lblID)
-                .addGap(100, 100, 100)
+                .addGap(84, 84, 84)
                 .addComponent(lblDM)
                 .addGap(40, 40, 40)
                 .addComponent(lblOrder)
@@ -257,7 +261,7 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
                 .addComponent(lblTKe)
                 .addGap(40, 40, 40)
                 .addComponent(lblTKhoan)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 211, Short.MAX_VALUE)
                 .addComponent(lblDX)
                 .addGap(32, 32, 32))
         );
@@ -732,14 +736,6 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
 
         pnlButton.setBackground(new java.awt.Color(44, 44, 62));
 
-        btnTT.setBackground(new java.awt.Color(204, 255, 255));
-        btnTT.setText("Thanh toán");
-        btnTT.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTTActionPerformed(evt);
-            }
-        });
-
         btnTTK.setBackground(new java.awt.Color(204, 255, 255));
         btnTTK.setText("Tạo TK");
         btnTTK.addActionListener(new java.awt.event.ActionListener() {
@@ -754,19 +750,15 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
             pnlButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlButtonLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnTT, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnTTK, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(100, 100, 100))
+                .addComponent(btnTTK, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(155, 155, 155))
         );
         pnlButtonLayout.setVerticalGroup(
             pnlButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlButtonLayout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
-                .addGroup(pnlButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnTT, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnTTK, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(17, 17, 17))
+                .addContainerGap(20, Short.MAX_VALUE)
+                .addComponent(btnTTK, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15))
         );
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -904,10 +896,6 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnTTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTTActionPerformed
-
-    }//GEN-LAST:event_btnTTActionPerformed
-
     private void btnTTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTTKActionPerformed
         new AD_C_RegisterForm().setVisible(true); // hoặc bạn mở form login/đăng ký khác
     }//GEN-LAST:event_btnTTKActionPerformed
@@ -922,7 +910,6 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnTT;
     private javax.swing.JButton btnTTK;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;

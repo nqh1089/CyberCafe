@@ -1,5 +1,6 @@
 package ViewAD.View;
 
+import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_LoadSDM;
 import ViewAD.Code.TAB1_Slidebar;
@@ -12,8 +13,9 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
     public AD_TAB4_QLMT() {
         initComponents();
         SetIconSlidebar();
-        TAB1_LoadSDM.LoadSoDoMay(pnlSDM);
 
+
+        lblID.setText("Xin chào, " + CN_TaiKhoanDangNhap.getTenTaiKhoan());
         setTitle("CyberCafe4KL_Quản lý Máy tính");
         CN_btnSlideBar.ganSuKienSlideBar(
                 lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan, lblDX,
@@ -45,7 +47,6 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
         jTree1 = new javax.swing.JTree();
         pnlMain = new javax.swing.JPanel();
         pnlCN = new javax.swing.JPanel();
-        lblID = new javax.swing.JLabel();
         lblDX = new javax.swing.JLabel();
         lblTKhoan = new javax.swing.JLabel();
         lblTKe = new javax.swing.JLabel();
@@ -54,6 +55,7 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
         lblSP = new javax.swing.JLabel();
         lblOrder = new javax.swing.JLabel();
         lblDM = new javax.swing.JLabel();
+        lblID = new javax.swing.JLabel();
         pnlCNNgang = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         lblTB = new javax.swing.JLabel();
@@ -127,11 +129,6 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
         pnlCN.setPreferredSize(new java.awt.Dimension(219, 780));
         pnlCN.setRequestFocusEnabled(false);
 
-        lblID.setBackground(new java.awt.Color(255, 255, 255));
-        lblID.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
-        lblID.setForeground(new java.awt.Color(204, 255, 255));
-        lblID.setText("[ID Admin]");
-
         lblDX.setBackground(new java.awt.Color(204, 255, 255));
         lblDX.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
         lblDX.setForeground(new java.awt.Color(204, 255, 255));
@@ -172,6 +169,12 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
         lblDM.setForeground(new java.awt.Color(204, 255, 255));
         lblDM.setText("Đặt máy");
 
+        lblID.setBackground(new java.awt.Color(255, 255, 255));
+        lblID.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        lblID.setForeground(new java.awt.Color(204, 255, 255));
+        lblID.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblID.setText("[ID Admin]");
+
         javax.swing.GroupLayout pnlCNLayout = new javax.swing.GroupLayout(pnlCN);
         pnlCN.setLayout(pnlCNLayout);
         pnlCNLayout.setHorizontalGroup(
@@ -186,16 +189,16 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
                     .addComponent(lblHD)
                     .addComponent(lblTKe)
                     .addComponent(lblTKhoan)
-                    .addComponent(lblID)
                     .addComponent(lblMT))
-                .addGap(70, 70, 70))
+                .addGap(82, 82, 82))
+            .addComponent(lblID, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
         );
         pnlCNLayout.setVerticalGroup(
             pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCNLayout.createSequentialGroup()
-                .addGap(37, 37, 37)
+                .addGap(53, 53, 53)
                 .addComponent(lblID)
-                .addGap(100, 100, 100)
+                .addGap(84, 84, 84)
                 .addComponent(lblDM)
                 .addGap(40, 40, 40)
                 .addComponent(lblOrder)
@@ -209,7 +212,7 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
                 .addComponent(lblTKe)
                 .addGap(40, 40, 40)
                 .addComponent(lblTKhoan)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 211, Short.MAX_VALUE)
                 .addComponent(lblDX)
                 .addGap(32, 32, 32))
         );

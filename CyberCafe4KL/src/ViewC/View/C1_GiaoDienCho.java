@@ -152,7 +152,7 @@ public class C1_GiaoDienCho extends JFrame {
 
     class BackgroundPanel extends JPanel {
 
-        private final ImageIcon gifIcon = new ImageIcon("J:/SU25/BL2/img/0701.gif");
+        private final ImageIcon gifIcon = new ImageIcon("E:/SU25/BL2/img/0701.gif");
 
         @Override
         protected void paintComponent(Graphics g) {

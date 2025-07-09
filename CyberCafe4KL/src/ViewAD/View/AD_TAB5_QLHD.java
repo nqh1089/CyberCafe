@@ -1,5 +1,6 @@
 package ViewAD.View;
 
+import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
 import java.awt.*;
@@ -13,6 +14,7 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
         SetIconSlidebar();
         SetTableOrder();
         
+        lblID.setText("Xin chào, " + CN_TaiKhoanDangNhap.getTenTaiKhoan());
         setTitle("CyberCafe4KL_Quản lý Hóa đơn");
         CN_btnSlideBar.ganSuKienSlideBar(
                 lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan, lblDX,
@@ -64,7 +66,6 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
         jTree1 = new javax.swing.JTree();
         pnlMain = new javax.swing.JPanel();
         pnlCN = new javax.swing.JPanel();
-        lblID = new javax.swing.JLabel();
         lblDX = new javax.swing.JLabel();
         lblTKhoan = new javax.swing.JLabel();
         lblTKe = new javax.swing.JLabel();
@@ -73,6 +74,7 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
         lblSP = new javax.swing.JLabel();
         lblOrder = new javax.swing.JLabel();
         lblDM = new javax.swing.JLabel();
+        lblID = new javax.swing.JLabel();
         pnlCNNgang = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         lblTB = new javax.swing.JLabel();
@@ -88,6 +90,7 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
         pnlTTTD = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         lblTTTD = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
 
         jScrollPane1.setViewportView(jTree1);
 
@@ -106,11 +109,6 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
         pnlCN.setMinimumSize(new java.awt.Dimension(219, 780));
         pnlCN.setPreferredSize(new java.awt.Dimension(219, 780));
         pnlCN.setRequestFocusEnabled(false);
-
-        lblID.setBackground(new java.awt.Color(255, 255, 255));
-        lblID.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
-        lblID.setForeground(new java.awt.Color(204, 255, 255));
-        lblID.setText("[ID Admin]");
 
         lblDX.setBackground(new java.awt.Color(204, 255, 255));
         lblDX.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
@@ -152,6 +150,12 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
         lblDM.setForeground(new java.awt.Color(204, 255, 255));
         lblDM.setText("Đặt máy");
 
+        lblID.setBackground(new java.awt.Color(255, 255, 255));
+        lblID.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        lblID.setForeground(new java.awt.Color(204, 255, 255));
+        lblID.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblID.setText("[ID Admin]");
+
         javax.swing.GroupLayout pnlCNLayout = new javax.swing.GroupLayout(pnlCN);
         pnlCN.setLayout(pnlCNLayout);
         pnlCNLayout.setHorizontalGroup(
@@ -166,16 +170,16 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
                     .addComponent(lblHD)
                     .addComponent(lblTKe)
                     .addComponent(lblTKhoan)
-                    .addComponent(lblID)
                     .addComponent(lblMT))
-                .addGap(70, 70, 70))
+                .addGap(82, 82, 82))
+            .addComponent(lblID, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         pnlCNLayout.setVerticalGroup(
             pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCNLayout.createSequentialGroup()
-                .addGap(37, 37, 37)
+                .addGap(54, 54, 54)
                 .addComponent(lblID)
-                .addGap(100, 100, 100)
+                .addGap(83, 83, 83)
                 .addComponent(lblDM)
                 .addGap(40, 40, 40)
                 .addComponent(lblOrder)
@@ -189,7 +193,7 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
                 .addComponent(lblTKe)
                 .addGap(40, 40, 40)
                 .addComponent(lblTKhoan)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 211, Short.MAX_VALUE)
                 .addComponent(lblDX)
                 .addGap(32, 32, 32))
         );
@@ -335,23 +339,31 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
                 .addGap(12, 12, 12))
         );
 
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tháng 6" }));
+
         javax.swing.GroupLayout pnlSDMLayout = new javax.swing.GroupLayout(pnlSDM);
         pnlSDM.setLayout(pnlSDMLayout);
         pnlSDMLayout.setHorizontalGroup(
             pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlSDMLayout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtSDM, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(pnlSDMLayout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1259, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 2, Short.MAX_VALUE)))
+                        .addContainerGap()
+                        .addGroup(pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtSDM, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(pnlSDMLayout.createSequentialGroup()
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1259, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 2, Short.MAX_VALUE))))
+                    .addGroup(pnlSDMLayout.createSequentialGroup()
+                        .addGap(356, 356, 356)
+                        .addComponent(pnlTSHD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(pnlTTTD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(pnlSDMLayout.createSequentialGroup()
-                .addGap(360, 360, 360)
-                .addComponent(pnlTSHD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(pnlTTTD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(584, 584, 584)
+                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlSDMLayout.setVerticalGroup(
@@ -360,11 +372,13 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
                 .addGap(25, 25, 25)
                 .addComponent(txtSDM)
                 .addGap(18, 18, 18)
+                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
                 .addGroup(pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(pnlTSHD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pnlTTTD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 527, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 507, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -430,6 +444,7 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel3;

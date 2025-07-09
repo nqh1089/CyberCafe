@@ -8,7 +8,7 @@ import java.awt.*;
 public class TAB2_CardSP {
 
     public static JPanel taoCard(Products sp, JTable tableOrder,
-                                 JTextField jTextField1, JTextField jTextField2, JTextField jTextField3) {
+            JTextField jTextField1, JTextField jTextField2, JTextField jTextField3) {
 
         JPanel card = new JPanel(new BorderLayout(10, 10));
         card.setPreferredSize(new Dimension(280, 130));
@@ -103,15 +103,16 @@ public class TAB2_CardSP {
         boolean daCo = false;
 
         for (int i = 0; i < model.getRowCount(); i++) {
-            if (sp.getTenSP().equals(model.getValueAt(i, 0))) {
+            int id = Integer.parseInt(model.getValueAt(i, 0).toString());
+            if (id == sp.getId()) {
                 daCo = true;
 
                 if (soLuongMoi == 0) {
                     model.removeRow(i);
                 } else {
-                    model.setValueAt(sp.getGia(), i, 1);
-                    model.setValueAt(soLuongMoi, i, 2);
-                    model.setValueAt(sp.getGia() * soLuongMoi, i, 3);
+                    model.setValueAt(sp.getGia(), i, 2); // đơn giá
+                    model.setValueAt(soLuongMoi, i, 3);  // số lượng
+                    model.setValueAt(sp.getGia() * soLuongMoi, i, 4); // thành tiền
                 }
                 break;
             }
@@ -119,10 +120,11 @@ public class TAB2_CardSP {
 
         if (!daCo && soLuongMoi > 0) {
             model.addRow(new Object[]{
-                    sp.getTenSP(),
-                    sp.getGia(),
-                    soLuongMoi,
-                    sp.getGia() * soLuongMoi
+                sp.getId(), // ID
+                sp.getTenSP(), // Tên sản phẩm
+                sp.getGia(), // Đơn giá
+                soLuongMoi, // Số lượng
+                sp.getGia() * soLuongMoi // Thành tiền
             });
         }
     }
@@ -132,11 +134,15 @@ public class TAB2_CardSP {
         int tong = 0;
 
         for (int i = 0; i < model.getRowCount(); i++) {
-            Object val = model.getValueAt(i, 3);
+            Object val = model.getValueAt(i, 4); // cột Thành tiền
             if (val != null) {
                 try {
-                    tong += Integer.parseInt(val.toString().replaceAll("\\D", ""));
-                } catch (Exception ignored) {}
+                    // Nếu dữ liệu đã format: "36.000", thì cần bỏ dấu chấm để parseInt
+                    String cleaned = val.toString().replace(".", "").replace(",", "").trim();
+                    tong += Integer.parseInt(cleaned);
+                } catch (Exception e) {
+                    System.out.println("Lỗi khi tính tổng tiền: " + e.getMessage());
+                }
             }
         }
 
