@@ -1,9 +1,18 @@
 package ViewAD.View;
 
+import Controller.DBConnection;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
-import java.awt.*;
+import ViewAD.Code.TAB3_ThemSP;
+import ViewAD.Code.TAB3_LoadTT;
+
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -13,6 +22,9 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
         initComponents();
         SetIconSlidebar();
         SetTableOrder();
+setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        CapNhatBangSanPham();
     }
 
     private void SetIconSlidebar() {
@@ -28,7 +40,7 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
 
         TAB1_Slidebar.SetLabelIcon(lblChat, "icChat.png", "");
         TAB1_Slidebar.SetLabelIcon(lblTB, "icTB.png", "");
-        
+
         lblID.setText("Xin chào, " + CN_TaiKhoanDangNhap.getTenTaiKhoan());
         setTitle("CyberCafe4KL_Quản lý Nhân viên");
         CN_btnSlideBar.ganSuKienSlideBar(
@@ -47,7 +59,7 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
         tblSanPham.setForeground(ChuTrang);  // Màu chữ trong bảng
         tblSanPham.setSelectionBackground(new Color(60, 60, 90));
         tblSanPham.setGridColor(new Color(70, 70, 90));
-        
+
         //Căn giữa tiêu đề bảng
         DefaultTableCellRenderer centerRenderer = (DefaultTableCellRenderer) tblSanPham.getTableHeader().getDefaultRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -56,6 +68,12 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
 
         jScrollPane2.getViewport().setBackground(nenToi);
         jScrollPane2.setBackground(nenToi);
+    }
+
+    private void CapNhatBangSanPham() {
+        String loaiSP = cbxLocSP.getSelectedItem().toString();
+        String trangThai = cbxLocTT.getSelectedItem().toString();
+        TAB3_LoadTT.LoadData(tblSanPham, loaiSP, trangThai);
     }
 
     @SuppressWarnings("unchecked")
@@ -88,6 +106,10 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
         btnTim = new javax.swing.JButton();
         btnSua = new javax.swing.JButton();
         btnThem = new javax.swing.JButton();
+        btnAn = new javax.swing.JButton();
+        btnXoa = new javax.swing.JButton();
+        cbxLocSP = new javax.swing.JComboBox<>();
+        cbxLocTT = new javax.swing.JComboBox<>();
 
         jScrollPane1.setViewportView(jTree1);
 
@@ -274,7 +296,7 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "Mã HD", "Tên SP", "Giá tiền", "Số lượng", "Tổng tiền", "Nhân viên bán"
+                "Mã SP", "Ảnh SP", "Tên SP", "Loại SP", "Giá SP", "Trạng thái"
             }
         ));
         tblSanPham.setGridColor(new java.awt.Color(30, 30, 47));
@@ -288,6 +310,11 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
         });
 
         btnTim.setText("Tìm");
+        btnTim.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTimActionPerformed(evt);
+            }
+        });
 
         btnSua.setText("Sửa");
         btnSua.addActionListener(new java.awt.event.ActionListener() {
@@ -300,6 +327,34 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
         btnThem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnThemActionPerformed(evt);
+            }
+        });
+
+        btnAn.setText("Ẩn");
+        btnAn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAnActionPerformed(evt);
+            }
+        });
+
+        btnXoa.setText("Xoá");
+        btnXoa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnXoaActionPerformed(evt);
+            }
+        });
+
+        cbxLocSP.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tất cả", "Đồ ăn", "Đồ uống", "Gói nạp" }));
+        cbxLocSP.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxLocSPActionPerformed(evt);
+            }
+        });
+
+        cbxLocTT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tất cả", "Đang bán", "Ngừng bán" }));
+        cbxLocTT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxLocTTActionPerformed(evt);
             }
         });
 
@@ -316,15 +371,23 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
                         .addGap(0, 2, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSDMLayout.createSequentialGroup()
-                .addGap(88, 88, 88)
+                .addGap(38, 38, 38)
                 .addComponent(txtFind, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnTim, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40)
+                .addComponent(cbxLocSP, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cbxLocTT, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnXoa, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(btnSua, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(88, 88, 88))
+                .addGap(18, 18, 18)
+                .addComponent(btnAn, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(56, 56, 56))
         );
         pnlSDMLayout.setVerticalGroup(
             pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -332,11 +395,17 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
                 .addGap(25, 25, 25)
                 .addComponent(txtSDM)
                 .addGap(37, 37, 37)
-                .addGroup(pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnTim)
-                    .addComponent(txtFind, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnThem)
-                    .addComponent(btnSua))
+                .addGroup(pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cbxLocSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cbxLocTT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnTim)
+                        .addComponent(txtFind, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnThem)
+                        .addComponent(btnSua)
+                        .addComponent(btnAn)
+                        .addComponent(btnXoa)))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
                 .addContainerGap())
@@ -400,12 +469,84 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
     }//GEN-LAST:event_txtFindActionPerformed
 
     private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
-
+        int row = tblSanPham.getSelectedRow();
+        if (row >= 0) {
+            String maSP = tblSanPham.getValueAt(row, 0).toString();
+            new TAB3_ThemSP(maSP).setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm để sửa");
+        }
     }//GEN-LAST:event_btnSuaActionPerformed
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-
+        new TAB3_ThemSP().setVisible(true);
     }//GEN-LAST:event_btnThemActionPerformed
+
+    private void btnAnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnActionPerformed
+        int row = tblSanPham.getSelectedRow();
+        if (row >= 0) {
+            String maSP = tblSanPham.getValueAt(row, 0).toString();
+            try (Connection conn = DBConnection.getConnection()) {
+                String sql = "UPDATE FoodDrink SET Available = 0 WHERE IDFood = ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setString(1, maSP);
+                int rows = stmt.executeUpdate();
+                if (rows > 0) {
+                    JOptionPane.showMessageDialog(this, "Đã ẩn sản phẩm (chuyển sang NGỪNG BÁN)");
+                    CapNhatBangSanPham(); // Load lại bảng để hiển thị trạng thái mới
+                } else {
+                    JOptionPane.showMessageDialog(this, "Ẩn sản phẩm thất bại");
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm để ẩn");
+        }
+    }//GEN-LAST:event_btnAnActionPerformed
+
+    private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
+        int row = tblSanPham.getSelectedRow();
+        if (row >= 0) {
+            String maSP = tblSanPham.getValueAt(row, 0).toString();
+            int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xoá sản phẩm này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    String sql = "DELETE FROM FoodDrink WHERE IDFood = ?";
+                    PreparedStatement stmt = conn.prepareStatement(sql);
+                    stmt.setString(1, maSP);
+                    int rows = stmt.executeUpdate();
+                    if (rows > 0) {
+                        JOptionPane.showMessageDialog(this, "Đã xoá sản phẩm");
+                        // Gọi lại LoadData()
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Xoá sản phẩm thất bại");
+                    }
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm để xoá");
+        }
+        CapNhatBangSanPham();
+    }//GEN-LAST:event_btnXoaActionPerformed
+
+    private void cbxLocSPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxLocSPActionPerformed
+        CapNhatBangSanPham();
+    }//GEN-LAST:event_cbxLocSPActionPerformed
+
+    private void cbxLocTTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxLocTTActionPerformed
+        CapNhatBangSanPham();
+    }//GEN-LAST:event_cbxLocTTActionPerformed
+
+    private void btnTimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimActionPerformed
+        String tenSP = txtFind.getText();
+        String loaiSP = cbxLocSP.getSelectedItem().toString();
+        String trangThai = cbxLocTT.getSelectedItem().toString();
+        TAB3_LoadTT.TimKiemTheoTen(tblSanPham, tenSP, loaiSP, trangThai);
+
+    }//GEN-LAST:event_btnTimActionPerformed
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -416,9 +557,13 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAn;
     private javax.swing.JButton btnSua;
     private javax.swing.JButton btnThem;
     private javax.swing.JButton btnTim;
+    private javax.swing.JButton btnXoa;
+    private javax.swing.JComboBox<String> cbxLocSP;
+    private javax.swing.JComboBox<String> cbxLocTT;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

@@ -15,7 +15,7 @@ public class TAB1_ClickMay {
     private JTable tblOrder;
 
     public TAB1_ClickMay(JLabel lblTenMay, JLabel lblTrangThai, JLabel lblTimeStart, JLabel lblTimeEnd,
-                         JLabel lblTimeUsed, JLabel lblTamTinh, JLabel lblTongTien, JTable tblOrder) {
+            JLabel lblTimeUsed, JLabel lblTamTinh, JLabel lblTongTien, JTable tblOrder) {
         this.lblTenMay = lblTenMay;
         this.lblTrangThai = lblTrangThai;
         this.lblTimeStart = lblTimeStart;
@@ -39,7 +39,9 @@ public class TAB1_ClickMay {
         lblTenMay.setText(tenMay.toUpperCase());
 
         try (Connection conn = DBConnection.getConnection()) {
-            if (conn == null) return;
+            if (conn == null) {
+                return;
+            }
 
             int idMay = -1;
             int idAcc = -1;
@@ -77,7 +79,8 @@ public class TAB1_ClickMay {
                 Timestamp now = new Timestamp(System.currentTimeMillis());
                 lblTimeEnd.setText(formatTime(now));
 
-                long usedMinutes = (now.getTime() - startTime.getTime()) / 60000;
+                long usedMinutes = (long) Math.ceil((now.getTime() - startTime.getTime()) / 60000.0); //Làm tròn lên số phút tiếp theo (1p30s = 2p)
+
                 lblTimeUsed.setText(usedMinutes + " phút");
 
                 double tamTinh = usedMinutes * pricePerMinute;
