@@ -23,7 +23,8 @@ public class TAB1_LoadSDM {
 
         long tong = dsMay.size();
         long trong = dsMay.stream().filter(m -> m.trangThai == 1).count();
-        long dangDung = tong - trong;
+        long dangDung = dsMay.stream().filter(m -> m.trangThai == 0).count();
+        long baoTri = dsMay.stream().filter(m -> m.trangThai == 2).count();
 
         pnlSDM.removeAll();
         pnlSDM.setBackground(new Color(30, 30, 47));
@@ -35,24 +36,26 @@ public class TAB1_LoadSDM {
         pnlSDM.add(lblTitle);
 
         // Thống kê
-        int labelW = 220;
-        int gap = 40;
-        int totalWidth = 3 * labelW + 2 * gap;
-        int startX = (797 - totalWidth) / 2 + 40;
+        int labelW = 180;
+        int gap = 30;
+        int totalWidth = 4 * labelW + 3 * gap;
+        int startX = (797 - totalWidth) / 2 + 70; // chỉnh "70" để điều chỉnh qua trái-phải phần thống kê
         int yThongKe = 80;
 
         JLabel lblTong = createStatLabel("icTSM.png", "Tổng số máy: " + tong, startX, yThongKe);
         JLabel lblTrong = createStatLabel("Inactive.png", "Máy đang trống: " + trong, startX + labelW + gap, yThongKe);
-        JLabel lblDangDung = createStatLabel("Active.png", "Máy đang sử dụng: " + dangDung, startX + 2 * (labelW + gap), yThongKe);
+        JLabel lblDangDung = createStatLabel("Active.png", "Đang sử dụng: " + dangDung, startX + 2 * (labelW + gap), yThongKe);
+        JLabel lblBaoTri = createStatLabel("Maintenance.png", "Bảo trì: " + baoTri, startX + 3 * (labelW + gap), yThongKe);
 
         pnlSDM.add(lblTong);
         pnlSDM.add(lblTrong);
         pnlSDM.add(lblDangDung);
+        pnlSDM.add(lblBaoTri);
 
         // Tạo handler xử lý click
         TAB1_ClickMay clickHandler = new TAB1_ClickMay(lblTenMay, lblTrangThai, lblTimeStart, lblTimeEnd, lblTimeUsed, lblTamTinh, lblTongTien, tblOrder);
 
-        // Vẽ sơ đồ máy
+        // Vẽ sơ đồ máy (chỉ hiển thị máy != trạng thái bảo trì)
         int cols = 5;
         int itemW = 90, itemH = 90;
         int gapX = 150;
@@ -64,14 +67,18 @@ public class TAB1_LoadSDM {
 
         int i = 0;
         for (Computer may : dsMay) {
+            if (may.trangThai == 2) continue; // Bỏ qua máy bảo trì
+
             int col = i % cols;
             int row = i / cols;
             int x = offsetX + col * gapX;
             int y = startY + row * gapY;
 
+            String iconFile = (may.trangThai == 1) ? "Inactive.png" : "Active.png";
+
             JLabel lblMay = new JLabel(
                 may.ten,
-                LoadIcon(may.trangThai == 1 ? "Inactive.png" : "Active.png", 72),
+                LoadIcon(iconFile, 72),
                 JLabel.CENTER
             );
             lblMay.setBounds(x, y, itemW, itemH);
@@ -92,7 +99,7 @@ public class TAB1_LoadSDM {
 
     private static JLabel createStatLabel(String iconName, String text, int x, int y) {
         JLabel label = new JLabel(text, LoadIcon(iconName, 24), JLabel.LEFT);
-        label.setBounds(x, y, 220, 24);
+        label.setBounds(x, y, 180, 24);
         label.setForeground(Color.WHITE);
         label.setFont(new Font("Segoe UI", Font.BOLD, 13));
         label.setHorizontalTextPosition(SwingConstants.RIGHT);

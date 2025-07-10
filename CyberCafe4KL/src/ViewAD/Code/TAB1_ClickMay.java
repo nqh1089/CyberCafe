@@ -15,7 +15,7 @@ public class TAB1_ClickMay {
     private JTable tblOrder;
 
     public TAB1_ClickMay(JLabel lblTenMay, JLabel lblTrangThai, JLabel lblTimeStart, JLabel lblTimeEnd,
-            JLabel lblTimeUsed, JLabel lblTamTinh, JLabel lblTongTien, JTable tblOrder) {
+                         JLabel lblTimeUsed, JLabel lblTamTinh, JLabel lblTongTien, JTable tblOrder) {
         this.lblTenMay = lblTenMay;
         this.lblTrangThai = lblTrangThai;
         this.lblTimeStart = lblTimeStart;
@@ -39,13 +39,13 @@ public class TAB1_ClickMay {
         lblTenMay.setText(tenMay.toUpperCase());
 
         try (Connection conn = DBConnection.getConnection()) {
-            if (conn == null) {
-                return;
-            }
+            if (conn == null) return;
 
             int idMay = -1;
             int idAcc = -1;
             Timestamp startTime = null;
+            int status = -1;
+            double pricePerMinute = 0;
 
             // Lấy thông tin máy
             String sqlMay = "SELECT IDComputer, ComputerStatus, PricePerMinute FROM Computer WHERE NameComputer = ?";
@@ -53,17 +53,35 @@ public class TAB1_ClickMay {
             ps.setString(1, tenMay);
             ResultSet rs = ps.executeQuery();
 
-            double pricePerMinute = 0;
-
             if (rs.next()) {
                 idMay = rs.getInt("IDComputer");
-                boolean dangDung = rs.getInt("ComputerStatus") == 0;
+                status = rs.getInt("ComputerStatus");
                 pricePerMinute = rs.getDouble("PricePerMinute");
-                lblTrangThai.setText(dangDung ? "Đang sử dụng" : "Trống");
+
+                if (status == 0) {
+                    lblTrangThai.setText("Đang sử dụng");
+                } else if (status == 1) {
+                    lblTrangThai.setText("Trống");
+                } else if (status == 2) {
+                    lblTrangThai.setText("Bảo trì");
+                } else {
+                    lblTrangThai.setText("Không xác định");
+                }
+            }
+
+            // Nếu máy không phải đang sử dụng → không cần xử lý tiếp
+            if (status != 0) {
+                clearUsageInfo();
+                return;
             }
 
             // Lấy thông tin tài khoản đang dùng máy
-            String sqlLog = "SELECT TOP 1 IDAccount, ThoiGianBatDau FROM LogAccess WHERE IDComputer = ? ORDER BY ThoiGianBatDau DESC";
+            String sqlLog = """
+                SELECT TOP 1 IDAccount, ThoiGianBatDau
+                FROM LogAccess
+                WHERE IDComputer = ?
+                ORDER BY ThoiGianBatDau DESC
+            """;
             ps = conn.prepareStatement(sqlLog);
             ps.setInt(1, idMay);
             rs = ps.executeQuery();
@@ -79,17 +97,13 @@ public class TAB1_ClickMay {
                 Timestamp now = new Timestamp(System.currentTimeMillis());
                 lblTimeEnd.setText(formatTime(now));
 
-                long usedMinutes = (long) Math.ceil((now.getTime() - startTime.getTime()) / 60000.0); //Làm tròn lên số phút tiếp theo (1p30s = 2p)
-
+                long usedMinutes = (long) Math.ceil((now.getTime() - startTime.getTime()) / 60000.0);
                 lblTimeUsed.setText(usedMinutes + " phút");
 
                 double tamTinh = usedMinutes * pricePerMinute;
                 lblTamTinh.setText(formatMoney(tamTinh));
             } else {
-                lblTimeStart.setText("Chưa có");
-                lblTimeEnd.setText("--:--");
-                lblTimeUsed.setText("--:--");
-                lblTamTinh.setText("0");
+                clearUsageInfo();
             }
 
             // Load bảng order nếu có
@@ -146,6 +160,14 @@ public class TAB1_ClickMay {
         DefaultTableModel model = (DefaultTableModel) tblOrder.getModel();
         model.setRowCount(0);
         lblTongTien.setText("0");
+    }
+
+    private void clearUsageInfo() {
+        lblTimeStart.setText("Chưa có");
+        lblTimeEnd.setText("--:--");
+        lblTimeUsed.setText("--:--");
+        lblTamTinh.setText("0");
+        clearOrderTable();
     }
 
     public void resetThongTinMayChuaChon() {
