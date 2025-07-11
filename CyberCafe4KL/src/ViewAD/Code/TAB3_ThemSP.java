@@ -1,6 +1,8 @@
 package ViewAD.Code;
 
 import Controller.DBConnection;
+import ViewAD.View.AD_TAB3_QLSP;
+import java.awt.Image;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
@@ -12,22 +14,27 @@ import java.sql.ResultSet;
 
 public class TAB3_ThemSP extends javax.swing.JFrame {
 
+    private AD_TAB3_QLSP LoadSP;
     private boolean cheDoSua = false;
     private String maSanPhamDangSua = null;
     private String tenAnhDaChon = "";
     private final String thuMucAnh = "E:/SU25/BL2/CyberCafe4KL/CyberCafe4KL/src/Assets/Products/";
 
-    public TAB3_ThemSP() {
+    public TAB3_ThemSP(AD_TAB3_QLSP formQLSP) {
         initComponents();
-        txtTenCN.setText("THÊM SẢN PHẨM");
-        cbxTrangThai.setEnabled(true);
-        this.setResizable(false); // Không cho phóng to
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE); //Chỉ đóng form thêm hoặc sửa, k đông form chính
+        this.LoadSP = formQLSP;
 
+        txtTenCN.setText("THÊM SẢN PHẨM");
+        cbxTrangThai.setEnabled(true); // Cho chọn
+        cbxTrangThai.setVisible(true); // Set hiện nút
+        this.setResizable(false);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     }
 
-    public TAB3_ThemSP(String maSP) {
+    public TAB3_ThemSP(String maSP, AD_TAB3_QLSP formQLSP) {
         initComponents();
+        this.LoadSP = formQLSP;
+
         cheDoSua = true;
         maSanPhamDangSua = maSP;
 
@@ -35,10 +42,10 @@ public class TAB3_ThemSP extends javax.swing.JFrame {
         txtTenSP.setEnabled(false);
         cbxLoaiSP.setEnabled(false);
         cbxTrangThai.setVisible(true);
+        cbxTrangThai.setEnabled(true);
 
         LoadThongTinSanPham(maSP);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
     }
 
     private void LoadThongTinSanPham(String maSP) {
@@ -54,6 +61,7 @@ public class TAB3_ThemSP extends javax.swing.JFrame {
                 txtGiaSP.setText(String.valueOf((int) rs.getDouble("Price")));
                 cbxTrangThai.setSelectedItem(rs.getInt("Available") == 1 ? "Đang bán" : "Ngừng bán");
                 tenAnhDaChon = rs.getString("ImageFood");
+                btnChonAnh.setText(tenAnhDaChon.replaceFirst("[.][^.]+$", "")); // bỏ phần mở rộng
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
@@ -93,7 +101,7 @@ public class TAB3_ThemSP extends javax.swing.JFrame {
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("Giá sản phẩm:");
 
-        cbxLoaiSP.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tất cả", "Đồ ăn", "Đồ uống", "Gói nạp" }));
+        cbxLoaiSP.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Đồ ăn", "Đồ uống", "Gói nạp" }));
         cbxLoaiSP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbxLoaiSPActionPerformed(evt);
@@ -247,14 +255,13 @@ public class TAB3_ThemSP extends javax.swing.JFrame {
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
         String ten = txtTenSP.getText().trim();
         String loai = cbxLoaiSP.getSelectedItem().toString();
-        String giaText = txtGiaSP.getText().trim().replaceAll("\\s+", ""); // Xóa khoảng trắng
+        String giaText = txtGiaSP.getText().trim().replaceAll("\\s+", "");
 
         if (ten.isEmpty() || giaText.isEmpty() || tenAnhDaChon.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin và chọn ảnh sản phẩm");
             return;
         }
 
-        // Kiểm tra file ảnh có tồn tại không
         File anh = new File(thuMucAnh + tenAnhDaChon);
         if (!anh.exists()) {
             JOptionPane.showMessageDialog(this, "Ảnh sản phẩm đã chọn không còn tồn tại");
@@ -285,7 +292,11 @@ public class TAB3_ThemSP extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Đã thêm sản phẩm mới");
             }
 
+            if (LoadSP != null) {
+                LoadSP.CapNhatBangSanPham();
+            }
             this.dispose();
+
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Giá sản phẩm không hợp lệ");
         } catch (Exception e) {
@@ -302,9 +313,13 @@ public class TAB3_ThemSP extends javax.swing.JFrame {
         if (result == JFileChooser.APPROVE_OPTION) {
             File fileDuocChon = chooser.getSelectedFile();
 
-            // Kiểm tra ảnh tồn tại
             if (!fileDuocChon.exists()) {
-                JOptionPane.showMessageDialog(this, "Ảnh không tồn tại hoặc đã bị xóa");
+                JOptionPane.showMessageDialog(this, "Ảnh không tồn tại hoặc đã bị xóa.");
+                return;
+            }
+
+            if (fileDuocChon.getName().matches(".*[^a-zA-Z0-9._-].*")) {
+                JOptionPane.showMessageDialog(this, "Tên ảnh chứa ký tự không hợp lệ. Vui lòng đổi tên.");
                 return;
             }
 
@@ -313,10 +328,11 @@ public class TAB3_ThemSP extends javax.swing.JFrame {
 
             try {
                 Files.copy(fileDuocChon.toPath(), dich.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                JOptionPane.showMessageDialog(this, "Đã chọn ảnh: " + tenAnhDaChon);
+                btnChonAnh.setText(tenAnhDaChon);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Không thể copy ảnh: " + e.getMessage());
                 tenAnhDaChon = "";
+                btnChonAnh.setText("Chọn ảnh SP");
             }
         }
     }//GEN-LAST:event_btnChonAnhActionPerformed

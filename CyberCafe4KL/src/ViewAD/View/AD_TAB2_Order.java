@@ -44,7 +44,7 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         );
 
         DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("ID"); // <- Ẩn cột này
+        model.addColumn("ID"); // Ẩn cột ID trên bảng
         model.addColumn("Tên sản phẩm");
         model.addColumn("Đơn giá");
         model.addColumn("Số lượng");
@@ -73,6 +73,7 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
     }
 
     private void SetTableOrder() {
+
         Color nenToi = new Color(30, 30, 47);
         Color ChuTrang = Color.WHITE;
         Color TitleDen = Color.BLACK;
@@ -132,6 +133,10 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
     }
 
     private void HienThongTinHoaDon() {
+        jTextField1.setEditable(false);
+        jTextField2.setEditable(false);
+        jTextField3.setEditable(false);
+
         // Hiển thị ngày giờ hiện tại
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");

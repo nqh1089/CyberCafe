@@ -22,7 +22,8 @@ public class TAB2_CardSP {
         lblImg.setPreferredSize(new Dimension(130, 130));
 
         try {
-            ImageIcon icon = new ImageIcon("src/Assets/Products/" + sp.getHinhAnh());
+            String DuongDanAnh = "E:/SU25/BL2/CyberCafe4KL/CyberCafe4KL/src/Assets/Products/" + sp.getHinhAnh();
+            ImageIcon icon = new ImageIcon(DuongDanAnh);
             Image img = icon.getImage().getScaledInstance(130, 130, Image.SCALE_SMOOTH);
             lblImg.setIcon(new ImageIcon(img));
         } catch (Exception e) {
@@ -137,7 +138,7 @@ public class TAB2_CardSP {
             Object val = model.getValueAt(i, 4); // cột Thành tiền
             if (val != null) {
                 try {
-                    // Nếu dữ liệu đã format: "36.000", thì cần bỏ dấu chấm để parseInt
+                    // Nếu dữ liệu đã format: "10.000", thì bỏ dấu chấm để parseInt
                     String cleaned = val.toString().replace(".", "").replace(",", "").trim();
                     tong += Integer.parseInt(cleaned);
                 } catch (Exception e) {
@@ -152,6 +153,6 @@ public class TAB2_CardSP {
     }
 
     private static String formatTien(int soTien) {
-        return String.format("%,d", soTien).replace(',', '.');
+        return String.format("%,d", soTien).replace(',', ' ');
     }
 }

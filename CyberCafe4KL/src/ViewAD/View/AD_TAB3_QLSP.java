@@ -18,11 +18,13 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 public class AD_TAB3_QLSP extends javax.swing.JFrame {
 
+    private AD_TAB3_QLSP LoadSP;
+
     public AD_TAB3_QLSP() {
         initComponents();
         SetIconSlidebar();
         SetTableOrder();
-setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         CapNhatBangSanPham();
     }
@@ -57,7 +59,10 @@ setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         tblSanPham.setBackground(nenToi);
         tblSanPham.setForeground(ChuTrang);  // Màu chữ trong bảng
-        tblSanPham.setSelectionBackground(new Color(60, 60, 90));
+        // Màu khi chọn hàng
+        tblSanPham.setSelectionBackground(new Color(100, 149, 237)); // Màu hàng khi chọn
+        tblSanPham.setSelectionForeground(Color.WHITE); // Màu chữ khi chọn
+
         tblSanPham.setGridColor(new Color(70, 70, 90));
 
         //Căn giữa tiêu đề bảng
@@ -70,7 +75,7 @@ setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         jScrollPane2.setBackground(nenToi);
     }
 
-    private void CapNhatBangSanPham() {
+    public void CapNhatBangSanPham() {
         String loaiSP = cbxLocSP.getSelectedItem().toString();
         String trangThai = cbxLocTT.getSelectedItem().toString();
         TAB3_LoadTT.LoadData(tblSanPham, loaiSP, trangThai);
@@ -472,14 +477,14 @@ setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         int row = tblSanPham.getSelectedRow();
         if (row >= 0) {
             String maSP = tblSanPham.getValueAt(row, 0).toString();
-            new TAB3_ThemSP(maSP).setVisible(true);
+            new TAB3_ThemSP(maSP, this).setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm để sửa");
         }
     }//GEN-LAST:event_btnSuaActionPerformed
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-        new TAB3_ThemSP().setVisible(true);
+        new TAB3_ThemSP(this).setVisible(true);
     }//GEN-LAST:event_btnThemActionPerformed
 
     private void btnAnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnActionPerformed
@@ -493,7 +498,7 @@ setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
                 int rows = stmt.executeUpdate();
                 if (rows > 0) {
                     JOptionPane.showMessageDialog(this, "Đã ẩn sản phẩm (chuyển sang NGỪNG BÁN)");
-                    CapNhatBangSanPham(); // Load lại bảng để hiển thị trạng thái mới
+                    CapNhatBangSanPham();
                 } else {
                     JOptionPane.showMessageDialog(this, "Ẩn sản phẩm thất bại");
                 }
@@ -516,9 +521,25 @@ setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
                     PreparedStatement stmt = conn.prepareStatement(sql);
                     stmt.setString(1, maSP);
                     int rows = stmt.executeUpdate();
+
                     if (rows > 0) {
+                        //
+                        int maxID = 0;
+                        String maxSql = "SELECT ISNULL(MAX(IDFood), 0) AS MaxID FROM FoodDrink";
+                        PreparedStatement maxStmt = conn.prepareStatement(maxSql);
+                        ResultSet rs = maxStmt.executeQuery();
+                        if (rs.next()) {
+                            maxID = rs.getInt("MaxID");
+                        }
+
+                        // Reset IDENTITY về maxID -> lấy id sp cao nhất trong bảng
+                        String reseedSql = "DBCC CHECKIDENT ('FoodDrink', RESEED, ?)";
+                        PreparedStatement resetStmt = conn.prepareStatement(reseedSql);
+                        resetStmt.setInt(1, maxID);
+                        resetStmt.execute();
+
                         JOptionPane.showMessageDialog(this, "Đã xoá sản phẩm");
-                        // Gọi lại LoadData()
+                        CapNhatBangSanPham();
                     } else {
                         JOptionPane.showMessageDialog(this, "Xoá sản phẩm thất bại");
                     }
@@ -529,7 +550,6 @@ setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         } else {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm để xoá");
         }
-        CapNhatBangSanPham();
     }//GEN-LAST:event_btnXoaActionPerformed
 
     private void cbxLocSPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxLocSPActionPerformed
