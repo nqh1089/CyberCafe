@@ -694,9 +694,9 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         String maHD = lblMaHD.getText().trim();
         String nguoiTao = CN_TaiKhoanDangNhap.getTenTaiKhoan().trim();
 
-        int tongTienSP = Integer.parseInt(jTextField1.getText().replace(".", "").trim());
-        int giamGia = Integer.parseInt(jTextField2.getText().replace(".", "").trim());
-        int thanhToan = Integer.parseInt(jTextField3.getText().replace(".", "").trim());
+        int tongTienSP = Integer.parseInt(jTextField1.getText().replace(" ", "").trim());
+        int giamGia = Integer.parseInt(jTextField2.getText().replace(" ", "").trim());
+        int thanhToan = Integer.parseInt(jTextField3.getText().replace(" ", "").trim());
 
         new TAB2_QR(maHD, nguoiTao, tongTienSP, giamGia, thanhToan, tableOrder, this).setVisible(true);
     }//GEN-LAST:event_btnThanhToanActionPerformed

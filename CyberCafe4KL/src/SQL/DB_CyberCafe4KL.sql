@@ -75,12 +75,12 @@ BEGIN
 END
 GO
 
-EXEC SP_AddAccount 1, N'nqh1089', N'123', N'BOSS', N'012345678998', N'0987654321', '', N'Nam', 0, 1;
-EXEC SP_AddAccount 2, N'catzpat', N'123', N'ADMIN', N'012345678999', N'0123456789', '', N'Nam', 0, 1;
-EXEC SP_AddAccount 3, N'mkhoixyz', N'123', N'ADMIN', N'030208003266', N'0382526800', '', N'Nam', 0, 1;
-EXEC SP_AddAccount 4, N'bnah07', N'123', N'ADMIN', N'012345678997', N'0987654322', '', N'Nữ', 0, 1;
+EXEC SP_AddAccount 1, N'nqh1089', N'123', N'BOSS', N'012345678998', N'0987654321', 'nqh1089@cb4kl.com', N'Nam', 0, 1;
+EXEC SP_AddAccount 2, N'catzpat', N'123', N'ADMIN', N'012345678999', N'0123456789', 'catzpat@cb4kl.com', N'Nam', 0, 1;
+EXEC SP_AddAccount 3, N'mkhoixyz', N'123', N'ADMIN', N'030208003266', N'0382526800', 'mkhoixyz@cb4kl.com', N'Nam', 0, 1;
+EXEC SP_AddAccount 4, N'bnah07', N'123', N'ADMIN', N'012345678997', N'0987654322', 'bnah07@cb4kl.com', N'Nữ', 0, 1;
 
-EXEC SP_AddAccount 5, N'1', N'1', N'ADMIN', N'111111111111', N'1111111111', '', N'Nam', 0, 1;
+EXEC SP_AddAccount 5, N'1', N'1', N'ADMIN', N'111111111111', N'1111111111', '1@cb4kl.com', N'Nam', 0, 1;
 
 GO
 
@@ -141,9 +141,8 @@ CREATE TABLE Computer
 	GPU VARCHAR(50) NULL,
 	Monitor VARCHAR(50) NULL,
 	IPRadmin VARCHAR(20) NULL,
-	-- Set IP máy
-	ComputerStatus BIT DEFAULT 1 NOT NULL
-	-- 1: Available ||  0: In Use / Maintenance
+	ComputerStatus INT NOT NULL DEFAULT 1
+	-- 0: ĐANG SỬ DỤNG | 1: ĐANG TRỐNG | 2: BẢO TRÌ
 );
 GO
 
@@ -153,14 +152,15 @@ AS
 		IDComputer,
 		ComputerStatus,
 		CASE 
-		WHEN ComputerStatus = 1 THEN N'Available'
-		ELSE N'In Use / Maintenance' -- Đang sử dụng /Bảo trì
+		WHEN ComputerStatus = 0 THEN N'Đang sử dụng'
+		WHEN ComputerStatus = 1 THEN N'Đang trống'
+		WHEN ComputerStatus = 2 THEN N'Bảo trì'
+		ELSE N'Không xác định'
 	END AS ComputerStatusText
 	FROM Computer;
 GO
--- SELECT * FROM V_ComputerStatus;
--- UPDATE Computer SET PricePerMinute = 1500 WHERE IDComputer = 1;
 
+-- Tạo lại bảng ComputerUsage
 CREATE TABLE ComputerUsage
 (
 	IDUsage INT IDENTITY(1,1) PRIMARY KEY,
@@ -172,7 +172,6 @@ CREATE TABLE ComputerUsage
 	Cost MONEY
 	-- Tổng tiền = phút chơi * đơn giá máy
 );
-
 GO
 
 CREATE TABLE LogAccess

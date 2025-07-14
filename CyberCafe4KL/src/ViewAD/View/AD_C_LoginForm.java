@@ -193,25 +193,29 @@ public class AD_C_LoginForm extends javax.swing.JFrame {
                 return;
             }
 
-            String sql = "SELECT * FROM Account WHERE NameAccount = ? AND PWAccount = ? AND AccountStatus = 1";
+            String sql = "SELECT * FROM Account WHERE NameAccount = ? AND PWAccount = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, name);
             ps.setString(2, pw);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
+                boolean isActive = rs.getBoolean("AccountStatus");
                 String role = rs.getString("RoleAccount");
 
-                if (role.equalsIgnoreCase("ADMIN") || role.equalsIgnoreCase("BOSS")) {
-                    // Gán tên tài khoản vào class chung
-                    CN_TaiKhoanDangNhap.setTenTaiKhoan(name);
+                if (!isActive) {
+                    JOptionPane.showMessageDialog(this, "Tài khoản đã ngừng hoạt động.");
+                    return;
+                }
 
-                    // Mở giao diện TAB1
+                if (role.equalsIgnoreCase("ADMIN") || role.equalsIgnoreCase("BOSS")) {
+                    CN_TaiKhoanDangNhap.setTenTaiKhoan(name);
                     new ViewAD.View.AD_TAB1_DatMay().setVisible(true);
                     this.dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, "Tài khoản không có quyền truy cập.");
                 }
+
             } else {
                 JOptionPane.showMessageDialog(this, "Sai tên đăng nhập hoặc mật khẩu.");
             }

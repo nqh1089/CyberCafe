@@ -3,6 +3,9 @@ package ViewAD.View;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
+import ViewAD.Code.TAB5_ChiTietHD;
+import ViewAD.Code.TAB5_LoadDuLieuHD;
+import ViewAD.Code.TAB5_cbxThang;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -12,14 +15,19 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
     public AD_TAB5_QLHD() {
         initComponents();
         SetIconSlidebar();
-        SetTableOrder();
-        
+        SetTableHoaDon();
+
         lblID.setText("Xin chào, " + CN_TaiKhoanDangNhap.getTenTaiKhoan());
         setTitle("CyberCafe4KL_Quản lý Hóa đơn");
         CN_btnSlideBar.ganSuKienSlideBar(
                 lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan, lblDX,
                 this
         );
+
+        TAB5_cbxThang.LoadThangCoHD(cbxThang);
+        int thangHienTai = TAB5_cbxThang.LaySoThangDangChon(cbxThang);
+        TAB5_LoadDuLieuHD.LoadHoaDonTheoThang(thangHienTai, TableHoaDon, lblTSHD, lblTTTD);
+
     }
 
     private void SetIconSlidebar() {
@@ -38,24 +46,45 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
 
     }
 
-    private void SetTableOrder() {
+    private void SetTableHoaDon() {
         Color nenToi = new Color(30, 30, 47);
-        Color ChuTrang = Color.WHITE;
-        Color TitleDen = Color.BLACK;
+        Color chuTrang = Color.WHITE;
+        Color titleDen = Color.BLACK;
 
-        tblSanPham.setBackground(nenToi);
-        tblSanPham.setForeground(ChuTrang);  // Màu chữ trong bảng
-        tblSanPham.setSelectionBackground(new Color(60, 60, 90));
-        tblSanPham.setGridColor(new Color(70, 70, 90));
-        
-        //Căn giữa tiêu đề bảng
-        DefaultTableCellRenderer centerRenderer = (DefaultTableCellRenderer) tblSanPham.getTableHeader().getDefaultRenderer();
+        TableHoaDon.setBackground(nenToi);
+        TableHoaDon.setForeground(chuTrang);
+        TableHoaDon.setSelectionBackground(new Color(100, 149, 237)); // Cornflower blue
+        TableHoaDon.setSelectionForeground(Color.WHITE);
+        TableHoaDon.setGridColor(new Color(70, 70, 90));
+
+        // Căn giữa tiêu đề bảng
+        DefaultTableCellRenderer centerRenderer = (DefaultTableCellRenderer) TableHoaDon.getTableHeader().getDefaultRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-
-        tblSanPham.getTableHeader().setForeground(TitleDen);  // Màu chữ tiêu đề
+        TableHoaDon.getTableHeader().setForeground(titleDen);
 
         jScrollPane2.getViewport().setBackground(nenToi);
         jScrollPane2.setBackground(nenToi);
+
+        // Không cho chỉnh sửa
+        TableHoaDon.setDefaultEditor(Object.class, null);
+
+        // Chọn theo hàng
+        TableHoaDon.setRowSelectionAllowed(true);
+        TableHoaDon.setColumnSelectionAllowed(false);
+        TableHoaDon.setCellSelectionEnabled(false);
+
+        // Sự kiện double-click để mở form chi tiết hóa đơn
+        TableHoaDon.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getClickCount() == 2 && TableHoaDon.getSelectedRow() != -1) {
+                    int row = TableHoaDon.getSelectedRow();
+                    String maHD = TableHoaDon.getValueAt(row, 0).toString();
+
+                    new TAB5_ChiTietHD(maHD).setVisible(true);
+                }
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -83,14 +112,14 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
         pnlSDM = new javax.swing.JPanel();
         txtSDM = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tblSanPham = new javax.swing.JTable();
+        TableHoaDon = new javax.swing.JTable();
         pnlTSHD = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
         lblTSHD = new javax.swing.JLabel();
+        txtTSHD = new javax.swing.JLabel();
         pnlTTTD = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
         lblTTTD = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        txtTTTD = new javax.swing.JLabel();
+        cbxThang = new javax.swing.JComboBox<>();
 
         jScrollPane1.setViewportView(jTree1);
 
@@ -267,31 +296,31 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
         jScrollPane2.setMaximumSize(new java.awt.Dimension(100, 100));
         jScrollPane2.setMinimumSize(new java.awt.Dimension(100, 100));
 
-        tblSanPham.setBackground(new java.awt.Color(30, 30, 47));
-        tblSanPham.setForeground(new java.awt.Color(30, 30, 47));
-        tblSanPham.setModel(new javax.swing.table.DefaultTableModel(
+        TableHoaDon.setBackground(new java.awt.Color(30, 30, 47));
+        TableHoaDon.setForeground(new java.awt.Color(30, 30, 47));
+        TableHoaDon.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Mã HD", "Tên SP", "Giá tiền", "Số lượng", "Tổng tiền", "Nhân viên bán"
+                "Mã HD", "Tổng số lượng SP", "Tổng tiền", "Nhân viên bán"
             }
         ));
-        tblSanPham.setGridColor(new java.awt.Color(30, 30, 47));
-        tblSanPham.setSelectionBackground(new java.awt.Color(30, 30, 47));
-        jScrollPane2.setViewportView(tblSanPham);
+        TableHoaDon.setGridColor(new java.awt.Color(30, 30, 47));
+        TableHoaDon.setSelectionBackground(new java.awt.Color(30, 30, 47));
+        jScrollPane2.setViewportView(TableHoaDon);
 
         pnlTSHD.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("100");
-
+        lblTSHD.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         lblTSHD.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTSHD.setText("[TỔNG SỐ HD]");
+        lblTSHD.setText("100");
+
+        txtTSHD.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txtTSHD.setText("[TỔNG SỐ HD]");
 
         javax.swing.GroupLayout pnlTSHDLayout = new javax.swing.GroupLayout(pnlTSHD);
         pnlTSHD.setLayout(pnlTSHDLayout);
@@ -299,47 +328,52 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
             pnlTSHDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlTSHDLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblTSHD, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
-            .addComponent(lblTSHD, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+            .addComponent(txtTSHD, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
         );
         pnlTSHDLayout.setVerticalGroup(
             pnlTSHDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlTSHDLayout.createSequentialGroup()
                 .addContainerGap(12, Short.MAX_VALUE)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblTSHD)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtTSHD)
                 .addGap(12, 12, 12))
         );
 
         pnlTTTD.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("100");
-
+        lblTTTD.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         lblTTTD.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTTTD.setText("[TỔNG TIỀN THU ĐƯỢC]");
+        lblTTTD.setText("100");
+
+        txtTTTD.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txtTTTD.setText("[TỔNG TIỀN THU ĐƯỢC]");
 
         javax.swing.GroupLayout pnlTTTDLayout = new javax.swing.GroupLayout(pnlTTTD);
         pnlTTTD.setLayout(pnlTTTDLayout);
         pnlTTTDLayout.setHorizontalGroup(
             pnlTTTDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(lblTTTD, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+            .addComponent(lblTTTD, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(txtTTTD, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
         );
         pnlTTTDLayout.setVerticalGroup(
             pnlTTTDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlTTTDLayout.createSequentialGroup()
                 .addContainerGap(12, Short.MAX_VALUE)
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblTTTD)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtTTTD)
                 .addGap(12, 12, 12))
         );
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tháng 6" }));
+        cbxThang.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tháng 6" }));
+        cbxThang.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxThangActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout pnlSDMLayout = new javax.swing.GroupLayout(pnlSDM);
         pnlSDM.setLayout(pnlSDMLayout);
@@ -363,7 +397,7 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
                 .addContainerGap())
             .addGroup(pnlSDMLayout.createSequentialGroup()
                 .addGap(584, 584, 584)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cbxThang, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlSDMLayout.setVerticalGroup(
@@ -372,7 +406,7 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
                 .addGap(25, 25, 25)
                 .addComponent(txtSDM)
                 .addGap(18, 18, 18)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cbxThang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
                 .addGroup(pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(pnlTSHD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -434,6 +468,11 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void cbxThangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxThangActionPerformed
+        int thang = TAB5_cbxThang.LaySoThangDangChon(cbxThang);
+        TAB5_LoadDuLieuHD.LoadHoaDonTheoThang(thang, TableHoaDon, lblTSHD, lblTTTD);
+    }//GEN-LAST:event_cbxThangActionPerformed
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -444,9 +483,8 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel6;
+    private javax.swing.JTable TableHoaDon;
+    private javax.swing.JComboBox<String> cbxThang;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -471,7 +509,8 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
     private javax.swing.JPanel pnlSDM;
     private javax.swing.JPanel pnlTSHD;
     private javax.swing.JPanel pnlTTTD;
-    private javax.swing.JTable tblSanPham;
     private javax.swing.JLabel txtSDM;
+    private javax.swing.JLabel txtTSHD;
+    private javax.swing.JLabel txtTTTD;
     // End of variables declaration//GEN-END:variables
 }

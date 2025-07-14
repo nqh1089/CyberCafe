@@ -3,6 +3,11 @@ package ViewAD.View;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
+import ViewAD.Code.TAB6_TongLuotTruyCap;
+import ViewAD.Code.TAB6_TopMay;
+import ViewAD.Code.TAB6_TopNV;
+import ViewAD.Code.TAB6_TopSP;
+import ViewAD.Code.TAB6_cbxThang;
 import java.awt.*;
 import java.time.LocalDate;
 import javax.swing.*;
@@ -13,8 +18,10 @@ public class AD_TAB6_ThongKe extends javax.swing.JFrame {
     public AD_TAB6_ThongKe() {
         initComponents();
         SetIconSlidebar();
-        LoadComboBoxThang();
-        
+
+        TAB6_cbxThang.LoadThangPhatSinh(cbxThangTK);
+        loadTatCaThongKe();
+
         lblID.setText("Xin chào, " + CN_TaiKhoanDangNhap.getTenTaiKhoan());
         setTitle("CyberCafe4KL_Thống kê");
         CN_btnSlideBar.ganSuKienSlideBar(
@@ -52,6 +59,15 @@ public class AD_TAB6_ThongKe extends javax.swing.JFrame {
         pnlSDM.add(cbxThang); // hoặc add vào chỗ tương ứng trong layout
     }
 
+    private void loadTatCaThongKe() {
+        int thang = TAB6_cbxThang.getThangFromComboBox(cbxThangTK);
+
+        TAB6_TongLuotTruyCap.Load(jLabel3, thang);     // Tổng lượt truy cập
+        TAB6_TopSP.LoadTable(jTable3, thang);          // Top sản phẩm
+        TAB6_TopNV.LoadTable(jTable1, thang);          // Top nhân viên
+        TAB6_TopMay.LoadTable(jTable2, thang);         // Top máy
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -76,7 +92,7 @@ public class AD_TAB6_ThongKe extends javax.swing.JFrame {
         pnlMainSDM = new javax.swing.JPanel();
         pnlSDM = new javax.swing.JPanel();
         txtSDM = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbxThangTK = new javax.swing.JComboBox<>();
         jPanel1 = new javax.swing.JPanel();
         pnlTSHD3 = new javax.swing.JPanel();
         lblTSHD3 = new javax.swing.JLabel();
@@ -94,7 +110,6 @@ public class AD_TAB6_ThongKe extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         pnlTSHD2 = new javax.swing.JPanel();
         lblTSHD2 = new javax.swing.JLabel();
-        jComboBox3 = new javax.swing.JComboBox<>();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
 
@@ -268,10 +283,10 @@ public class AD_TAB6_ThongKe extends javax.swing.JFrame {
         txtSDM.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         txtSDM.setText("THỐNG KÊ");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tháng 6" }));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+        cbxThangTK.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tháng 6" }));
+        cbxThangTK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
+                cbxThangTKActionPerformed(evt);
             }
         });
 
@@ -445,22 +460,15 @@ public class AD_TAB6_ThongKe extends javax.swing.JFrame {
         lblTSHD2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblTSHD2.setText("TOP MÁY ĐƯỢC CHỌN NHIỀU NHẤT:");
 
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Normal", "Vip", "S-Vip" }));
-        jComboBox3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox3ActionPerformed(evt);
-            }
-        });
-
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "ID", "Phân khúc", "Số lượt bật", "Giờ hoạt động", "Doanh thu"
+                "ID", "Số lượt bật", "Giờ hoạt động", "Doanh thu"
             }
         ));
         jScrollPane3.setViewportView(jTable2);
@@ -469,21 +477,17 @@ public class AD_TAB6_ThongKe extends javax.swing.JFrame {
         pnlTSHD2.setLayout(pnlTSHD2Layout);
         pnlTSHD2Layout.setHorizontalGroup(
             pnlTSHD2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
             .addGroup(pnlTSHD2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(lblTSHD2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
         );
         pnlTSHD2Layout.setVerticalGroup(
             pnlTSHD2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlTSHD2Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addGroup(pnlTSHD2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblTSHD2))
+                .addComponent(lblTSHD2)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE))
         );
@@ -527,7 +531,7 @@ public class AD_TAB6_ThongKe extends javax.swing.JFrame {
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSDMLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cbxThangTK, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(577, 577, 577))
         );
         pnlSDMLayout.setVerticalGroup(
@@ -536,7 +540,7 @@ public class AD_TAB6_ThongKe extends javax.swing.JFrame {
                 .addGap(25, 25, 25)
                 .addComponent(txtSDM)
                 .addGap(18, 18, 18)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cbxThangTK, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(23, 23, 23)
                 .addGroup(pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -603,13 +607,9 @@ public class AD_TAB6_ThongKe extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jComboBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox3ActionPerformed
-
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
+    private void cbxThangTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxThangTKActionPerformed
+        loadTatCaThongKe();
+    }//GEN-LAST:event_cbxThangTKActionPerformed
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -620,8 +620,7 @@ public class AD_TAB6_ThongKe extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox3;
+    private javax.swing.JComboBox<String> cbxThangTK;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

@@ -3,6 +3,9 @@ package ViewAD.View;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
+import ViewAD.Code.TAB7_ChiTietNV;
+import ViewAD.Code.TAB7_NhanVien;
+import ViewAD.Code.TAB7_cbxTT;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -13,13 +16,20 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
         initComponents();
         SetIconSlidebar();
         SetTableOrder();
-        
+        CapNhatTable();
+        TAB7_cbxTT.CapNhatComboBox(cbxTT);
+        LoadTable();
+
         lblID.setText("Xin chào, " + CN_TaiKhoanDangNhap.getTenTaiKhoan());
         setTitle("CyberCafe4KL_Quản lý Nhân viên");
         CN_btnSlideBar.ganSuKienSlideBar(
                 lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan, lblDX,
                 this
         );
+
+        cbxTT.addActionListener(e -> {
+            TAB7_cbxTT.LocTheoTrangThai(tblQLNV, txtTimKiem, cbxTT);
+        });
     }
 
     private void SetIconSlidebar() {
@@ -35,27 +45,56 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
 
         TAB1_Slidebar.SetLabelIcon(lblChat, "icChat.png", "");
         TAB1_Slidebar.SetLabelIcon(lblTB, "icTB.png", "");
-        
+
     }
 
     private void SetTableOrder() {
         Color nenToi = new Color(30, 30, 47);
-        Color ChuTrang = Color.WHITE;
-        Color TitleDen = Color.BLACK;
+        Color chuTrang = Color.WHITE;
+        Color titleDen = Color.BLACK;
 
-        tblSanPham.setBackground(nenToi);
-        tblSanPham.setForeground(ChuTrang);  // Màu chữ trong bảng
-        tblSanPham.setSelectionBackground(new Color(60, 60, 90));
-        tblSanPham.setGridColor(new Color(70, 70, 90));
-        
-        //Căn giữa tiêu đề bảng
-        DefaultTableCellRenderer centerRenderer = (DefaultTableCellRenderer) tblSanPham.getTableHeader().getDefaultRenderer();
+        tblQLNV.setBackground(nenToi);
+        tblQLNV.setForeground(chuTrang); // Màu chữ
+        tblQLNV.setSelectionBackground(new Color(100, 149, 237)); // Màu nền khi chọn
+        tblQLNV.setSelectionForeground(Color.WHITE); // Màu chữ khi chọn
+
+        tblQLNV.setGridColor(new Color(70, 70, 90));
+        tblQLNV.setRowSelectionAllowed(true);
+        tblQLNV.setColumnSelectionAllowed(false);
+        tblQLNV.setCellSelectionEnabled(false);
+        tblQLNV.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        // Căn giữa tiêu đề bảng
+        DefaultTableCellRenderer centerRenderer = (DefaultTableCellRenderer) tblQLNV.getTableHeader().getDefaultRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-
-        tblSanPham.getTableHeader().setForeground(TitleDen);  // Màu chữ tiêu đề
+        tblQLNV.getTableHeader().setForeground(titleDen);
 
         jScrollPane2.getViewport().setBackground(nenToi);
         jScrollPane2.setBackground(nenToi);
+    }
+
+    public void LocTrangThai() {
+        String keyword = txtTimKiem.getText().trim(); // Nếu có ô tìm kiếm theo tên
+        String selected = cbxTT.getSelectedItem().toString();
+
+        int status = -1; // -1 = tất cả
+        if (selected.equals("Đang hoạt động")) {
+            status = 1;
+        } else if (selected.equals("Ngừng hoạt động")) {
+            status = 0;
+        }
+
+        // Gọi DAO đã sửa ở TAB7_NhanVien
+        ViewAD.Code.TAB7_NhanVien.LoadTable(tblQLNV, keyword, status);
+    }
+
+    private void LoadTable() {
+        String keyword = txtTimKiem.getText().trim();
+        TAB7_NhanVien.LoadTable(tblQLNV, keyword, -1);  // -1 = tất cả
+    }
+
+    public void CapNhatTable() {
+        LoadTable();
     }
 
     @SuppressWarnings("unchecked")
@@ -83,11 +122,12 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
         pnlSDM = new javax.swing.JPanel();
         txtSDM = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tblSanPham = new javax.swing.JTable();
-        txtFind = new javax.swing.JTextField();
+        tblQLNV = new javax.swing.JTable();
+        txtTimKiem = new javax.swing.JTextField();
         btnTim = new javax.swing.JButton();
-        btnSua = new javax.swing.JButton();
         btnThem = new javax.swing.JButton();
+        btnSua = new javax.swing.JButton();
+        cbxTT = new javax.swing.JComboBox<>();
 
         jScrollPane1.setViewportView(jTree1);
 
@@ -264,35 +304,33 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
         jScrollPane2.setMaximumSize(new java.awt.Dimension(100, 100));
         jScrollPane2.setMinimumSize(new java.awt.Dimension(100, 100));
 
-        tblSanPham.setBackground(new java.awt.Color(30, 30, 47));
-        tblSanPham.setForeground(new java.awt.Color(30, 30, 47));
-        tblSanPham.setModel(new javax.swing.table.DefaultTableModel(
+        tblQLNV.setBackground(new java.awt.Color(30, 30, 47));
+        tblQLNV.setForeground(new java.awt.Color(30, 30, 47));
+        tblQLNV.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Mã HD", "Tên SP", "Giá tiền", "Số lượng", "Tổng tiền", "Nhân viên bán"
+                "ID", "Name", "Role", "CCCD", "PhoneNumber", "Email", "Gender", "Status"
             }
         ));
-        tblSanPham.setGridColor(new java.awt.Color(30, 30, 47));
-        tblSanPham.setSelectionBackground(new java.awt.Color(30, 30, 47));
-        jScrollPane2.setViewportView(tblSanPham);
+        tblQLNV.setGridColor(new java.awt.Color(30, 30, 47));
+        tblQLNV.setSelectionBackground(new java.awt.Color(30, 30, 47));
+        jScrollPane2.setViewportView(tblQLNV);
 
-        txtFind.addActionListener(new java.awt.event.ActionListener() {
+        txtTimKiem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtFindActionPerformed(evt);
+                txtTimKiemActionPerformed(evt);
             }
         });
 
         btnTim.setText("Tìm");
-
-        btnSua.setText("Sửa");
-        btnSua.addActionListener(new java.awt.event.ActionListener() {
+        btnTim.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSuaActionPerformed(evt);
+                btnTimActionPerformed(evt);
             }
         });
 
@@ -302,6 +340,15 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
                 btnThemActionPerformed(evt);
             }
         });
+
+        btnSua.setText("Sửa");
+        btnSua.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSuaActionPerformed(evt);
+            }
+        });
+
+        cbxTT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tất cả", "Đang hoạt động", "Ngừng hoạt động'" }));
 
         javax.swing.GroupLayout pnlSDMLayout = new javax.swing.GroupLayout(pnlSDM);
         pnlSDM.setLayout(pnlSDMLayout);
@@ -317,10 +364,12 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSDMLayout.createSequentialGroup()
                 .addGap(88, 88, 88)
-                .addComponent(txtFind, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnTim, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(cbxTT, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(62, 62, 62)
                 .addComponent(btnSua, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -334,9 +383,10 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
                 .addGap(37, 37, 37)
                 .addGroup(pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnTim)
-                    .addComponent(txtFind, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnThem)
-                    .addComponent(btnSua))
+                    .addComponent(btnSua)
+                    .addComponent(cbxTT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
                 .addContainerGap())
@@ -395,17 +445,34 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFindActionPerformed
+    private void txtTimKiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTimKiemActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtFindActionPerformed
-
-    private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
-
-    }//GEN-LAST:event_btnSuaActionPerformed
+    }//GEN-LAST:event_txtTimKiemActionPerformed
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-
+        TAB7_ChiTietNV formThem = new TAB7_ChiTietNV(this);  // Truyền this
+        formThem.setVisible(true);
     }//GEN-LAST:event_btnThemActionPerformed
+
+    private void btnTimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimActionPerformed
+        LoadTable();
+    }//GEN-LAST:event_btnTimActionPerformed
+
+    private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
+        int row = tblQLNV.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn nhân viên cần sửa");
+            return;
+        }
+
+        String[] duLieu = new String[8];
+        for (int i = 0; i < 8; i++) {
+            duLieu[i] = tblQLNV.getValueAt(row, i).toString();
+        }
+
+        TAB7_ChiTietNV formSua = new TAB7_ChiTietNV(duLieu, this);  // Truyền this
+        formSua.setVisible(true);
+    }//GEN-LAST:event_btnSuaActionPerformed
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -419,6 +486,9 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
     private javax.swing.JButton btnSua;
     private javax.swing.JButton btnThem;
     private javax.swing.JButton btnTim;
+    private javax.swing.JComboBox<String> cbxLoaiSP;
+    private javax.swing.JComboBox<String> cbxLoaiSP1;
+    private javax.swing.JComboBox<String> cbxTT;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -439,8 +509,8 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
     private javax.swing.JPanel pnlMain;
     private javax.swing.JPanel pnlMainSDM;
     private javax.swing.JPanel pnlSDM;
-    private javax.swing.JTable tblSanPham;
-    private javax.swing.JTextField txtFind;
+    private javax.swing.JTable tblQLNV;
     private javax.swing.JLabel txtSDM;
+    private javax.swing.JTextField txtTimKiem;
     // End of variables declaration//GEN-END:variables
 }
