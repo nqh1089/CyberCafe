@@ -219,8 +219,8 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
         }
 
         try (Connection conn = Controller.DBConnection.getConnection()) {
-            CallableStatement cs = conn.prepareCall("{? = call SP_DangKyNhanhClient(?, ?, ?, ?)}"); //CallableStatement là class bắt buộc phải dùng khi bạn muốn gọi stored procedure có RETURN giá trị trong JDBC.
-            cs.registerOutParameter(1, java.sql.Types.INTEGER); // mã kết quả trả về
+            CallableStatement cs = conn.prepareCall("{? = call SP_DangKyNhanhClient(?, ?, ?, ?)}");
+            cs.registerOutParameter(1, java.sql.Types.INTEGER);
             cs.setString(2, name);
             cs.setString(3, phone);
             cs.setString(4, gender);
@@ -228,7 +228,7 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
 
             cs.execute();
 
-            int result = cs.getInt(1); // lấy kết quả trả về
+            int result = cs.getInt(1);
 
             switch (result) {
                 case 0 -> {
@@ -237,7 +237,7 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
                             "THÀNH CÔNG",
                             JOptionPane.INFORMATION_MESSAGE
                     );
-                    this.dispose(); // đóng form sau khi đăng ký thành công
+                    this.dispose();
                 }
                 case 1 ->
                     JOptionPane.showMessageDialog(this, "Tên tài khoản đã tồn tại.", "Trùng dữ liệu", JOptionPane.WARNING_MESSAGE);
@@ -280,6 +280,12 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(AD_C_RegisterForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 

@@ -74,7 +74,7 @@ public class CN_btnSlideBar {
                 int x = JOptionPane.showConfirmDialog(currentFrame, "Bạn chắc chắn muốn đăng xuất?", "Xác nhận", JOptionPane.YES_NO_OPTION);
                 if (x == JOptionPane.YES_OPTION) {
                     currentFrame.dispose();
-                    new AD_C_LoginForm().setVisible(true);
+                    new AD_LoginForm().setVisible(true);
                 }
             }
         });

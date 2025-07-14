@@ -1,14 +1,19 @@
 package ViewAD.View;
 
+import Controller.DBConnection;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
 import ViewAD.Code.TAB7_ChiTietNV;
 import ViewAD.Code.TAB7_NhanVien;
 import ViewAD.Code.TAB7_cbxTT;
+import java.sql.Connection;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
 
 public class AD_TAB7_QLNV extends javax.swing.JFrame {
 
@@ -74,7 +79,7 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
     }
 
     public void LocTrangThai() {
-        String keyword = txtTimKiem.getText().trim(); // Nếu có ô tìm kiếm theo tên
+        String keyword = txtTimKiem.getText().trim();
         String selected = cbxTT.getSelectedItem().toString();
 
         int status = -1; // -1 = tất cả
@@ -450,7 +455,29 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
     }//GEN-LAST:event_txtTimKiemActionPerformed
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-        TAB7_ChiTietNV formThem = new TAB7_ChiTietNV(this);  // Truyền this
+        String role = CN_TaiKhoanDangNhap.getTenTaiKhoan().toUpperCase(); // Lấy tên tài khoản đang đăng nhập
+        String sql = "SELECT RoleAccount FROM Account WHERE NameAccount = ?";
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, CN_TaiKhoanDangNhap.getTenTaiKhoan());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String roleAcc = rs.getString("RoleAccount");
+                if (!roleAcc.equalsIgnoreCase("BOSS")) {
+                    JOptionPane.showMessageDialog(this, "Ối zồi ôiii!!! Trình nà zì????\nTài khoản hiện tại không có quyền thêm nhân viên");
+                    return;
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy tài khoản đang đăng nhập.");
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi kiểm tra quyền tài khoản.");
+            return;
+        }
+
+        TAB7_ChiTietNV formThem = new TAB7_ChiTietNV(this);
         formThem.setVisible(true);
     }//GEN-LAST:event_btnThemActionPerformed
 
@@ -470,7 +497,7 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
             duLieu[i] = tblQLNV.getValueAt(row, i).toString();
         }
 
-        TAB7_ChiTietNV formSua = new TAB7_ChiTietNV(duLieu, this);  // Truyền this
+        TAB7_ChiTietNV formSua = new TAB7_ChiTietNV(duLieu, this);
         formSua.setVisible(true);
     }//GEN-LAST:event_btnSuaActionPerformed
     public static void main(String args[]) {

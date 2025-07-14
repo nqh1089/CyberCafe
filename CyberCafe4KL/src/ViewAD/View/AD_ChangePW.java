@@ -7,9 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 
-public class AD_C_LoginForm extends javax.swing.JFrame {
+public class AD_ChangePW extends javax.swing.JFrame {
 
-    public AD_C_LoginForm() {
+    public AD_ChangePW() {
         initComponents();
         this.setResizable(false); // Không cho phóng to
         setTitle("CyberCafe4KL");
@@ -23,12 +23,14 @@ public class AD_C_LoginForm extends javax.swing.JFrame {
         pnlMain2 = new javax.swing.JPanel();
         pnlRegister = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        txtName = new javax.swing.JTextField();
+        txtOldPW = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        txtPW = new javax.swing.JPasswordField();
+        txtNewPW = new javax.swing.JPasswordField();
         cbShow = new javax.swing.JCheckBox();
-        btnLogin = new javax.swing.JButton();
+        btnChangePW = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        txtName = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -40,17 +42,23 @@ public class AD_C_LoginForm extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("NameAccount:");
+        jLabel2.setText("Old Password:");
 
-        txtName.addActionListener(new java.awt.event.ActionListener() {
+        txtOldPW.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNameActionPerformed(evt);
+                txtOldPWActionPerformed(evt);
             }
         });
 
         jLabel3.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Password:");
+        jLabel3.setText("New Password:");
+
+        txtNewPW.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNewPWActionPerformed(evt);
+            }
+        });
 
         cbShow.setBackground(new java.awt.Color(30, 30, 47));
         cbShow.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
@@ -62,11 +70,11 @@ public class AD_C_LoginForm extends javax.swing.JFrame {
             }
         });
 
-        btnLogin.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        btnLogin.setText("Login");
-        btnLogin.addActionListener(new java.awt.event.ActionListener() {
+        btnChangePW.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        btnChangePW.setText("Change Password");
+        btnChangePW.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLoginActionPerformed(evt);
+                btnChangePWActionPerformed(evt);
             }
         });
 
@@ -75,6 +83,16 @@ public class AD_C_LoginForm extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("LOGIN ");
+
+        jLabel5.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("NameAccount:");
+
+        txtName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNameActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout pnlRegisterLayout = new javax.swing.GroupLayout(pnlRegister);
         pnlRegister.setLayout(pnlRegisterLayout);
@@ -92,10 +110,12 @@ public class AD_C_LoginForm extends javax.swing.JFrame {
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txtName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtPW, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbShow, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addComponent(txtOldPW, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnChangePW, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtNewPW, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbShow, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(74, 74, 74))))
         );
         pnlRegisterLayout.setVerticalGroup(
@@ -103,19 +123,23 @@ public class AD_C_LoginForm extends javax.swing.JFrame {
             .addGroup(pnlRegisterLayout.createSequentialGroup()
                 .addGap(35, 35, 35)
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(39, 39, 39)
-                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                .addComponent(jLabel5)
                 .addGap(15, 15, 15)
                 .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
+                .addComponent(jLabel2)
+                .addGap(15, 15, 15)
+                .addComponent(txtOldPW, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
                 .addComponent(jLabel3)
                 .addGap(15, 15, 15)
-                .addComponent(txtPW, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtNewPW, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(cbShow)
                 .addGap(24, 24, 24)
-                .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(109, Short.MAX_VALUE))
+                .addComponent(btnChangePW, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(105, 105, 105))
         );
 
         javax.swing.GroupLayout pnlMain2Layout = new javax.swing.GroupLayout(pnlMain2);
@@ -166,83 +190,94 @@ public class AD_C_LoginForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
+    private void txtOldPWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtOldPWActionPerformed
 
-    }//GEN-LAST:event_txtNameActionPerformed
+    }//GEN-LAST:event_txtOldPWActionPerformed
 
-    private void cbShowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbShowActionPerformed
-        if (cbShow.isSelected()) {
-            txtPW.setEchoChar((char) 0); // Hiện mật khẩu rõ
-        } else {
-            txtPW.setEchoChar('*'); // Ẩn lại mật khẩu
-        }
-    }//GEN-LAST:event_cbShowActionPerformed
-
-    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+    private void btnChangePWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangePWActionPerformed
         String name = txtName.getText().trim();
-        String pw = new String(txtPW.getPassword()).trim();
+        String oldPw = txtOldPW.getText().trim();
+        String newPw = new String(txtNewPW.getPassword()).trim();
 
-        if (name.isEmpty() || pw.isEmpty()) {
+        if (name.isEmpty() || oldPw.isEmpty() || newPw.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin.");
             return;
         }
 
         try (Connection conn = DBConnection.getConnection()) {
             if (conn == null) {
-                JOptionPane.showMessageDialog(this, "Không thể kết nối CSDL.");
+                JOptionPane.showMessageDialog(this, "Không thể kết nối cơ sở dữ liệu.");
                 return;
             }
 
-            String sql = "SELECT * FROM Account WHERE NameAccount = ? AND PWAccount = ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, name);
-            ps.setString(2, pw);
-            ResultSet rs = ps.executeQuery();
+            // Kiểm tra tên tài khoản + mật khẩu cũ
+            String sqlCheck = "SELECT * FROM Account WHERE NameAccount = ? AND PWAccount = ?";
+            PreparedStatement psCheck = conn.prepareStatement(sqlCheck);
+            psCheck.setString(1, name);
+            psCheck.setString(2, oldPw);
+            ResultSet rs = psCheck.executeQuery();
 
-            if (rs.next()) {
-                boolean isActive = rs.getBoolean("AccountStatus");
-                String role = rs.getString("RoleAccount");
+            if (!rs.next()) {
+                JOptionPane.showMessageDialog(this, "Tên tài khoản hoặc mật khẩu cũ không đúng.");
+                return;
+            }
 
-                if (!isActive) {
-                    JOptionPane.showMessageDialog(this, "Tài khoản đã ngừng hoạt động.");
-                    return;
-                }
+            // Cập nhật mật khẩu mới
+            String sqlUpdate = "UPDATE Account SET PWAccount = ? WHERE NameAccount = ?";
+            PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate);
+            psUpdate.setString(1, newPw);
+            psUpdate.setString(2, name);
+            int rows = psUpdate.executeUpdate();
 
-                if (role.equalsIgnoreCase("ADMIN") || role.equalsIgnoreCase("BOSS")) {
-                    CN_TaiKhoanDangNhap.setTenTaiKhoan(name);
-                    new ViewAD.View.AD_TAB1_DatMay().setVisible(true);
-                    this.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Tài khoản không có quyền truy cập.");
-                }
-
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(this, "Đổi mật khẩu thành công. Mật khẩu mới là: " + newPw);
+                this.dispose(); // Đóng form sau khi đổi
             } else {
-                JOptionPane.showMessageDialog(this, "Sai tên đăng nhập hoặc mật khẩu.");
+                JOptionPane.showMessageDialog(this, "Không thể cập nhật mật khẩu.");
             }
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi đăng nhập: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi đổi mật khẩu: " + e.getMessage());
         }
-    }//GEN-LAST:event_btnLoginActionPerformed
+    }//GEN-LAST:event_btnChangePWActionPerformed
+
+    private void cbShowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbShowActionPerformed
+        if (cbShow.isSelected()) {
+            txtNewPW.setEchoChar((char) 0); // Hiện mật khẩu rõ
+        } else {
+            txtNewPW.setEchoChar('*'); // Ẩn lại mật khẩu
+        }
+    }//GEN-LAST:event_cbShowActionPerformed
+
+    private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNameActionPerformed
+
+    private void txtNewPWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNewPWActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNewPWActionPerformed
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AD_C_LoginForm().setVisible(true);
+                new AD_ChangePW().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnLogin;
+    private javax.swing.JButton btnChangePW;
     private javax.swing.JCheckBox cbShow;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel pnlMain;
     private javax.swing.JPanel pnlMain2;
     private javax.swing.JPanel pnlRegister;
     private javax.swing.JTextField txtName;
-    private javax.swing.JPasswordField txtPW;
+    private javax.swing.JPasswordField txtNewPW;
+    private javax.swing.JTextField txtOldPW;
     // End of variables declaration//GEN-END:variables
 }
