@@ -1163,9 +1163,9 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="53" max="-2" attributes="0"/>
-                              <Component id="btnTM" min="-2" pref="100" max="-2" attributes="0"/>
+                              <Component id="btnThem" min="-2" pref="100" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="btnSuaTT" min="-2" pref="100" max="-2" attributes="0"/>
+                              <Component id="btnSua" min="-2" pref="100" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="btnTrangThai" min="-2" pref="100" max="-2" attributes="0"/>
                               <EmptySpace pref="62" max="32767" attributes="0"/>
@@ -1177,8 +1177,8 @@
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace pref="18" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="btnTM" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
-                                  <Component id="btnSuaTT" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
+                                  <Component id="btnThem" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
+                                  <Component id="btnSua" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
                                   <Component id="btnTrangThai" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
@@ -1187,7 +1187,7 @@
                     </DimensionLayout>
                   </Layout>
                   <SubComponents>
-                    <Component class="javax.swing.JButton" name="btnTM">
+                    <Component class="javax.swing.JButton" name="btnThem">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="ff" green="ff" red="cc" type="rgb"/>
@@ -1195,10 +1195,10 @@
                         <Property name="text" type="java.lang.String" value="Th&#xea;m m&#xe1;y"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnTMActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnThemActionPerformed"/>
                       </Events>
                     </Component>
-                    <Component class="javax.swing.JButton" name="btnSuaTT">
+                    <Component class="javax.swing.JButton" name="btnSua">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="ff" green="ff" red="cc" type="rgb"/>
@@ -1206,7 +1206,7 @@
                         <Property name="text" type="java.lang.String" value="S&#x1eed;a TT"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSuaTTActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSuaActionPerformed"/>
                       </Events>
                     </Component>
                     <Component class="javax.swing.JButton" name="btnTrangThai">

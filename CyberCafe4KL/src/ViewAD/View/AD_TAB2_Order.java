@@ -666,6 +666,11 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnThanhToanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThanhToanActionPerformed
+        if (tableOrder.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Hóa đơn trống. Vui lòng chọn sản phẩm để thanh toán!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         String maHD = lblMaHD.getText().trim();
         String nguoiTao = CN_TaiKhoanDangNhap.getTenTaiKhoan().trim();
 

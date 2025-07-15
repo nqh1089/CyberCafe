@@ -103,7 +103,7 @@ public class TAB4_LoadMayTinh {
                     lblRAM.setText(may.ram);
                     lblGPU.setText(may.gpu);
                     lblMonitor.setText(may.monitor);
-                    lblGia.setText(may.donGia + " VND/phút");
+                    lblGia.setText(may.donGia + " đ/phút");
                 }
             });
 

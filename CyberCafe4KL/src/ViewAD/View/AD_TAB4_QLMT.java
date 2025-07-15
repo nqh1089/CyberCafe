@@ -18,6 +18,7 @@ import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
 import ViewAD.Code.TAB4_LoadMayTinh;
+import ViewAD.Code.TAB4_ThemSuaMay;
 
 public class AD_TAB4_QLMT extends javax.swing.JFrame {
 
@@ -58,6 +59,19 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
         TAB1_Slidebar.SetLabelIcon(lblChat, "icChat.png", "");
         TAB1_Slidebar.SetLabelIcon(lblTB, "icTB.png", "");
 
+    }
+
+    public void CapNhatSoDoMay() {
+        TAB4_LoadMayTinh.LoadSoDoMay(
+                pnlSoDoMay,
+                lblTenMay,
+                lblTrangThai,
+                lblCPU,
+                lblRAM,
+                lblGPU,
+                lblMonitor,
+                lblGia
+        );
     }
 
     @SuppressWarnings("unchecked")
@@ -126,8 +140,8 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
         lblGia = new javax.swing.JLabel();
         lblTenMay = new javax.swing.JLabel();
         pnlButton = new javax.swing.JPanel();
-        btnTM = new javax.swing.JButton();
-        btnSuaTT = new javax.swing.JButton();
+        btnThem = new javax.swing.JButton();
+        btnSua = new javax.swing.JButton();
         btnTrangThai = new javax.swing.JButton();
         lblTrangThai = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -689,19 +703,19 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
 
         pnlButton.setBackground(new java.awt.Color(44, 44, 62));
 
-        btnTM.setBackground(new java.awt.Color(204, 255, 255));
-        btnTM.setText("Thêm máy");
-        btnTM.addActionListener(new java.awt.event.ActionListener() {
+        btnThem.setBackground(new java.awt.Color(204, 255, 255));
+        btnThem.setText("Thêm máy");
+        btnThem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTMActionPerformed(evt);
+                btnThemActionPerformed(evt);
             }
         });
 
-        btnSuaTT.setBackground(new java.awt.Color(204, 255, 255));
-        btnSuaTT.setText("Sửa TT");
-        btnSuaTT.addActionListener(new java.awt.event.ActionListener() {
+        btnSua.setBackground(new java.awt.Color(204, 255, 255));
+        btnSua.setText("Sửa TT");
+        btnSua.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSuaTTActionPerformed(evt);
+                btnSuaActionPerformed(evt);
             }
         });
 
@@ -719,9 +733,9 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
             pnlButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlButtonLayout.createSequentialGroup()
                 .addGap(53, 53, 53)
-                .addComponent(btnTM, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(btnSuaTT, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnSua, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnTrangThai, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(62, Short.MAX_VALUE))
@@ -731,8 +745,8 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlButtonLayout.createSequentialGroup()
                 .addContainerGap(18, Short.MAX_VALUE)
                 .addGroup(pnlButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnTM, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSuaTT, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSua, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnTrangThai, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(17, 17, 17))
         );
@@ -865,13 +879,26 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnTMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTMActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnTMActionPerformed
+    private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
+        new TAB4_ThemSuaMay(this, "", "", "", "", "", "", 0).setVisible(true);
+    }//GEN-LAST:event_btnThemActionPerformed
 
-    private void btnSuaTTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaTTActionPerformed
+    private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
+        String tenMay = lblTenMay.getText();
+        String cpu = lblCPU.getText();
+        String ram = lblRAM.getText();
+        String gpu = lblGPU.getText();
+        String monitor = lblMonitor.getText();
+        String gia = lblGia.getText();
+        int trangThai = lblTrangThai.getText().equalsIgnoreCase("Máy đang bảo trì") ? 1 : 0;
 
-    }//GEN-LAST:event_btnSuaTTActionPerformed
+        if (tenMay == null || tenMay.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một máy để sửa.");
+            return;
+        }
+
+        new TAB4_ThemSuaMay(this, tenMay, cpu, ram, gpu, monitor, gia, trangThai).setVisible(true);
+    }//GEN-LAST:event_btnSuaActionPerformed
 
     private void btnTrangThaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTrangThaiActionPerformed
         String tenMay = lblTenMay.getText();
@@ -934,8 +961,8 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnSuaTT;
-    private javax.swing.JButton btnTM;
+    private javax.swing.JButton btnSua;
+    private javax.swing.JButton btnThem;
     private javax.swing.JButton btnTrangThai;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel13;
