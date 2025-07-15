@@ -1,5 +1,6 @@
-package ViewC.View;
+package ViewAD.View;
 
+import ViewC.View.*;
 import ViewAD.View.*;
 import Controller.DBConnection;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
@@ -8,9 +9,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 
-public class C2_Chat extends javax.swing.JFrame {
+public class AD_Chat extends javax.swing.JFrame {
 
-    public C2_Chat() {
+    public AD_Chat() {
         initComponents();
         this.setResizable(false); // Không cho phóng to
         setTitle("CyberCafe4KL");
@@ -144,7 +145,7 @@ public class C2_Chat extends javax.swing.JFrame {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new C2_Chat().setVisible(true);
+                new AD_Chat().setVisible(true);
             }
         });
     }
