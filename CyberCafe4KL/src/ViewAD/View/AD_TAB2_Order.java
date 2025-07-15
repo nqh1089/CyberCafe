@@ -3,6 +3,7 @@ package ViewAD.View;
 import Controller.DAO;
 import Controller.DBConnection;
 import Model.Products;
+import ViewAD.Code.CN_SetupTable;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
@@ -29,7 +30,7 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
     public AD_TAB2_Order() {
         initComponents();
         SetIconSlidebar();
-        SetTableOrder();
+//        SetTableOrder();
         danhSachSanPham = getAllProducts();
         hienThiSanPham(danhSachSanPham);
         HienThongTinHoaDon();
@@ -43,17 +44,12 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
                 this
         );
 
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("ID"); // Ẩn cột ID trên bảng
-        model.addColumn("Tên sản phẩm");
-        model.addColumn("Đơn giá");
-        model.addColumn("Số lượng");
-        model.addColumn("Thành tiền");
-
-        tableOrder.setModel(model);
+        String[] columns = {"ID", "Tên SP", "Đơn giá", "Số lượng", "Thành tiền"};
+        CN_SetupTable.SetTable(tableOrder, jScrollPane4, columns);
+        // ẨN CỘT ID (cột đầu tiên - index 0)
         tableOrder.getColumnModel().getColumn(0).setMinWidth(0);
         tableOrder.getColumnModel().getColumn(0).setMaxWidth(0);
-
+        tableOrder.getColumnModel().getColumn(0).setWidth(0);
     }
 
     private void SetIconSlidebar() {
@@ -70,27 +66,6 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         TAB1_Slidebar.SetLabelIcon(lblChat, "icChat.png", "");
         TAB1_Slidebar.SetLabelIcon(lblTB, "icTB.png", "");
 
-    }
-
-    private void SetTableOrder() {
-
-        Color nenToi = new Color(30, 30, 47);
-        Color ChuTrang = Color.WHITE;
-        Color TitleDen = Color.BLACK;
-
-        tableOrder.setBackground(nenToi);
-        tableOrder.setForeground(ChuTrang);  // Màu chữ trong bảng
-        tableOrder.setSelectionBackground(new Color(60, 60, 90));
-        tableOrder.setGridColor(new Color(70, 70, 90));
-
-        //Căn giữa tiêu đề bảng
-        DefaultTableCellRenderer centerRenderer = (DefaultTableCellRenderer) tableOrder.getTableHeader().getDefaultRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-
-        tableOrder.getTableHeader().setForeground(TitleDen);  // Màu chữ tiêu đề
-
-        jScrollPane4.getViewport().setBackground(nenToi);
-        jScrollPane4.setBackground(nenToi);
     }
 
     public List<Products> getAllProducts() {

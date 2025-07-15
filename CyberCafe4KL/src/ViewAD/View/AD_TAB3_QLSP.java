@@ -1,6 +1,7 @@
 package ViewAD.View;
 
 import Controller.DBConnection;
+import ViewAD.Code.CN_SetupTable;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
@@ -23,10 +24,14 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
     public AD_TAB3_QLSP() {
         initComponents();
         SetIconSlidebar();
-        SetTableOrder();
+        String[] columns = {"Mã SP", "Ảnh SP", "Tên SP", "Loại SP", "Giá SP", "Trạng Thái"};
+        CN_SetupTable.SetTable(tblSanPham, jScrollPane2, columns);
+        
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         CapNhatBangSanPham();
+        
+        
     }
 
     private void SetIconSlidebar() {
@@ -50,29 +55,6 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
                 this
         );
 
-    }
-
-    private void SetTableOrder() {
-        Color nenToi = new Color(30, 30, 47);
-        Color ChuTrang = Color.WHITE;
-        Color TitleDen = Color.BLACK;
-
-        tblSanPham.setBackground(nenToi);
-        tblSanPham.setForeground(ChuTrang);  // Màu chữ trong bảng
-        // Màu khi chọn hàng
-        tblSanPham.setSelectionBackground(new Color(100, 149, 237)); // Màu hàng khi chọn
-        tblSanPham.setSelectionForeground(Color.WHITE); // Màu chữ khi chọn
-
-        tblSanPham.setGridColor(new Color(70, 70, 90));
-
-        //Căn giữa tiêu đề bảng
-        DefaultTableCellRenderer centerRenderer = (DefaultTableCellRenderer) tblSanPham.getTableHeader().getDefaultRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-
-        tblSanPham.getTableHeader().setForeground(TitleDen);  // Màu chữ tiêu đề
-
-        jScrollPane2.getViewport().setBackground(nenToi);
-        jScrollPane2.setBackground(nenToi);
     }
 
     public void CapNhatBangSanPham() {

@@ -10,13 +10,13 @@ import java.awt.event.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class C1_GiaoDienCho extends JFrame {
+public class C1_GiaoDienTreo extends JFrame {
 
     private JLabel lblMay;
     private JPanel panelLogin;
     private Timer dongHo, timer15s;
 
-    public C1_GiaoDienCho() {
+    public C1_GiaoDienTreo() {
         this.setUndecorated(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         String ip = CN_LayTenMayTheoIP.getIPRadminHienTai();
@@ -123,7 +123,7 @@ public class C1_GiaoDienCho extends JFrame {
                 showFullScreenDialog("Đăng nhập thành công!");
 
                 new C2_Menu().setVisible(true);
-                C1_GiaoDienCho.this.dispose();
+                C1_GiaoDienTreo.this.dispose();
             } else {
                 showFullScreenDialog("Sai tài khoản hoặc máy không hợp lệ!");
             }
@@ -200,7 +200,7 @@ public class C1_GiaoDienCho extends JFrame {
 
     class BackgroundPanel extends JPanel {
 
-        private final ImageIcon gifIcon = new ImageIcon("E:/SU25/BL2/img/0701.gif");
+        private final ImageIcon gifIcon = new ImageIcon("E:/SU25/BL2/img/TreoMay.jpg");
 
         @Override
         protected void paintComponent(Graphics g) {
@@ -244,7 +244,7 @@ public class C1_GiaoDienCho extends JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_formMouseClicked
     public static void main(String[] args) {
-        java.awt.EventQueue.invokeLater(() -> new C1_GiaoDienCho());
+        java.awt.EventQueue.invokeLater(() -> new C1_GiaoDienTreo());
     }
 }
 

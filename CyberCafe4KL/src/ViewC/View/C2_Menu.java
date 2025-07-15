@@ -21,7 +21,7 @@ public class C2_Menu extends JFrame {
         C2_ClientIcons.LoadIcons(pnlCN);
         C2_SetImage.SetPanelBackgroundTLQL(pnlTLQL);
         addEventHandlers();
-        
+
         this.setResizable(false); // Không cho phóng to
         chanDongX(); // Không cho tắt giao diện khi đang đăng nhập
     }
@@ -68,23 +68,22 @@ public class C2_Menu extends JFrame {
         }
     }
 
+    // Hàm xử lý sự kiện click từ tất cả JLabel trong pnlCN
     private void addEventHandlers() {
-        for (Component c : pnlCN.getComponents()) {
-            if (c instanceof JPanel rowPanel) {
-                for (Component sub : ((JPanel) rowPanel).getComponents()) {
-                    if (sub instanceof JPanel itemPanel) {
-                        for (Component comp : itemPanel.getComponents()) {
-                            if (comp instanceof JLabel lbl && lbl.getName() != null) {
-                                lbl.addMouseListener(new MouseAdapter() {
-                                    @Override
-                                    public void mouseClicked(MouseEvent e) {
-                                        xuLyChucNang(lbl.getName());
-                                    }
-                                });
-                            }
-                        }
+        addLabelMouseListeners(pnlCN);
+    }
+
+    private void addLabelMouseListeners(Container container) {
+        for (Component comp : container.getComponents()) {
+            if (comp instanceof JLabel lbl && lbl.getName() != null) {
+                lbl.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        xuLyChucNang(lbl.getName());
                     }
-                }
+                });
+            } else if (comp instanceof Container inner) {
+                addLabelMouseListeners(inner); // đệ quy cho mọi container lồng nhau
             }
         }
     }
@@ -108,7 +107,8 @@ public class C2_Menu extends JFrame {
                 JOptionPane.showMessageDialog(this, "Chức năng Đổi mật khẩu đang phát triển");
                 break;
             case "khoamay":
-                this.setEnabled(false);
+                new C1_GiaoDienTreo().setVisible(true); // Mở form khóa máy
+                this.dispose(); // Đóng form menu
                 break;
             default:
                 JOptionPane.showMessageDialog(this, "Không xác định chức năng: " + tenNut);

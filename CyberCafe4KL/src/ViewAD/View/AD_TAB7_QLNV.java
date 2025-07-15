@@ -1,6 +1,7 @@
 package ViewAD.View;
 
 import Controller.DBConnection;
+import ViewAD.Code.CN_SetupTable;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
@@ -20,7 +21,11 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
     public AD_TAB7_QLNV() {
         initComponents();
         SetIconSlidebar();
-        SetTableOrder();
+
+        String[] columns = {"ID", "NameAccount", "Role", "CCCD", "PhoneNumber", "Email", "Gender", "Status"};
+        CN_SetupTable.SetTable(tblQLNV, jScrollPane2, columns);
+
+//        SetTableOrder();
         CapNhatTable();
         TAB7_cbxTT.CapNhatComboBox(cbxTT);
         LoadTable();
@@ -53,31 +58,30 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
 
     }
 
-    private void SetTableOrder() {
-        Color nenToi = new Color(30, 30, 47);
-        Color chuTrang = Color.WHITE;
-        Color titleDen = Color.BLACK;
-
-        tblQLNV.setBackground(nenToi);
-        tblQLNV.setForeground(chuTrang); // Màu chữ
-        tblQLNV.setSelectionBackground(new Color(100, 149, 237)); // Màu nền khi chọn
-        tblQLNV.setSelectionForeground(Color.WHITE); // Màu chữ khi chọn
-
-        tblQLNV.setGridColor(new Color(70, 70, 90));
-        tblQLNV.setRowSelectionAllowed(true);
-        tblQLNV.setColumnSelectionAllowed(false);
-        tblQLNV.setCellSelectionEnabled(false);
-        tblQLNV.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        // Căn giữa tiêu đề bảng
-        DefaultTableCellRenderer centerRenderer = (DefaultTableCellRenderer) tblQLNV.getTableHeader().getDefaultRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        tblQLNV.getTableHeader().setForeground(titleDen);
-
-        jScrollPane2.getViewport().setBackground(nenToi);
-        jScrollPane2.setBackground(nenToi);
-    }
-
+//    private void SetTableOrder() {
+//        Color nenToi = new Color(30, 30, 47);
+//        Color chuTrang = Color.WHITE;
+//        Color titleDen = Color.BLACK;
+//
+//        tblQLNV.setBackground(nenToi);
+//        tblQLNV.setForeground(chuTrang); // Màu chữ
+//        tblQLNV.setSelectionBackground(new Color(100, 149, 237)); // Màu nền khi chọn
+//        tblQLNV.setSelectionForeground(Color.WHITE); // Màu chữ khi chọn
+//
+//        tblQLNV.setGridColor(new Color(70, 70, 90));
+//        tblQLNV.setRowSelectionAllowed(true);
+//        tblQLNV.setColumnSelectionAllowed(false);
+//        tblQLNV.setCellSelectionEnabled(false);
+//        tblQLNV.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//
+//        // Căn giữa tiêu đề bảng
+//        DefaultTableCellRenderer centerRenderer = (DefaultTableCellRenderer) tblQLNV.getTableHeader().getDefaultRenderer();
+//        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+//        tblQLNV.getTableHeader().setForeground(titleDen);
+//
+//        jScrollPane2.getViewport().setBackground(nenToi);
+//        jScrollPane2.setBackground(nenToi);
+//    }
     public void LocTrangThai() {
         String keyword = txtTimKiem.getText().trim();
         String selected = cbxTT.getSelectedItem().toString();

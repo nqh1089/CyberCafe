@@ -1,5 +1,6 @@
 package ViewAD.View;
 
+import ViewAD.Code.CN_SetupTable;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_ClickMay;
@@ -15,7 +16,7 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
     public AD_TAB1_DatMay() {
         initComponents();
         SetIconSlidebar();
-        SetTableOrder();
+//        SetTableOrder();
         TAB1_LoadSDM.LoadSoDoMay(
                 pnlSDM,
                 lblTenMay, lblTrangThai,
@@ -35,6 +36,9 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
                 lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan, lblDX,
                 this
         );
+
+        String[] columns = { "Tên SP", "Đơn giá", "Số lượng", "Thành tiền" };
+        CN_SetupTable.SetTable(tblOrder, jScrollPane2, columns);
 
     }
 

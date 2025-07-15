@@ -15,14 +15,14 @@ public class TAB5_LoadDuLieuHD {
         int tongTienThuDuoc = 0;
 
         try (Connection conn = DBConnection.getConnection()) {
-            String sql = "SELECT ofd.IDOrder, ofd.IDAccount, " +
-                         "SUM(od.Quantity) AS TongSL, " +
-                         "SUM(od.Quantity * fd.Price) AS TongTien " +
-                         "FROM OrderFood ofd " +
-                         "JOIN OrderDetail od ON ofd.IDOrder = od.IDOrder " +
-                         "JOIN FoodDrink fd ON od.IDFood = fd.IDFood " +
-                         "WHERE MONTH(ofd.OrderTime) = ? AND YEAR(ofd.OrderTime) = ? " +
-                         "GROUP BY ofd.IDOrder, ofd.IDAccount";
+            String sql = "SELECT ofd.IDOrder, ofd.IDAccount, ofd.OrderTime, "
+                    + "SUM(od.Quantity) AS TongSL, "
+                    + "SUM(od.Quantity * fd.Price) AS TongTien "
+                    + "FROM OrderFood ofd "
+                    + "JOIN OrderDetail od ON ofd.IDOrder = od.IDOrder "
+                    + "JOIN FoodDrink fd ON od.IDFood = fd.IDFood "
+                    + "WHERE MONTH(ofd.OrderTime) = ? AND YEAR(ofd.OrderTime) = ? "
+                    + "GROUP BY ofd.IDOrder, ofd.IDAccount, ofd.OrderTime";
 
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, thang);
@@ -35,15 +35,18 @@ public class TAB5_LoadDuLieuHD {
                 int tongSL = rs.getInt("TongSL");
                 int tongTien = rs.getInt("TongTien");
                 int idNV = rs.getInt("IDAccount");
+                String ngayTao = rs.getTimestamp("OrderTime").toLocalDateTime()
+                        .format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
 
                 tongSoHoaDon++;
                 tongTienThuDuoc += tongTien;
 
                 model.addRow(new Object[]{
-                        "HD" + idHD,
-                        tongSL,
-                        dinhDangTien(tongTien),
-                        "NV" + idNV
+                    "HD" + idHD,
+                    tongSL,
+                    DinhDangTien(tongTien),
+                    "NV" + idNV,
+                    ngayTao // Thêm dòng này
                 });
             }
 
@@ -53,10 +56,10 @@ public class TAB5_LoadDuLieuHD {
         }
 
         lblSoHD.setText(String.valueOf(tongSoHoaDon));
-        lblTongTien.setText(dinhDangTien(tongTienThuDuoc) + " đ");
+        lblTongTien.setText(DinhDangTien(tongTienThuDuoc)); // + " đ");
     }
 
-    private static String dinhDangTien(int so) {
-        return String.format("%,d", so).replace(",", ".");
+    private static String DinhDangTien(int so) {
+        return String.format("%,d", so).replace(",", " ");
     }
 }

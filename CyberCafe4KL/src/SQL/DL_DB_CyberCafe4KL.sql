@@ -94,10 +94,28 @@ WHERE IDOrder = 7;
 
 SELECT NameComputer, ComputerStatus FROM Computer WHERE NameComputer = 'MÁY 09';
 
+
 -- Check nv bán hàng
 SELECT * FROM OrderFood
 WHERE IDAccount = (
     SELECT IDAccount FROM Account WHERE NameAccount = 'nqh1089'
 )
 
-SELECT TOP 2 * FROM Account
+
+-- Check Tài khoản
+SELECT TOP 5 * FROM Account
+
+
+-- Check trạng thái máy
+SELECT 
+    IDComputer,
+    NameComputer,
+    ComputerStatus,
+    CASE 
+        WHEN ComputerStatus = 0 THEN N'Đang sử dụng'
+        WHEN ComputerStatus = 1 THEN N'Đang trống'
+        WHEN ComputerStatus = 2 THEN N'Bảo trì'
+        ELSE N'Không xác định'
+    END AS TrangThai
+FROM Computer
+ORDER BY IDComputer;

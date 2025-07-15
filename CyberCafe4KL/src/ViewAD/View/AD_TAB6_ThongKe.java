@@ -4,34 +4,38 @@ import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.CN_btnSlideBar;
 import ViewAD.Code.TAB1_Slidebar;
 import ViewAD.Code.TAB6_TongLuotTruyCap;
-import ViewAD.Code.TAB6_TopMay;
-import ViewAD.Code.TAB6_TopNV;
-import ViewAD.Code.TAB6_TopSP;
 import ViewAD.Code.TAB6_cbxThang;
+import ViewAD.Code.TAB6_tbl;
 import java.awt.*;
 import java.time.LocalDate;
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 
 public class AD_TAB6_ThongKe extends javax.swing.JFrame {
 
     public AD_TAB6_ThongKe() {
         initComponents();
-        SetIconSlidebar();
-
-        TAB6_cbxThang.LoadThangPhatSinh(cbxThangTK);
-        loadTatCaThongKe();
-
+        setupSidebar();
         lblID.setText("Xin chào, " + CN_TaiKhoanDangNhap.getTenTaiKhoan());
         setTitle("CyberCafe4KL_Thống kê");
-        CN_btnSlideBar.ganSuKienSlideBar(
-                lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan, lblDX,
-                this
-        );
+
+        // Load tháng và set bảng
+        TAB6_cbxThang.LoadThangPhatSinh(cbxThangTK);
+        TAB6_tbl.SetupAllTables(jTable1, jScrollPane2, jTable3, jScrollPane4, jTable2, jScrollPane3);
+
+        int thangHienTai = LocalDate.now().getMonthValue();
+        loadDuLieuBangTheoThang(thangHienTai);
+        loadThongKePhu(thangHienTai);
+
+        // Khi chọn tháng mới
+        cbxThangTK.addActionListener(e -> {
+            int thang = TAB6_cbxThang.getThangFromComboBox(cbxThangTK);
+            loadDuLieuBangTheoThang(thang);
+            loadThongKePhu(thang);
+        });
     }
 
-    private void SetIconSlidebar() {
-//        A1_Slidebar.SetLabelIcon(lblDX, "icID.png", ); //Khi dnhap thì hiện lên tên tkhoan
+    // === Cài đặt slidebar và icon ===
+    private void setupSidebar() {
         TAB1_Slidebar.SetLabelIcon(lblDM, "icDM.png", " ĐẶT MÁY");
         TAB1_Slidebar.SetLabelIcon(lblOrder, "icOrder.png", " ORDER");
         TAB1_Slidebar.SetLabelIcon(lblSP, "icSP.png", " SẢN PHẨM");
@@ -44,9 +48,25 @@ public class AD_TAB6_ThongKe extends javax.swing.JFrame {
         TAB1_Slidebar.SetLabelIcon(lblChat, "icChat.png", "");
         TAB1_Slidebar.SetLabelIcon(lblTB, "icTB.png", "");
 
+        CN_btnSlideBar.ganSuKienSlideBar(
+                lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan, lblDX,
+                this
+        );
     }
-    JComboBox<String> cbxThang;
 
+    // === Load dữ liệu chính (3 bảng) ===
+    private void loadDuLieuBangTheoThang(int thang) {
+        TAB6_tbl.LoadTopSanPham(jTable3, thang);
+        TAB6_tbl.LoadTopNhanVien(jTable1, thang);
+        TAB6_tbl.LoadTopMay(jTable2, thang);
+    }
+
+    // === Load thông kê phụ (ví dụ lượt truy cập) ===
+    private void loadThongKePhu(int thang) {
+        TAB6_TongLuotTruyCap.Load(jLabel3, thang);
+    }
+
+    // === Nếu bạn có hàm tạo danh sách tháng thủ công ===
     public void LoadComboBoxThang() {
         int thangHienTai = LocalDate.now().getMonthValue(); // Lấy tháng hiện tại (1-12)
 
@@ -55,17 +75,8 @@ public class AD_TAB6_ThongKe extends javax.swing.JFrame {
             danhSachThang[i] = "THÁNG " + (i + 1);
         }
 
-        cbxThang = new JComboBox<>(danhSachThang);
-        pnlSDM.add(cbxThang); // hoặc add vào chỗ tương ứng trong layout
-    }
-
-    private void loadTatCaThongKe() {
-        int thang = TAB6_cbxThang.getThangFromComboBox(cbxThangTK);
-
-        TAB6_TongLuotTruyCap.Load(jLabel3, thang);     // Tổng lượt truy cập
-        TAB6_TopSP.LoadTable(jTable3, thang);          // Top sản phẩm
-        TAB6_TopNV.LoadTable(jTable1, thang);          // Top nhân viên
-        TAB6_TopMay.LoadTable(jTable2, thang);         // Top máy
+        cbxThangTK = new JComboBox<>(danhSachThang);
+        pnlSDM.add(cbxThangTK);
     }
 
     @SuppressWarnings("unchecked")
@@ -608,7 +619,7 @@ public class AD_TAB6_ThongKe extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cbxThangTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxThangTKActionPerformed
-        loadTatCaThongKe();
+        LoadComboBoxThang();
     }//GEN-LAST:event_cbxThangTKActionPerformed
     public static void main(String args[]) {
 

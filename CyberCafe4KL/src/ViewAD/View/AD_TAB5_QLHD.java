@@ -51,36 +51,48 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
         Color chuTrang = Color.WHITE;
         Color titleDen = Color.BLACK;
 
+        // Bắt buộc phải set lại model trước
+        TableHoaDon.setModel(new javax.swing.table.DefaultTableModel(
+                new Object[][]{},
+                new String[]{"Mã HD", "Tổng SL", "Tổng tiền", "Nhân viên bán", "Ngày tạo"}
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        });
+
+        // Màu bảng
         TableHoaDon.setBackground(nenToi);
         TableHoaDon.setForeground(chuTrang);
-        TableHoaDon.setSelectionBackground(new Color(100, 149, 237)); // Cornflower blue
-        TableHoaDon.setSelectionForeground(Color.WHITE);
         TableHoaDon.setGridColor(new Color(70, 70, 90));
 
-        // Căn giữa tiêu đề bảng
-        DefaultTableCellRenderer centerRenderer = (DefaultTableCellRenderer) TableHoaDon.getTableHeader().getDefaultRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        // Màu khi chọn hàng
+        TableHoaDon.setSelectionBackground(new Color(100, 149, 237)); // Xanh dương
+        TableHoaDon.setSelectionForeground(Color.WHITE);              // Chữ trắng
+
+        // Chỉ chọn hàng, không chọn từng ô
+        TableHoaDon.setCellSelectionEnabled(false);
+        TableHoaDon.setColumnSelectionAllowed(false);
+        TableHoaDon.setRowSelectionAllowed(true);
+        TableHoaDon.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // Chọn 1 hàng duy nhất
+
+        // Căn giữa header
+        DefaultTableCellRenderer headerRenderer = (DefaultTableCellRenderer) TableHoaDon.getTableHeader().getDefaultRenderer();
+        headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         TableHoaDon.getTableHeader().setForeground(titleDen);
 
+        // ScrollPane màu nền
         jScrollPane2.getViewport().setBackground(nenToi);
         jScrollPane2.setBackground(nenToi);
 
-        // Không cho chỉnh sửa
-        TableHoaDon.setDefaultEditor(Object.class, null);
-
-        // Chọn theo hàng
-        TableHoaDon.setRowSelectionAllowed(true);
-        TableHoaDon.setColumnSelectionAllowed(false);
-        TableHoaDon.setCellSelectionEnabled(false);
-
-        // Sự kiện double-click để mở form chi tiết hóa đơn
+        // Double click => mở chi tiết hóa đơn
         TableHoaDon.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 if (evt.getClickCount() == 2 && TableHoaDon.getSelectedRow() != -1) {
                     int row = TableHoaDon.getSelectedRow();
                     String maHD = TableHoaDon.getValueAt(row, 0).toString();
-
                     new TAB5_ChiTietHD(maHD).setVisible(true);
                 }
             }
@@ -300,13 +312,13 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
         TableHoaDon.setForeground(new java.awt.Color(30, 30, 47));
         TableHoaDon.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Mã HD", "Tổng số lượng SP", "Tổng tiền", "Nhân viên bán"
+                "Mã HD", "Tổng số lượng SP", "Tổng tiền", "Nhân viên bán", "Ngày tạo"
             }
         ));
         TableHoaDon.setGridColor(new java.awt.Color(30, 30, 47));

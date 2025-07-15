@@ -3,9 +3,16 @@ package ViewC.View;
 import ViewAD.View.*;
 import Controller.DBConnection;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 public class C2_Chat extends javax.swing.JFrame {
@@ -14,6 +21,24 @@ public class C2_Chat extends javax.swing.JFrame {
         initComponents();
         this.setResizable(false); // Không cho phóng to
         setTitle("CyberCafe4KL");
+        JButton btnSend = new JButton();
+        btnSend.setPreferredSize(new java.awt.Dimension(35, 35));
+        btnSend.setBorderPainted(false);
+        btnSend.setContentAreaFilled(false);
+        btnSend.setFocusPainted(false);
+        btnSend.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+        try {
+            // ⚠️ Đổi đúng đường dẫn ảnh trên máy bạn:
+            BufferedImage img = ImageIO.read(new File("C:\\Users\\ADMIN\\OneDrive\\Desktop\\CNTT\\Orange\\PRO230\\CyberCafe4KL\\CyberCafe4KL\\src\\Assets\\Client\\Send.png"));
+            Image scaled = img.getScaledInstance(24, 24, Image.SCALE_SMOOTH);
+            btnSend.setIcon(new ImageIcon(scaled));
+        } catch (IOException e) {
+            e.printStackTrace(); // Cho bạn biết ảnh chưa đúng đường
+        }
+
+        pnlSend.setLayout(new java.awt.BorderLayout());
+        pnlSend.add(btnSend, java.awt.BorderLayout.CENTER);
     }
 
     @SuppressWarnings("unchecked")
@@ -25,7 +50,7 @@ public class C2_Chat extends javax.swing.JFrame {
         pnlRegister = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
+        pnlSend = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -42,14 +67,14 @@ public class C2_Chat extends javax.swing.JFrame {
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("CHAT");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout pnlSendLayout = new javax.swing.GroupLayout(pnlSend);
+        pnlSend.setLayout(pnlSendLayout);
+        pnlSendLayout.setHorizontalGroup(
+            pnlSendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 61, Short.MAX_VALUE)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        pnlSendLayout.setVerticalGroup(
+            pnlSendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
@@ -77,7 +102,7 @@ public class C2_Chat extends javax.swing.JFrame {
             .addGroup(pnlRegisterLayout.createSequentialGroup()
                 .addComponent(jTextField1)
                 .addGap(1, 1, 1)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(pnlSend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         pnlRegisterLayout.setVerticalGroup(
@@ -90,7 +115,7 @@ public class C2_Chat extends javax.swing.JFrame {
                 .addGap(1, 1, 1)
                 .addGroup(pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(pnlSend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout pnlMain2Layout = new javax.swing.GroupLayout(pnlMain2);
@@ -151,11 +176,11 @@ public class C2_Chat extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JPanel pnlMain;
     private javax.swing.JPanel pnlMain2;
     private javax.swing.JPanel pnlRegister;
+    private javax.swing.JPanel pnlSend;
     // End of variables declaration//GEN-END:variables
 }
