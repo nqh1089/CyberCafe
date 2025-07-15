@@ -1,258 +1,103 @@
--- USE master
--- GO
--- ALTER DATABASE CyberCafe4KL SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
--- DROP DATABASE CyberCafe4KL;
--- GO
-
-CREATE DATABASE CyberCafe4KL
-GO
 USE CyberCafe4KL
 GO
 
-CREATE TABLE Account
-(
-	IDAccount INT PRIMARY KEY,
-	NameAccount VARCHAR(50) UNIQUE NOT NULL,
-	PWAccount VARCHAR(50) NOT NULL,
-	RoleAccount VARCHAR(50) CHECK (RoleAccount IN ('CLIENT', 'ADMIN', 'BOSS')) DEFAULT 'CLIENT',
-	-- CLIENT / ADMIN / BOSS
-	CCCD VARCHAR(12) UNIQUE NOT NULL,
-	-- Nếu 1 ngày đẹp trời nào đó, nhà nước tăng số cccd lên 13 ký tự thì cũng không sao cả, ALTER TABLE cân hết 
-	PhoneNumber VARCHAR(10) UNIQUE NULL,
-	Email VARCHAR(50) NULL,
-	Gender NVARCHAR(3) NULL,
-	-- 'Nam', 'Nữ'
-	OnlineStatus BIT DEFAULT 0 NOT NULL,
-	-- 1: Online - 0: Offline 
-	AccountStatus BIT DEFAULT 1 NOT NULL,
-	-- 1: True (Tài Khoản Còn Hoạt Động) - 0: False (Tài Khoản Ngưng Hoạt Động)
-	Created_at DATETIME DEFAULT GETDATE() NOT NULL
-);
+INSERT INTO Computer
+	(IDComputer, NameComputer, PricePerMinute, CPU, RAM, GPU, Monitor, IPRadmin, ComputerStatus)
+VALUES
+	(1, 'MÁY 01', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', '26.150.90.74', 1), -- nqh
+	(2, 'MÁY 02', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', '26.144.233.207', 1), -- minhkhoi
+	(3, 'MÁY 03', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', '26.228.105.146', 1), -- namkhanh
+	(4, 'MÁY 04', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', NULL, 1), -- baohan
+	(5, 'MÁY 05', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', NULL, 0),
+	(6, 'MÁY 06', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', NULL, 1),
+	(7, 'MÁY 07', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', NULL, 2),
+	(8, 'MÁY 08', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', NULL, 0),
+	(9, 'MÁY 09', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', NULL, 1),
+	(10, 'MÁY 10', 200, 'Intel Xeon W-3400', 'DDR5', 'RTX 6000 Ada', '500Hz', NULL, 2);
+	-- 0 = Đang hoạt động
+	-- 1 = Máy trống
+	-- 2 = Bảo trì
 GO
 
-CREATE PROC SP_AddAccount
-	@IDAccount INT,
-	@NameAccount VARCHAR(50),
-	@PWAccount VARCHAR(50),
-	@RoleAccount VARCHAR(50),
-	@CCCD VARCHAR(12),
-	@PhoneNumber VARCHAR(10),
-	@Email VARCHAR(50),
-	@Gender NVARCHAR(3),
-	@OnlineStatus BIT,
-	@AccountStatus BIT
-AS
+SELECT *
+FROM Computer
+
+
+INSERT INTO FoodDrink (NameFood, ImageFood, Price, Category, Available) VALUES
+-- ĐỒ UỐNG
+(N'Sting Tài nộc quá nớn', 'dSting.jpg', 12000, N'Đồ uống', 1),
+(N'Coca-Cola', 'dCoca.jpg', 10000, N'Đồ uống', 1),
+(N'Trà xanh hạ hỏa', 'd0do.jpg', 9000, N'Đồ uống', 1),
+(N'Giống Coca nhưng là Pépsi', 'dPepsi.jpg', 10000, N'Đồ uống', 1),
+(N'Nước tinh khiết', 'dNuocLoc.jpg', 8000, N'Đồ uống', 1),
+
+-- ĐỒ ĂN
+(N'Mì tôm 2 trứng', 'fM2T.jpg', 12000, N'Đồ ăn', 1),
+(N'Mì đặc biệt', 'fMDB.jpg', 10000, N'Đồ ăn', 1),
+(N'Mì kay', 'fMK.jpg', 9000, N'Đồ ăn', 1),
+
+-- GÓI NẠP THẺ
+(N'Gói nạp 50.000 VNĐ', '50.jpg', 50000, N'Gói nạp', 1),
+(N'Gói nạp 100.000 VNĐ', '100.jpg', 100000, N'Gói nạp', 1),
+(N'Gói nạp 200.000 VNĐ', '200.jpg', 200000, N'Gói nạp', 1),
+(N'Gói nạp 500.000 VNĐ', '500.jpg', 500000, N'Gói nạp', 1);
+GO
+
+SELECT *
+FROM FoodDrink
+
+
+-- Tạo tài khoản test cho máy 05
+IF NOT EXISTS (SELECT * FROM Account WHERE IDAccount = 200)
 BEGIN
-	IF (@IDAccount IS NULL OR @NameAccount IS NULL OR @PWAccount IS NULL OR @RoleAccount IS NULL OR @CCCD IS NULL OR @PhoneNumber IS NULL OR @Email IS NULL OR @Gender IS NULL OR @AccountStatus IS NULL OR @OnlineStatus IS NULL)
-		PRINT N'VUI LÒNG NHẬP ĐỦ THÔNG TIN'
-	ELSE IF EXISTS (SELECT *
-	FROM Account
-	WHERE IDAccount = @IDAccount)
-    	PRINT N'IDAccount ALREADY EXISTS'
-	ELSE IF EXISTS (SELECT *
-	FROM Account
-	WHERE NameAccount = @NameAccount)
-    	PRINT N'NameAccount ALREADY EXISTS'
-	ELSE IF EXISTS (SELECT *
-	FROM Account
-	WHERE CCCD = @CCCD)
-    	PRINT N'CCCD ALREADY EXISTS'
-	ELSE IF EXISTS (SELECT *
-	FROM Account
-	WHERE PhoneNumber = @PhoneNumber)
-    	PRINT N'PhoneNumber ALREADY EXISTS'
-	ELSE IF (@RoleAccount = 'BOSS' AND EXISTS (SELECT *
-		FROM Account
-		WHERE RoleAccount = 'BOSS'))
-		PRINT N'BOSS ĐÃ CÓ CHỦ CÒN BẠN THÌ KHÔNG'
-	ELSE 
-		BEGIN
-		INSERT INTO Account
-			(IDAccount, NameAccount, PWAccount, RoleAccount, CCCD, PhoneNumber, Email, Gender, OnlineStatus, AccountStatus)
-		VALUES
-			(@IDAccount, @NameAccount, @PWAccount, @RoleAccount, @CCCD, @PhoneNumber, @Email, @Gender, @OnlineStatus, @AccountStatus)
-	END
-END
-GO
-
-EXEC SP_AddAccount 1, N'nqh1089', N'123', N'BOSS', N'012345678998', N'0987654321', 'nqh1089@cb4kl.com', N'Nam', 0, 1;
-EXEC SP_AddAccount 2, N'catzpat', N'123', N'ADMIN', N'012345678999', N'0123456789', 'catzpat@cb4kl.com', N'Nam', 0, 1;
-EXEC SP_AddAccount 3, N'mkhoixyz', N'123', N'ADMIN', N'030208003266', N'0382526800', 'mkhoixyz@cb4kl.com', N'Nam', 0, 1;
-EXEC SP_AddAccount 4, N'bnah07', N'123', N'ADMIN', N'012345678997', N'0987654322', 'bnah07@cb4kl.com', N'Nữ', 0, 1;
-
-EXEC SP_AddAccount 5, N'1', N'1', N'ADMIN', N'111111111111', N'1111111111', '1@cb4kl.com', N'Nam', 0, 1;
-
-GO
-
-
-CREATE PROC SP_DangKyNhanhClient
-	@NameAccount VARCHAR(50),
-	@PhoneNumber VARCHAR(10),
-	@Gender NVARCHAR(3),
-	@CCCD VARCHAR(12)
-AS
-BEGIN
-	IF EXISTS (SELECT 1
-	FROM Account
-	WHERE NameAccount = @NameAccount)
-		RETURN 1;
-	-- trùng tài khoản
-
-	IF EXISTS (SELECT 1
-	FROM Account
-	WHERE PhoneNumber = @PhoneNumber)
-		RETURN 2;
-	-- trùng SĐT
-
-	IF EXISTS (SELECT 1
-	FROM Account
-	WHERE CCCD = @CCCD)
-		RETURN 3;
-	-- trùng CCCD
-
-	DECLARE @ID INT = (SELECT ISNULL(MAX(IDAccount), 0) + 1
-	FROM Account);
-
-	INSERT INTO Account
-		(IDAccount, NameAccount, PWAccount, RoleAccount, CCCD, PhoneNumber, Gender)
-	VALUES
-		(@ID, @NameAccount, 'khach123', 'CLIENT', @CCCD, @PhoneNumber, @Gender);
-
-	RETURN 0;
+    INSERT INTO Account (IDAccount, NameAccount, PWAccount, RoleAccount, CCCD, PhoneNumber, Email, Gender, OnlineStatus, AccountStatus)
+    VALUES (200, 'testmay02', '1234', 'CLIENT', '999999999999', '0999999999', 'test@may02.com', N'Nam', 1, 1);
 END
 
-GO
-CREATE VIEW V_Account
-AS
-	SELECT
-		IDAccount, NameAccount, RoleAccount, CCCD, PhoneNumber, Email, Gender,
-		OnlineStatus, AccountStatus, FORMAT(Created_at, 'dd/MM/yyyy HH:mm:ss') AS Created_at
-	FROM Account;
-GO
--- SELECT * FROM V_Account;
+-- Log đang dùng máy 05
+INSERT INTO LogAccess (IDComputer, ThoiGianBatDau, IDAccount)
+VALUES (5, DATEADD(MINUTE, -20, GETDATE()), 200); -- dùng từ 20 phút trước
 
-CREATE TABLE Computer
-(
-	IDComputer INT PRIMARY KEY,
-	NameComputer VARCHAR(50) NOT NULL,
-	PricePerMinute MONEY NOT NULL CHECK(PricePerMinute >= 0) DEFAULT 200,
-	CPU VARCHAR(50) NULL,
-	RAM VARCHAR(50) NULL,
-	GPU VARCHAR(50) NULL,
-	Monitor VARCHAR(50) NULL,
-	IPRadmin VARCHAR(20) NULL,
-	ComputerStatus INT NOT NULL DEFAULT 1
-	-- 0: ĐANG SỬ DỤNG | 1: ĐANG TRỐNG | 2: BẢO TRÌ
-);
-GO
+-- Tạo đơn hàng
+IF NOT EXISTS (SELECT * FROM OrderFood WHERE IDOrder = 1)
+BEGIN
+    INSERT INTO OrderFood (IDOrder, IDAccount)
+    VALUES (1, 200);
+END
 
-CREATE VIEW V_ComputerStatus
-AS
-	SELECT
-		IDComputer,
-		ComputerStatus,
-		CASE 
-		WHEN ComputerStatus = 0 THEN N'Đang sử dụng'
-		WHEN ComputerStatus = 1 THEN N'Đang trống'
-		WHEN ComputerStatus = 2 THEN N'Bảo trì'
-		ELSE N'Không xác định'
-	END AS ComputerStatusText
-	FROM Computer;
-GO
+-- Lấy ID món Sting & Mì đặc biệt
+DECLARE @idSting INT = (SELECT TOP 1 IDFood FROM FoodDrink WHERE NameFood LIKE N'Sting%');
+DECLARE @idMiDB INT = (SELECT TOP 1 IDFood FROM FoodDrink WHERE NameFood = N'Mì đặc biệt');
 
--- Tạo lại bảng ComputerUsage
-CREATE TABLE ComputerUsage
-(
-	IDUsage INT IDENTITY(1,1) PRIMARY KEY,
-	IDAccount INT FOREIGN KEY REFERENCES Account(IDAccount),
-	IDComputer INT FOREIGN KEY REFERENCES Computer(IDComputer),
-	StartTime DATETIME DEFAULT GETDATE(),
-	EndTime DATETIME,
-	TotalTime AS DATEDIFF(MINUTE, StartTime, EndTime),
-	Cost MONEY
-	-- Tổng tiền = phút chơi * đơn giá máy
-);
-GO
+-- Thêm chi tiết đơn hàng
+INSERT INTO OrderDetail (IDOrder, IDFood, Quantity, TotalPrice)
+VALUES 
+(1, @idSting, 1, 12000),
+(1, @idMiDB, 2, 20000);
 
-CREATE TABLE LogAccess
-(
-	IDLog INT IDENTITY(1,1) PRIMARY KEY,
-	IDComputer INT NOT NULL FOREIGN KEY REFERENCES Computer(IDComputer),
-	ThoiGianBatDau DATETIME NOT NULL,
-	IDAccount INT NULL FOREIGN KEY REFERENCES Account(IDAccount)
-);
-GO
 
-CREATE TABLE FoodDrink
-(
-	IDFood INT IDENTITY(1,1) PRIMARY KEY,
-	NameFood NVARCHAR(100) NOT NULL,
-	ImageFood NVARCHAR(255) NOT NULL,
-	Price MONEY NOT NULL CHECK (Price >= 0) DEFAULT 0,
-	Category NVARCHAR(50),
-	Available BIT DEFAULT 1
-	-- 1: Còn hàng, còn bán, 0: Hết hàng, không bán nữa
-);
-GO
 
-CREATE TABLE OrderFood
-(
-	IDOrder INT PRIMARY KEY,
-	IDAccount INT FOREIGN KEY REFERENCES Account(IDAccount),
-	OrderTime DATETIME DEFAULT GETDATE()
-);
-GO
 
-CREATE TABLE OrderDetail
-(
-	IDOrderDetail INT PRIMARY KEY IDENTITY,
-	IDOrder INT FOREIGN KEY REFERENCES OrderFood(IDOrder),
-	IDFood INT FOREIGN KEY REFERENCES FoodDrink(IDFood),
-	Quantity INT NOT NULL CHECK (Quantity > 0),
-	-- Số lượng món ăn
-	TotalPrice MONEY NOT NULL CHECK (TotalPrice >= 0) DEFAULT 0
-);
--- INSERT INTO OrderDetail (IDOrder, IDFood, Quantity, TotalPrice) VALUES (@IDOrder, @IDFood, @Quantity, @Quantity * @Price);
-GO
+SELECT * FROM Account
+WHERE NameAccount = '2' AND PWAccount = 'khach123' AND RoleAccount = 'CLIENT' AND AccountStatus = 1;
 
-CREATE TABLE Message
-(
-	IDMessage INT PRIMARY KEY IDENTITY,
-	SenderID INT NOT NULL FOREIGN KEY REFERENCES Account(IDAccount),
-	-- ID người gửi (liên kết tới Account)
-	ReceiverID INT NOT NULL FOREIGN KEY REFERENCES Account(IDAccount),
-	-- ID người nhận (liên kết tới Account)
-	Content NVARCHAR(255) NOT NULL,
-	-- Nội dung tin nhắn
-	SentAt DATETIME DEFAULT GETDATE() NOT NULL,
-	-- Thời điểm gửi
-	IsRead BIT DEFAULT 0
-	-- 0: chưa đọc, 1: đã đọc
-);
-GO
 
--- Bảng Hóa Đơn
-CREATE TABLE Invoice
-(
-	IDInvoice INT PRIMARY KEY IDENTITY,
-	IDAccount INT FOREIGN KEY REFERENCES Account(IDAccount),
-	CreateAt DATETIME DEFAULT GETDATE() NOT NULL,
-	TotalAmount MONEY NOT NULL CHECK (TotalAmount >= 0) DEFAULT 0,
-	Status NVARCHAR(50) DEFAULT N'Paid'
-	-- Paid / Pending / Cancelled
-);
-GO
 
--- Bảng Chi tiết hóa đơn
-CREATE TABLE InvoiceDetail
-(
-	IDInvoiceDetail INT PRIMARY KEY IDENTITY,
-	IDInvoice INT FOREIGN KEY REFERENCES Invoice(IDInvoice),
-	IDFood INT FOREIGN KEY REFERENCES FoodDrink(IDFood),
-	Quantity INT NOT NULL CHECK (Quantity > 0),
-	UnitPrice MONEY NOT NULL CHECK (UnitPrice >= 0),
-	TotalPrice MONEY NOT NULL CHECK (TotalPrice >= 0) DEFAULT 0,
-	-- Tính toán tổng giá trị của mặt hàng
-	TotalAmount MONEY NOT NULL CHECK (TotalAmount >= 0) DEFAULT 0
-);
-GO
+-- Check mã hđ
+SELECT * FROM OrderFood WHERE IDOrder = 7;
+
+-- Chi tiết sản phẩm trong hóa đơn
+SELECT OD.*, FD.NameFood
+FROM OrderDetail OD
+JOIN FoodDrink FD ON OD.IDFood = FD.IDFood
+WHERE IDOrder = 7;
+
+SELECT NameComputer, ComputerStatus FROM Computer WHERE NameComputer = 'MÁY 09';
+
+-- Check nv bán hàng
+SELECT * FROM OrderFood
+WHERE IDAccount = (
+    SELECT IDAccount FROM Account WHERE NameAccount = 'nqh1089'
+)
+
+SELECT TOP 2 * FROM Account
