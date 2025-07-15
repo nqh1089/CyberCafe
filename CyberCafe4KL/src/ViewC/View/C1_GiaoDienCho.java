@@ -19,7 +19,7 @@ public class C1_GiaoDienCho extends JFrame {
     public C1_GiaoDienCho() {
         this.setUndecorated(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        CN_LayTenMayTheoIP.ganThongTinMay();
+        String ip = CN_LayTenMayTheoIP.getIPRadminHienTai();
 
         BackgroundPanel bgPanel = new BackgroundPanel();
         bgPanel.setLayout(null);
@@ -107,7 +107,8 @@ public class C1_GiaoDienCho extends JFrame {
             String user = txtUser.getText().trim();
             String pass = new String(txtPass.getPassword());
 
-            boolean ketQua = CN_LoginMay.loginMay(user, pass);
+            boolean ketQua = CN_LoginMay.loginMay(txtUser.getText().trim(), new String(txtPass.getPassword()));
+
             if (ketQua) {
                 if (timer15s != null) {
                     timer15s.stop();

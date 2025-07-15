@@ -1,24 +1,26 @@
 package ViewC.Code;
 
 import Controller.DBConnection;
+
 import java.net.*;
 import java.sql.*;
 import java.util.Enumeration;
 
 public class CN_LayTenMayTheoIP {
 
+    // Hàm gán thông tin máy vào biến toàn cục
     public static void ganThongTinMay() {
         try {
-            String ip = layIPRadmin(); // <-- Đổi cách lấy IP
+            String ip = layIPRadmin(); // Lấy IP Radmin VPN
 
             if (ip == null) {
-                System.out.println("KHONG TIM THAY IP RADMIN VPN");
+                System.out.println("KHÔNG TÌM THẤY IP RADMIN VPN");
                 return;
             }
 
             Connection conn = DBConnection.getConnection();
             if (conn == null) {
-                System.out.println("KHONG KET NOI DUOC CSDL");
+                System.out.println("KHÔNG KẾT NỐI ĐƯỢC CSDL");
                 return;
             }
 
@@ -30,17 +32,22 @@ public class CN_LayTenMayTheoIP {
             if (rs.next()) {
                 CN_BienToanCuc.IDComputer = rs.getInt("IDComputer");
                 CN_BienToanCuc.TenMay = rs.getString("NameComputer");
-                System.out.println("MAY HIEN TAI: " + CN_BienToanCuc.TenMay + " (IP: " + ip + ")");
+                System.out.println("MÁY HIỆN TẠI: " + CN_BienToanCuc.TenMay + " (IP: " + ip + ")");
             } else {
-                System.out.println("KHONG TIM THAY MAY CHO IP: " + ip);
+                System.out.println("KHÔNG TÌM THẤY MÁY CHO IP: " + ip);
             }
 
         } catch (Exception e) {
-            System.out.println("Loi CN_LayTenMayTheoIP: " + e.getMessage());
+            System.out.println("Lỗi CN_LayTenMayTheoIP: " + e.getMessage());
         }
     }
 
-    // Hàm lấy IP Radmin VPN (26.x.x.x)
+    // ✅ Hàm public để lấy IP từ class khác
+    public static String getIPRadminHienTai() {
+        return layIPRadmin();
+    }
+
+    // ✅ Hàm nội bộ: duyệt NetworkInterface để lấy IP bắt đầu bằng 26.
     private static String layIPRadmin() {
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -63,7 +70,7 @@ public class CN_LayTenMayTheoIP {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Loi layIPRadmin: " + e.getMessage());
+            System.out.println("Lỗi layIPRadmin: " + e.getMessage());
         }
 
         return null;
