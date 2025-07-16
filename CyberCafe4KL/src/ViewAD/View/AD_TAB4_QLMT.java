@@ -14,9 +14,8 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 
 import Controller.DBConnection;
+import ViewAD.Code.CN_Slidebar;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
-import ViewAD.Code.CN_btnSlideBar;
-import ViewAD.Code.TAB1_Slidebar;
 import ViewAD.Code.TAB4_LoadMayTinh;
 import ViewAD.Code.TAB4_ThemSuaMay;
 
@@ -24,14 +23,13 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
 
     public AD_TAB4_QLMT() {
         initComponents();
-        SetIconSlidebar();
+        CN_Slidebar.SetSlidebar(
+                lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan,
+                lblDMK, lblDX, lblChat, lblTB, this
+        );
 
         lblID.setText("Xin chào, " + CN_TaiKhoanDangNhap.getTenTaiKhoan());
         setTitle("CyberCafe4KL_Quản lý Máy tính");
-        CN_btnSlideBar.ganSuKienSlideBar(
-                lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan, lblDX,
-                this
-        );
 
         TAB4_LoadMayTinh.LoadSoDoMay(
                 pnlSoDoMay,
@@ -43,22 +41,6 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
                 lblMonitor,
                 lblGia
         );
-    }
-
-    private void SetIconSlidebar() {
-//        A1_Slidebar.SetLabelIcon(lblDX, "icID.png", ); //Khi dnhap thì hiện lên tên tkhoan
-        TAB1_Slidebar.SetLabelIcon(lblDM, "icDM.png", " ĐẶT MÁY");
-        TAB1_Slidebar.SetLabelIcon(lblOrder, "icOrder.png", " ORDER");
-        TAB1_Slidebar.SetLabelIcon(lblSP, "icSP.png", " SẢN PHẨM");
-        TAB1_Slidebar.SetLabelIcon(lblHD, "icHD1.png", " HÓA ĐƠN");
-        TAB1_Slidebar.SetLabelIcon(lblMT, "icMT.png", " MÁY TÍNH");
-        TAB1_Slidebar.SetLabelIcon(lblTKe, "icTKe.png", " THỐNG KÊ");
-        TAB1_Slidebar.SetLabelIcon(lblTKhoan, "icTKhoan.png", " TÀI KHOẢN");
-        TAB1_Slidebar.SetLabelIcon(lblDX, "icDX.png", " Đăng xuất");
-
-        TAB1_Slidebar.SetLabelIcon(lblChat, "icChat.png", "");
-        TAB1_Slidebar.SetLabelIcon(lblTB, "icTB.png", "");
-
     }
 
     public void CapNhatSoDoMay() {
@@ -81,16 +63,6 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTree1 = new javax.swing.JTree();
         pnlMain = new javax.swing.JPanel();
-        pnlCN = new javax.swing.JPanel();
-        lblDX = new javax.swing.JLabel();
-        lblTKhoan = new javax.swing.JLabel();
-        lblTKe = new javax.swing.JLabel();
-        lblHD = new javax.swing.JLabel();
-        lblMT = new javax.swing.JLabel();
-        lblSP = new javax.swing.JLabel();
-        lblOrder = new javax.swing.JLabel();
-        lblDM = new javax.swing.JLabel();
-        lblID = new javax.swing.JLabel();
         pnlCNNgang = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         lblTB = new javax.swing.JLabel();
@@ -145,6 +117,17 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
         btnTrangThai = new javax.swing.JButton();
         lblTrangThai = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        pnlCN = new javax.swing.JPanel();
+        lblID = new javax.swing.JLabel();
+        lblDX = new javax.swing.JLabel();
+        lblTKhoan = new javax.swing.JLabel();
+        lblTKe = new javax.swing.JLabel();
+        lblHD = new javax.swing.JLabel();
+        lblMT = new javax.swing.JLabel();
+        lblSP = new javax.swing.JLabel();
+        lblOrder = new javax.swing.JLabel();
+        lblDM = new javax.swing.JLabel();
+        lblDMK = new javax.swing.JLabel();
 
         jScrollPane1.setViewportView(jTree1);
 
@@ -158,100 +141,6 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
         pnlMain.setMinimumSize(new java.awt.Dimension(1500, 780));
         pnlMain.setRequestFocusEnabled(false);
         pnlMain.setVerifyInputWhenFocusTarget(false);
-
-        pnlCN.setBackground(new java.awt.Color(44, 44, 62));
-        pnlCN.setMaximumSize(new java.awt.Dimension(219, 780));
-        pnlCN.setMinimumSize(new java.awt.Dimension(219, 780));
-        pnlCN.setPreferredSize(new java.awt.Dimension(219, 780));
-        pnlCN.setRequestFocusEnabled(false);
-
-        lblDX.setBackground(new java.awt.Color(204, 255, 255));
-        lblDX.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
-        lblDX.setForeground(new java.awt.Color(204, 255, 255));
-        lblDX.setText("Đăng xuất");
-
-        lblTKhoan.setBackground(new java.awt.Color(255, 255, 255));
-        lblTKhoan.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
-        lblTKhoan.setForeground(new java.awt.Color(204, 255, 255));
-        lblTKhoan.setText("Tài khoản");
-
-        lblTKe.setBackground(new java.awt.Color(255, 255, 255));
-        lblTKe.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
-        lblTKe.setForeground(new java.awt.Color(204, 255, 255));
-        lblTKe.setText("Thống kê");
-
-        lblHD.setBackground(new java.awt.Color(255, 255, 255));
-        lblHD.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
-        lblHD.setForeground(new java.awt.Color(204, 255, 255));
-        lblHD.setText("Hóa đơn");
-
-        lblMT.setBackground(new java.awt.Color(255, 255, 255));
-        lblMT.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
-        lblMT.setForeground(new java.awt.Color(204, 255, 255));
-        lblMT.setText("Máy tính");
-
-        lblSP.setBackground(new java.awt.Color(255, 255, 255));
-        lblSP.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
-        lblSP.setForeground(new java.awt.Color(204, 255, 255));
-        lblSP.setText("Sản phẩm");
-
-        lblOrder.setBackground(new java.awt.Color(255, 255, 255));
-        lblOrder.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
-        lblOrder.setForeground(new java.awt.Color(204, 255, 255));
-        lblOrder.setText("Order");
-
-        lblDM.setBackground(new java.awt.Color(255, 255, 255));
-        lblDM.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
-        lblDM.setForeground(new java.awt.Color(204, 255, 255));
-        lblDM.setText("Đặt máy");
-
-        lblID.setBackground(new java.awt.Color(255, 255, 255));
-        lblID.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
-        lblID.setForeground(new java.awt.Color(204, 255, 255));
-        lblID.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblID.setText("[ID Admin]");
-
-        javax.swing.GroupLayout pnlCNLayout = new javax.swing.GroupLayout(pnlCN);
-        pnlCN.setLayout(pnlCNLayout);
-        pnlCNLayout.setHorizontalGroup(
-            pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlCNLayout.createSequentialGroup()
-                .addGap(55, 55, 55)
-                .addGroup(pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblDX)
-                    .addComponent(lblOrder)
-                    .addComponent(lblDM)
-                    .addComponent(lblSP)
-                    .addComponent(lblHD)
-                    .addComponent(lblTKe)
-                    .addComponent(lblTKhoan)
-                    .addComponent(lblMT))
-                .addGap(82, 82, 82))
-            .addComponent(lblID, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
-        );
-        pnlCNLayout.setVerticalGroup(
-            pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlCNLayout.createSequentialGroup()
-                .addGap(53, 53, 53)
-                .addComponent(lblID)
-                .addGap(84, 84, 84)
-                .addComponent(lblDM)
-                .addGap(40, 40, 40)
-                .addComponent(lblOrder)
-                .addGap(40, 40, 40)
-                .addComponent(lblSP)
-                .addGap(40, 40, 40)
-                .addComponent(lblMT)
-                .addGap(40, 40, 40)
-                .addComponent(lblHD)
-                .addGap(40, 40, 40)
-                .addComponent(lblTKe)
-                .addGap(40, 40, 40)
-                .addComponent(lblTKhoan)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 211, Short.MAX_VALUE)
-                .addComponent(lblDX)
-                .addGap(32, 32, 32))
-        );
 
         pnlCNNgang.setBackground(new java.awt.Color(153, 255, 153));
 
@@ -277,14 +166,14 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblChat, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(28, 28, 28)
+                .addGap(18, 18, 18)
                 .addComponent(lblTB, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(58, 58, 58))
+                .addGap(30, 30, 30))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(8, 8, 8)
+                .addGap(11, 11, 11)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblChat)
                     .addComponent(lblTB))
@@ -625,7 +514,7 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
                                 .addComponent(jPanel14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel33)))))
-                .addContainerGap(263, Short.MAX_VALUE))
+                .addContainerGap(269, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout pnlMainSDMLayout = new javax.swing.GroupLayout(pnlMainSDM);
@@ -847,6 +736,110 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
                 .addGap(2, 2, 2))
         );
 
+        pnlCN.setBackground(new java.awt.Color(44, 44, 62));
+        pnlCN.setMaximumSize(new java.awt.Dimension(219, 780));
+        pnlCN.setMinimumSize(new java.awt.Dimension(219, 780));
+        pnlCN.setRequestFocusEnabled(false);
+
+        lblID.setBackground(new java.awt.Color(255, 255, 255));
+        lblID.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        lblID.setForeground(new java.awt.Color(204, 255, 255));
+        lblID.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        lblID.setText("Xin chào, nqh1089");
+
+        lblDX.setBackground(new java.awt.Color(204, 255, 255));
+        lblDX.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        lblDX.setForeground(new java.awt.Color(204, 255, 255));
+        lblDX.setText("Đăng xuất");
+
+        lblTKhoan.setBackground(new java.awt.Color(255, 255, 255));
+        lblTKhoan.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        lblTKhoan.setForeground(new java.awt.Color(204, 255, 255));
+        lblTKhoan.setText("Tài khoản");
+
+        lblTKe.setBackground(new java.awt.Color(255, 255, 255));
+        lblTKe.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        lblTKe.setForeground(new java.awt.Color(204, 255, 255));
+        lblTKe.setText("Thống kê");
+
+        lblHD.setBackground(new java.awt.Color(255, 255, 255));
+        lblHD.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        lblHD.setForeground(new java.awt.Color(204, 255, 255));
+        lblHD.setText("Hóa đơn");
+
+        lblMT.setBackground(new java.awt.Color(255, 255, 255));
+        lblMT.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        lblMT.setForeground(new java.awt.Color(204, 255, 255));
+        lblMT.setText("Máy tính");
+
+        lblSP.setBackground(new java.awt.Color(255, 255, 255));
+        lblSP.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        lblSP.setForeground(new java.awt.Color(204, 255, 255));
+        lblSP.setText("Sản phẩm");
+
+        lblOrder.setBackground(new java.awt.Color(255, 255, 255));
+        lblOrder.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        lblOrder.setForeground(new java.awt.Color(204, 255, 255));
+        lblOrder.setText("Order");
+
+        lblDM.setBackground(new java.awt.Color(255, 255, 255));
+        lblDM.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        lblDM.setForeground(new java.awt.Color(204, 255, 255));
+        lblDM.setText("Đặt máy");
+
+        lblDMK.setBackground(new java.awt.Color(255, 255, 255));
+        lblDMK.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        lblDMK.setForeground(new java.awt.Color(204, 255, 255));
+        lblDMK.setText("Đổi MK");
+
+        javax.swing.GroupLayout pnlCNLayout = new javax.swing.GroupLayout(pnlCN);
+        pnlCN.setLayout(pnlCNLayout);
+        pnlCNLayout.setHorizontalGroup(
+            pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlCNLayout.createSequentialGroup()
+                .addContainerGap(41, Short.MAX_VALUE)
+                .addComponent(lblID, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+            .addGroup(pnlCNLayout.createSequentialGroup()
+                .addGap(55, 55, 55)
+                .addGroup(pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblDMK)
+                    .addComponent(lblDX)
+                    .addComponent(lblOrder)
+                    .addComponent(lblDM)
+                    .addComponent(lblSP)
+                    .addComponent(lblHD)
+                    .addComponent(lblTKe)
+                    .addComponent(lblMT)
+                    .addComponent(lblTKhoan))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        pnlCNLayout.setVerticalGroup(
+            pnlCNLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCNLayout.createSequentialGroup()
+                .addGap(53, 53, 53)
+                .addComponent(lblID)
+                .addGap(84, 84, 84)
+                .addComponent(lblDM)
+                .addGap(40, 40, 40)
+                .addComponent(lblOrder)
+                .addGap(40, 40, 40)
+                .addComponent(lblSP)
+                .addGap(40, 40, 40)
+                .addComponent(lblMT)
+                .addGap(40, 40, 40)
+                .addComponent(lblHD)
+                .addGap(40, 40, 40)
+                .addComponent(lblTKe)
+                .addGap(40, 40, 40)
+                .addComponent(lblTKhoan)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblDMK)
+                .addGap(18, 18, 18)
+                .addComponent(lblDX)
+                .addGap(43, 43, 43))
+        );
+
         javax.swing.GroupLayout pnlMainLayout = new javax.swing.GroupLayout(pnlMain);
         pnlMain.setLayout(pnlMainLayout);
         pnlMainLayout.setHorizontalGroup(
@@ -864,7 +857,6 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
         );
         pnlMainLayout.setVerticalGroup(
             pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnlCN, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(pnlMainLayout.createSequentialGroup()
                 .addComponent(pnlCNNgang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
@@ -872,6 +864,9 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
                     .addComponent(pnlMainSDM, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pnlMainTTM, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(2, 2, 2))
+            .addGroup(pnlMainLayout.createSequentialGroup()
+                .addComponent(pnlCN, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         getContentPane().add(pnlMain, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1500, 780));
@@ -1004,6 +999,7 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
     private javax.swing.JLabel lblCauHinh;
     private javax.swing.JLabel lblChat;
     private javax.swing.JLabel lblDM;
+    private javax.swing.JLabel lblDMK;
     private javax.swing.JLabel lblDX;
     private javax.swing.JLabel lblGPU;
     private javax.swing.JLabel lblGia;

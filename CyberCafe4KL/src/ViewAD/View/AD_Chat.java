@@ -1,20 +1,94 @@
 package ViewAD.View;
 
-import ViewC.View.*;
-import ViewAD.View.*;
-import Controller.DBConnection;
-import ViewAD.Code.CN_TaiKhoanDangNhap;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import javax.swing.JOptionPane;
+import Socket.ChatServer;
+
+import javax.swing.*;
+import javax.swing.text.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.time.LocalTime;
 
 public class AD_Chat extends javax.swing.JFrame {
 
+    public static AD_Chat instance;
+    private JTextPane txtChat;
+
     public AD_Chat() {
         initComponents();
-        this.setResizable(false); // Không cho phóng to
-        setTitle("CyberCafe4KL");
+        instance = this;
+        setTitle("CyberCafe4KL_Admin");
+        this.setResizable(false);
+
+        // Gán icon gửi
+        String iconPath = "E:/SU25/BL2/PRO230_DATN/CyberCafe4KL/CyberCafe4KL/src/Assets/Client/Send.png";
+        ImageIcon icon = new ImageIcon(iconPath);
+        Image img = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+        lblSend.setIcon(new ImageIcon(img));
+        lblSend.setText("");
+
+        // Tạo vùng chat bằng JTextPane để hỗ trợ đổi màu
+        txtChat = new JTextPane();
+        txtChat.setEditable(false);
+        txtChat.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        txtChat.setBackground(new Color(30, 30, 47)); // Nền tối
+        txtChat.setForeground(Color.WHITE);          // Mặc định trắng nếu thiếu style
+
+        JScrollPane scrollPane = new JScrollPane(txtChat);
+        pnlZoneMessage.setLayout(new BorderLayout());
+        pnlZoneMessage.add(scrollPane, BorderLayout.CENTER);
+
+        // Khởi động server chat
+        new Thread(() -> new ChatServer(1902)).start();
+
+        // Xử lý sự kiện gửi tin
+        lblSend.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                String msg = txtText.getText().trim();
+                if (!msg.isEmpty()) {
+                    String time = LocalTime.now().withNano(0).toString().substring(0, 5);
+                    StyledDocument doc = txtChat.getStyledDocument();
+
+                    try {
+                        // Style tin Admin
+                        Style adminStyle = txtChat.addStyle("AdminStyle", null);
+                        StyleConstants.setForeground(adminStyle, new Color(51, 51, 255));
+                        doc.insertString(doc.getLength(), "Admin [" + time + "]: " + msg + "\n", adminStyle);
+
+                        // Gửi cho máy client cuối cùng đã gửi
+                        String target = ChatServer.lastClientSentMessage;
+                        if (target != null) {
+                            ChatServer.guiChoClient(target, msg);
+                        } else {
+                            // Không có máy nào để gửi → hiển thị thông báo
+                            Style sysStyle = txtChat.addStyle("SystemStyle", null);
+                            StyleConstants.setForeground(sysStyle, Color.LIGHT_GRAY);
+                            doc.insertString(doc.getLength(), "(Không có máy nào để gửi tin.)\n", sysStyle);
+                        }
+
+                        txtChat.setCaretPosition(doc.getLength()); // Tự scroll
+
+                    } catch (BadLocationException ex) {
+                        ex.printStackTrace();
+                    }
+
+                    txtText.setText("");
+                }
+            }
+        });
+    }
+
+    public void hienThiTinNhan(String tenMay, String noiDung, String thoiGian) {
+        StyledDocument doc = txtChat.getStyledDocument();
+        try {
+            Style clientStyle = txtChat.addStyle("ClientStyle", null);
+            StyleConstants.setForeground(clientStyle, new Color(204, 255, 255)); // Client: cyan
+            doc.insertString(doc.getLength(), tenMay + " [" + thoiGian + "]: " + noiDung + "\n", clientStyle);
+            txtChat.setCaretPosition(doc.getLength()); // Tự scroll
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -24,10 +98,10 @@ public class AD_Chat extends javax.swing.JFrame {
         pnlMain = new javax.swing.JPanel();
         pnlMain2 = new javax.swing.JPanel();
         pnlRegister = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
+        lblTittle = new javax.swing.JLabel();
+        txtText = new javax.swing.JTextField();
+        pnlZoneMessage = new javax.swing.JPanel();
+        lblSend = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -37,35 +111,27 @@ public class AD_Chat extends javax.swing.JFrame {
 
         pnlRegister.setBackground(new java.awt.Color(30, 30, 47));
 
-        jLabel4.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel4.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("CHAT");
+        lblTittle.setBackground(new java.awt.Color(255, 255, 255));
+        lblTittle.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
+        lblTittle.setForeground(new java.awt.Color(255, 255, 255));
+        lblTittle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTittle.setText("CHAT");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 61, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        pnlZoneMessage.setBackground(new java.awt.Color(30, 30, 47));
+
+        javax.swing.GroupLayout pnlZoneMessageLayout = new javax.swing.GroupLayout(pnlZoneMessage);
+        pnlZoneMessage.setLayout(pnlZoneMessageLayout);
+        pnlZoneMessageLayout.setHorizontalGroup(
+            pnlZoneMessageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
-
-        jPanel2.setBackground(new java.awt.Color(44, 44, 62));
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        pnlZoneMessageLayout.setVerticalGroup(
+            pnlZoneMessageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 340, Short.MAX_VALUE)
         );
+
+        lblSend.setForeground(new java.awt.Color(153, 255, 255));
+        lblSend.setText("Send");
 
         javax.swing.GroupLayout pnlRegisterLayout = new javax.swing.GroupLayout(pnlRegister);
         pnlRegister.setLayout(pnlRegisterLayout);
@@ -73,25 +139,26 @@ public class AD_Chat extends javax.swing.JFrame {
             pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlRegisterLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
+                .addComponent(lblTittle, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(pnlRegisterLayout.createSequentialGroup()
-                .addComponent(jTextField1)
-                .addGap(1, 1, 1)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(txtText)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblSend)
+                .addGap(13, 13, 13))
+            .addComponent(pnlZoneMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         pnlRegisterLayout.setVerticalGroup(
             pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlRegisterLayout.createSequentialGroup()
                 .addGap(35, 35, 35)
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblTittle, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(pnlZoneMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(1, 1, 1)
-                .addGroup(pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtText, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblSend)))
         );
 
         javax.swing.GroupLayout pnlMain2Layout = new javax.swing.GroupLayout(pnlMain2);
@@ -151,12 +218,12 @@ public class AD_Chat extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel lblSend;
+    private javax.swing.JLabel lblTittle;
     private javax.swing.JPanel pnlMain;
     private javax.swing.JPanel pnlMain2;
     private javax.swing.JPanel pnlRegister;
+    private javax.swing.JPanel pnlZoneMessage;
+    private javax.swing.JTextField txtText;
     // End of variables declaration//GEN-END:variables
 }

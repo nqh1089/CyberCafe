@@ -82,7 +82,7 @@ FROM Account
 WHERE RoleAccount IN ('ADMIN', 'BOSS')
 ORDER BY RoleAccount;
 
--- Lọc nhân viên theo trạng thái
+-- Lọc nhân viên
 SELECT 
     IDAccount,
     NameAccount,
@@ -97,4 +97,5 @@ SELECT
     END AS TrangThai
 FROM Account
 WHERE RoleAccount IN ('ADMIN', 'BOSS')
-ORDER BY AccountStatus DESC, NameAccount;
+ORDER BY IDAccount ASC;
+
