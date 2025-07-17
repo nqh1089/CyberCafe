@@ -5,8 +5,7 @@ import Socket.ChatServer;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.time.LocalTime;
 
 public class AD_Chat extends javax.swing.JFrame {
@@ -41,42 +40,57 @@ public class AD_Chat extends javax.swing.JFrame {
         // Khởi động server chat
         new Thread(() -> new ChatServer(1902)).start();
 
-        // Xử lý sự kiện gửi tin
+        // Gửi khi click icon
         lblSend.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                String msg = txtText.getText().trim();
-                if (!msg.isEmpty()) {
-                    String time = LocalTime.now().withNano(0).toString().substring(0, 5);
-                    StyledDocument doc = txtChat.getStyledDocument();
+                guiTinNhan();
+            }
+        });
 
-                    try {
-                        // Style tin Admin
-                        Style adminStyle = txtChat.addStyle("AdminStyle", null);
-                        StyleConstants.setForeground(adminStyle, new Color(51, 51, 255));
-                        doc.insertString(doc.getLength(), "Admin [" + time + "]: " + msg + "\n", adminStyle);
-
-                        // Gửi cho máy client cuối cùng đã gửi
-                        String target = ChatServer.lastClientSentMessage;
-                        if (target != null) {
-                            ChatServer.guiChoClient(target, msg);
-                        } else {
-                            // Không có máy nào để gửi → hiển thị thông báo
-                            Style sysStyle = txtChat.addStyle("SystemStyle", null);
-                            StyleConstants.setForeground(sysStyle, Color.LIGHT_GRAY);
-                            doc.insertString(doc.getLength(), "(Không có máy nào để gửi tin.)\n", sysStyle);
-                        }
-
-                        txtChat.setCaretPosition(doc.getLength()); // Tự scroll
-
-                    } catch (BadLocationException ex) {
-                        ex.printStackTrace();
-                    }
-
-                    txtText.setText("");
+        // Gửi khi nhấn Enter (không xử lý Shift)
+        txtText.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    e.consume(); // chặn xuống dòng
+                    guiTinNhan();
                 }
             }
         });
+    }
+
+    private void guiTinNhan() {
+        String msg = txtText.getText().trim();
+        if (!msg.isEmpty()) {
+            String time = LocalTime.now().withNano(0).toString().substring(0, 5);
+            StyledDocument doc = txtChat.getStyledDocument();
+
+            try {
+                // Style tin nhắn từ Admin
+                Style adminStyle = txtChat.addStyle("AdminStyle", null);
+                StyleConstants.setForeground(adminStyle, new Color(153, 255, 0));
+                doc.insertString(doc.getLength(), "Admin [" + time + "]: " + msg + "\n", adminStyle);
+
+                // Gửi cho client cuối cùng đã gửi
+                String target = ChatServer.lastClientSentMessage;
+                if (target != null) {
+                    ChatServer.guiChoClient(target, msg);
+                } else {
+                    // Không có máy nào để gửi
+                    Style sysStyle = txtChat.addStyle("SystemStyle", null);
+                    StyleConstants.setForeground(sysStyle, Color.LIGHT_GRAY);
+                    doc.insertString(doc.getLength(), "(Không có máy nào để gửi tin.)\n", sysStyle);
+                }
+
+                txtChat.setCaretPosition(doc.getLength()); // Tự scroll xuống dòng cuối
+
+            } catch (BadLocationException ex) {
+                ex.printStackTrace();
+            }
+
+            txtText.setText(""); // Xoá nội dung
+        }
     }
 
     public void hienThiTinNhan(String tenMay, String noiDung, String thoiGian) {
@@ -85,7 +99,7 @@ public class AD_Chat extends javax.swing.JFrame {
             Style clientStyle = txtChat.addStyle("ClientStyle", null);
             StyleConstants.setForeground(clientStyle, new Color(204, 255, 255)); // Client: cyan
             doc.insertString(doc.getLength(), tenMay + " [" + thoiGian + "]: " + noiDung + "\n", clientStyle);
-            txtChat.setCaretPosition(doc.getLength()); // Tự scroll
+            txtChat.setCaretPosition(doc.getLength()); // Scroll cuối
         } catch (BadLocationException e) {
             e.printStackTrace();
         }

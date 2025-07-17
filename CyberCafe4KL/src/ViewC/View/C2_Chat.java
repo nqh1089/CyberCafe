@@ -6,8 +6,7 @@ import ViewC.Code.CN_BienToanCuc;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.time.LocalTime;
 
 public class C2_Chat extends javax.swing.JFrame {
@@ -38,26 +37,42 @@ public class C2_Chat extends javax.swing.JFrame {
         pnlZoneMessage.add(scrollPane, BorderLayout.CENTER);
 
         // Tên thật & tên hiển thị
-        String nameAccount = CN_BienToanCuc.TenTaiKhoan;
-        String tenMay = "Máy " + CN_BienToanCuc.IDComputer;
+        String nameAccount = CN_BienToanCuc.TenTaiKhoan; // dùng để gửi & lưu DB
+        String tenMay = "Máy " + CN_BienToanCuc.IDComputer; // dùng để hiển thị
         clientSocket = new ChatClient("26.150.90.74", 1902, nameAccount, tenMay, this::hienThiTinNhan);
 
+        // Gửi bằng chuột
         lblSend.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                String msg = txtText.getText().trim();
-                if (!msg.isEmpty()) {
-                    clientSocket.guiTinNhan(msg);
-                    String time = LocalTime.now().withNano(0).toString().substring(0, 5);
-                    appendTinNhan(clientSocket.getTenHienThi(), msg, time, new Color(204, 255, 255)); // cyan
-                    txtText.setText("");
+                guiTinNhan();
+            }
+        });
+
+        // Gửi bằng Enter
+        txtText.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    e.consume(); // chặn xuống dòng
+                    guiTinNhan();
                 }
             }
         });
     }
 
+    private void guiTinNhan() {
+        String msg = txtText.getText().trim();
+        if (!msg.isEmpty()) {
+            clientSocket.guiTinNhan(msg);
+            String time = LocalTime.now().withNano(0).toString().substring(0, 5);
+            appendTinNhan(clientSocket.getTenHienThi(), msg, time, new Color(204, 255, 255)); // Client: Cyan
+            txtText.setText("");
+        }
+    }
+
     public void hienThiTinNhan(String nguoiGui, String noiDung, String thoiGian) {
-        appendTinNhan(nguoiGui, noiDung, thoiGian, new Color(51, 51, 255)); // Admin xanh
+        appendTinNhan(nguoiGui, noiDung, thoiGian, new Color(51, 51, 255)); // Admin: Xanh
     }
 
     private void appendTinNhan(String ten, String nd, String time, Color color) {
