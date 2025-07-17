@@ -87,6 +87,12 @@ public class CN_Slidebar {
             }
         });
 
+        lblChat.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                new AD_Chat().setVisible(true); // Mở form Chat nhưng k đóng form tab
+            }
+        });
+
         lblDX.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 int x = JOptionPane.showConfirmDialog(currentFrame, "Bạn chắc chắn muốn đăng xuất?", "Xác nhận", JOptionPane.YES_NO_OPTION);

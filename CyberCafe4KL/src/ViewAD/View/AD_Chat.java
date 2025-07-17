@@ -70,9 +70,6 @@ public class AD_Chat extends javax.swing.JFrame {
         pnlZoneMessage.setLayout(new BorderLayout());
         pnlZoneMessage.add(scrollPane, BorderLayout.CENTER);
 
-        // Khởi động server chat
-        new Thread(() -> new ChatServer(1902)).start();
-
         // Gửi khi click icon
         lblSend.addMouseListener(new MouseAdapter() {
             @Override
