@@ -18,6 +18,8 @@ public class C2_Chat extends javax.swing.JFrame {
         initComponents();
         setTitle("CyberCafe4KL_Client");
         setResizable(false);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
 
         // Gán icon gửi
         String iconPath = "E:/SU25/BL2/PRO230_DATN/CyberCafe4KL/CyberCafe4KL/src/Assets/Client/Send.png";
@@ -72,7 +74,7 @@ public class C2_Chat extends javax.swing.JFrame {
     }
 
     public void hienThiTinNhan(String nguoiGui, String noiDung, String thoiGian) {
-        appendTinNhan(nguoiGui, noiDung, thoiGian, new Color(51, 51, 255)); // Admin: Xanh
+        appendTinNhan(nguoiGui, noiDung, thoiGian, new Color(153, 255, 0)); // Admin: Xanh
     }
 
     private void appendTinNhan(String ten, String nd, String time, Color color) {
@@ -147,9 +149,9 @@ public class C2_Chat extends javax.swing.JFrame {
         pnlRegisterLayout.setVerticalGroup(
             pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlRegisterLayout.createSequentialGroup()
-                .addGap(35, 35, 35)
+                .addGap(15, 15, 15)
                 .addComponent(lblTittle, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(26, 26, 26)
                 .addComponent(pnlZoneMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(1, 1, 1)
                 .addGroup(pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)

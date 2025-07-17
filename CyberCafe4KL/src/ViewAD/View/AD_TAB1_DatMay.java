@@ -7,6 +7,9 @@ import ViewAD.Code.TAB1_ClickMay;
 import ViewAD.Code.TAB1_LoadSDM;
 import java.awt.*;
 import javax.swing.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -910,7 +913,45 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
     }//GEN-LAST:event_btnTTKActionPerformed
 
     private void btnMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMessageActionPerformed
-        // TODO add your handling code here:
+        String tenMay = lblTenMay.getText().trim();
+        String trangThai = lblTrangThai.getText().trim();
+
+        if (tenMay.isEmpty() || tenMay.equalsIgnoreCase("MÁY")) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một máy.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (!trangThai.equalsIgnoreCase("Đang sử dụng")) {
+            JOptionPane.showMessageDialog(this, "Máy hiện không hoạt động, không thể gửi tin nhắn.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        try (Connection conn = Controller.DBConnection.getConnection()) {
+            String sql = """
+            SELECT TOP 1 A.NameAccount
+            FROM LogAccess L
+            JOIN Account A ON L.IDAccount = A.IDAccount
+            JOIN Computer C ON C.IDComputer = L.IDComputer
+            WHERE C.NameComputer = ?
+            ORDER BY ThoiGianBatDau DESC
+        """;
+
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, tenMay);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String nameAcc = rs.getString("NameAccount");
+                Socket.ChatTargetManager.setTargetNameAccount(nameAcc);
+                new AD_Chat().setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy tài khoản đang dùng máy.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi khi xử lý.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
     }//GEN-LAST:event_btnMessageActionPerformed
 
     public static void main(String args[]) {

@@ -1,11 +1,14 @@
 package ViewAD.View;
 
 import Socket.ChatServer;
-
+import Socket.ChatTargetManager;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalTime;
 
 public class AD_Chat extends javax.swing.JFrame {
@@ -18,6 +21,36 @@ public class AD_Chat extends javax.swing.JFrame {
         instance = this;
         setTitle("CyberCafe4KL_Admin");
         this.setResizable(false);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        // Nếu có máy đang được chọn để nhắn tin
+        if (ChatTargetManager.hasTarget()) {
+            String nameAccount = ChatTargetManager.getTargetNameAccount();
+
+            // Tìm tên máy tương ứng với NameAccount
+            try (Connection conn = Controller.DBConnection.getConnection()) {
+                String sql = """
+            SELECT TOP 1 C.NameComputer
+            FROM LogAccess L
+            JOIN Computer C ON L.IDComputer = C.IDComputer
+            JOIN Account A ON L.IDAccount = A.IDAccount
+            WHERE A.NameAccount = ?
+            ORDER BY L.ThoiGianBatDau DESC
+        """;
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setString(1, nameAccount);
+                ResultSet rs = ps.executeQuery();
+
+                if (rs.next()) {
+                    String tenMay = rs.getString("NameComputer");
+                    lblTittle.setText("CHAT - " + tenMay.toUpperCase());
+                }
+            } catch (Exception e) {
+                lblTittle.setText("CHAT");
+            }
+        } else {
+            lblTittle.setText("CHAT");
+        }
 
         // Gán icon gửi
         String iconPath = "E:/SU25/BL2/PRO230_DATN/CyberCafe4KL/CyberCafe4KL/src/Assets/Client/Send.png";
@@ -73,7 +106,10 @@ public class AD_Chat extends javax.swing.JFrame {
                 doc.insertString(doc.getLength(), "Admin [" + time + "]: " + msg + "\n", adminStyle);
 
                 // Gửi cho client cuối cùng đã gửi
-                String target = ChatServer.lastClientSentMessage;
+                String target = ChatTargetManager.hasTarget()
+                        ? ChatTargetManager.getTargetNameAccount()
+                        : ChatServer.lastClientSentMessage;
+
                 if (target != null) {
                     ChatServer.guiChoClient(target, msg);
                 } else {
@@ -116,6 +152,21 @@ public class AD_Chat extends javax.swing.JFrame {
         txtText = new javax.swing.JTextField();
         pnlZoneMessage = new javax.swing.JPanel();
         lblSend = new javax.swing.JLabel();
+        pnlSender = new javax.swing.JPanel();
+        pnlItem1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        pnlItem2 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        pnlItem3 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        pnlItem5 = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        pnlTittle = new javax.swing.JPanel();
+        lblTittle1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -129,7 +180,7 @@ public class AD_Chat extends javax.swing.JFrame {
         lblTittle.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
         lblTittle.setForeground(new java.awt.Color(255, 255, 255));
         lblTittle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTittle.setText("CHAT");
+        lblTittle.setText("MÁY 1");
 
         pnlZoneMessage.setBackground(new java.awt.Color(30, 30, 47));
 
@@ -141,7 +192,7 @@ public class AD_Chat extends javax.swing.JFrame {
         );
         pnlZoneMessageLayout.setVerticalGroup(
             pnlZoneMessageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 340, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         lblSend.setForeground(new java.awt.Color(153, 255, 255));
@@ -152,22 +203,22 @@ public class AD_Chat extends javax.swing.JFrame {
         pnlRegisterLayout.setHorizontalGroup(
             pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlRegisterLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblTittle, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(pnlRegisterLayout.createSequentialGroup()
                 .addComponent(txtText)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblSend)
                 .addGap(13, 13, 13))
             .addComponent(pnlZoneMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(pnlRegisterLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblTittle, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
+                .addContainerGap())
         );
         pnlRegisterLayout.setVerticalGroup(
             pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlRegisterLayout.createSequentialGroup()
-                .addGap(35, 35, 35)
+                .addGap(15, 15, 15)
                 .addComponent(lblTittle, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(24, 24, 24)
                 .addComponent(pnlZoneMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(1, 1, 1)
                 .addGroup(pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -192,11 +243,198 @@ public class AD_Chat extends javax.swing.JFrame {
                 .addGap(2, 2, 2))
         );
 
+        pnlSender.setBackground(new java.awt.Color(153, 255, 255));
+
+        pnlItem1.setBackground(new java.awt.Color(30, 30, 47));
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(153, 255, 255));
+        jLabel1.setText("HH:mm");
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(153, 255, 255));
+        jLabel2.setText("MÁY X: Order mới");
+
+        javax.swing.GroupLayout pnlItem1Layout = new javax.swing.GroupLayout(pnlItem1);
+        pnlItem1.setLayout(pnlItem1Layout);
+        pnlItem1Layout.setHorizontalGroup(
+            pnlItem1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlItem1Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel1)
+                .addGap(6, 6, 6))
+        );
+        pnlItem1Layout.setVerticalGroup(
+            pnlItem1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlItem1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlItem1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        pnlItem2.setBackground(new java.awt.Color(30, 30, 47));
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(153, 255, 255));
+        jLabel3.setText("HH:mm");
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(153, 255, 255));
+        jLabel4.setText("MÁY X: Order mới");
+
+        javax.swing.GroupLayout pnlItem2Layout = new javax.swing.GroupLayout(pnlItem2);
+        pnlItem2.setLayout(pnlItem2Layout);
+        pnlItem2Layout.setHorizontalGroup(
+            pnlItem2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlItem2Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3)
+                .addGap(6, 6, 6))
+        );
+        pnlItem2Layout.setVerticalGroup(
+            pnlItem2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlItem2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlItem2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        pnlItem3.setBackground(new java.awt.Color(30, 30, 47));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(153, 255, 255));
+        jLabel5.setText("HH:mm");
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(153, 255, 255));
+        jLabel6.setText("MÁY X: Order mới");
+
+        javax.swing.GroupLayout pnlItem3Layout = new javax.swing.GroupLayout(pnlItem3);
+        pnlItem3.setLayout(pnlItem3Layout);
+        pnlItem3Layout.setHorizontalGroup(
+            pnlItem3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlItem3Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel5)
+                .addGap(6, 6, 6))
+        );
+        pnlItem3Layout.setVerticalGroup(
+            pnlItem3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlItem3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlItem3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        pnlItem5.setBackground(new java.awt.Color(30, 30, 47));
+
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(153, 255, 255));
+        jLabel9.setText("HH:mm");
+
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(153, 255, 255));
+        jLabel10.setText("MÁY X: Order mới");
+
+        javax.swing.GroupLayout pnlItem5Layout = new javax.swing.GroupLayout(pnlItem5);
+        pnlItem5.setLayout(pnlItem5Layout);
+        pnlItem5Layout.setHorizontalGroup(
+            pnlItem5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlItem5Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel9)
+                .addGap(6, 6, 6))
+        );
+        pnlItem5Layout.setVerticalGroup(
+            pnlItem5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlItem5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlItem5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        pnlTittle.setBackground(new java.awt.Color(30, 30, 47));
+
+        lblTittle1.setBackground(new java.awt.Color(255, 255, 255));
+        lblTittle1.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
+        lblTittle1.setForeground(new java.awt.Color(153, 255, 255));
+        lblTittle1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTittle1.setText("CHAT");
+
+        javax.swing.GroupLayout pnlTittleLayout = new javax.swing.GroupLayout(pnlTittle);
+        pnlTittle.setLayout(pnlTittleLayout);
+        pnlTittleLayout.setHorizontalGroup(
+            pnlTittleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(pnlTittleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pnlTittleLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(lblTittle1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        pnlTittleLayout.setVerticalGroup(
+            pnlTittleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 84, Short.MAX_VALUE)
+            .addGroup(pnlTittleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pnlTittleLayout.createSequentialGroup()
+                    .addGap(30, 30, 30)
+                    .addComponent(lblTittle1)
+                    .addContainerGap(31, Short.MAX_VALUE)))
+        );
+
+        javax.swing.GroupLayout pnlSenderLayout = new javax.swing.GroupLayout(pnlSender);
+        pnlSender.setLayout(pnlSenderLayout);
+        pnlSenderLayout.setHorizontalGroup(
+            pnlSenderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlSenderLayout.createSequentialGroup()
+                .addGap(2, 2, 2)
+                .addGroup(pnlSenderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlItem1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnlItem2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnlItem3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnlItem5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnlTittle, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(2, 2, 2))
+        );
+        pnlSenderLayout.setVerticalGroup(
+            pnlSenderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSenderLayout.createSequentialGroup()
+                .addGap(2, 2, 2)
+                .addComponent(pnlTittle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(4, 4, 4)
+                .addComponent(pnlItem1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(pnlItem2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(pnlItem3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(pnlItem5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(168, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout pnlMainLayout = new javax.swing.GroupLayout(pnlMain);
         pnlMain.setLayout(pnlMainLayout);
         pnlMainLayout.setHorizontalGroup(
             pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlMainLayout.createSequentialGroup()
+                .addGap(2, 2, 2)
+                .addComponent(pnlSender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
                 .addComponent(pnlMain2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(2, 2, 2))
@@ -206,6 +444,10 @@ public class AD_Chat extends javax.swing.JFrame {
             .addGroup(pnlMainLayout.createSequentialGroup()
                 .addGap(2, 2, 2)
                 .addComponent(pnlMain2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(2, 2, 2))
+            .addGroup(pnlMainLayout.createSequentialGroup()
+                .addGap(2, 2, 2)
+                .addComponent(pnlSender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2))
         );
 
@@ -232,11 +474,29 @@ public class AD_Chat extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel lblSend;
     private javax.swing.JLabel lblTittle;
+    private javax.swing.JLabel lblTittle1;
+    private javax.swing.JPanel pnlItem1;
+    private javax.swing.JPanel pnlItem2;
+    private javax.swing.JPanel pnlItem3;
+    private javax.swing.JPanel pnlItem4;
+    private javax.swing.JPanel pnlItem5;
     private javax.swing.JPanel pnlMain;
     private javax.swing.JPanel pnlMain2;
     private javax.swing.JPanel pnlRegister;
+    private javax.swing.JPanel pnlSender;
+    private javax.swing.JPanel pnlTittle;
     private javax.swing.JPanel pnlZoneMessage;
     private javax.swing.JTextField txtText;
     // End of variables declaration//GEN-END:variables

@@ -64,15 +64,28 @@ public class C1_GiaoDienCho extends JFrame {
             this.setExtendedState(JFrame.MAXIMIZED_BOTH);
             this.setVisible(true);
         }
+
+        // Nếu đăng xuất về lại mà mất tên máy thì khôi phục lại
+        if (CN_BienToanCuc.TenMay == null || CN_BienToanCuc.TenMay.isEmpty()) {
+            CN_BienToanCuc.TenMay = ViewC.Code.CN_XacDinhMayClient.getTenMayClient();
+        }
+
     }
 
     private void CapNhatThoiGian() {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+
         dongHo = new Timer(1000, e -> {
+            // Nếu tên máy đang trống hoặc null → lấy lại từ IP
+            if (CN_BienToanCuc.TenMay == null || CN_BienToanCuc.TenMay.isEmpty()) {
+                CN_BienToanCuc.TenMay = ViewC.Code.CN_XacDinhMayClient.getTenMayClient();
+            }
+
             String timeStr = sdf.format(new Date());
-            String tenMay = CN_BienToanCuc.TenMay.equals("") ? "MÁY ???" : CN_BienToanCuc.TenMay;
+            String tenMay = CN_BienToanCuc.TenMay != null ? CN_BienToanCuc.TenMay : "MÁY ???";
             lblMay.setText(tenMay + ", " + timeStr);
         });
+
         dongHo.start();
     }
 
@@ -140,6 +153,7 @@ public class C1_GiaoDienCho extends JFrame {
         };
         txtUser.addKeyListener(resetTimer);
         txtPass.addKeyListener(resetTimer);
+        panelLogin.getRootPane().setDefaultButton(btnLogin); // Gán phím enter (Enter = Login)
     }
 
     private void HienThiLogin() {

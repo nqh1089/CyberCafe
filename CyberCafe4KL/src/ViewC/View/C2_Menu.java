@@ -4,6 +4,7 @@ import Controller.DBConnection;
 import ViewC.Code.CN_BienToanCuc;
 import ViewC.Code.C2_SetImage;
 import ViewC.Code.C2_ClientIcons;
+import ViewC.Code.CN_LogoutMay;
 
 import javax.swing.*;
 import java.awt.*;
@@ -97,11 +98,8 @@ public class C2_Menu extends JFrame {
                 JOptionPane.showMessageDialog(this, "Chức năng Order đang phát triển");
                 break;
             case "dangxuat":
-                int confirm = JOptionPane.showConfirmDialog(this, "Bạn chắc chắn muốn đăng xuất?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-                if (confirm == JOptionPane.YES_OPTION) {
-                    new C1_GiaoDienCho().setVisible(true);
-                    this.dispose();
-                }
+                CN_LogoutMay.logoutMay();
+                this.dispose();
                 break;
             case "matkhau":
                 JOptionPane.showMessageDialog(this, "Chức năng Đổi mật khẩu đang phát triển");

@@ -13,6 +13,8 @@ public class AD_LoginForm extends javax.swing.JFrame {
         initComponents();
         this.setResizable(false); // Không cho phóng to
         setTitle("CyberCafe4KL");
+
+        getRootPane().setDefaultButton(btnLogin); // Gán enter cho phím login
     }
 
     @SuppressWarnings("unchecked")
@@ -209,7 +211,15 @@ public class AD_LoginForm extends javax.swing.JFrame {
                 }
 
                 if (role.equalsIgnoreCase("ADMIN") || role.equalsIgnoreCase("BOSS")) {
+                    // Gán thông tin đnhap
                     CN_TaiKhoanDangNhap.setTenTaiKhoan(name);
+                    // Khởi động ChatServer nếu chưa có
+                    if (Socket.ChatServer.instance == null) {
+                        Socket.ChatServer server = new Socket.ChatServer(1902);
+                        Socket.ChatServer.instance = server;
+                        new Thread(server).start();
+                    }
+                    //Mở giao diện chính (TAB1)
                     new ViewAD.View.AD_TAB1_DatMay().setVisible(true);
                     this.dispose();
                 } else {
