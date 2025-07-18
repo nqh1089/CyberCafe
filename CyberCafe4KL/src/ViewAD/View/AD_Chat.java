@@ -2,6 +2,7 @@ package ViewAD.View;
 
 import Socket.ChatServer;
 import Socket.ChatTargetManager;
+import ViewAD.Code.AD_Chat_pnlSender;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
@@ -23,6 +24,8 @@ public class AD_Chat extends javax.swing.JFrame {
         this.setResizable(false);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
+        
+//        AD_Chat_pnlSender.LoadDanhSachChat(pnlSender);
         // Nếu có máy đang được chọn để nhắn tin
         if (ChatTargetManager.hasTarget()) {
             String nameAccount = ChatTargetManager.getTargetNameAccount();
@@ -138,30 +141,54 @@ public class AD_Chat extends javax.swing.JFrame {
         }
     }
 
+    public class TestChatDanhSach {
+
+        public static void main(String[] args) {
+            JFrame f = new JFrame("Test Danh sách máy");
+            f.setSize(270, 700);
+            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            JPanel pnlSender = new JPanel(null);
+            pnlSender.setPreferredSize(new Dimension(245, 1000));
+            pnlSender.setBackground(Color.CYAN);
+
+            JScrollPane scroll = new JScrollPane(pnlSender);
+            scroll.setBounds(0, 0, 255, 700);
+            scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+            scroll.setBorder(null);
+
+            f.setLayout(null);
+            f.add(scroll);
+
+            AD_Chat_pnlSender.LoadDanhSachChat(pnlSender);
+            f.setVisible(true);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         pnlMain = new javax.swing.JPanel();
-        pnlMain2 = new javax.swing.JPanel();
+        pnlMainMessage = new javax.swing.JPanel();
         pnlRegister = new javax.swing.JPanel();
-        lblTittle = new javax.swing.JLabel();
         txtText = new javax.swing.JTextField();
         pnlZoneMessage = new javax.swing.JPanel();
         lblSend = new javax.swing.JLabel();
+        lblTittle = new javax.swing.JLabel();
         pnlSender = new javax.swing.JPanel();
         pnlItem1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        lblTime1 = new javax.swing.JLabel();
+        lblMay1 = new javax.swing.JLabel();
         pnlItem2 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        lblTime2 = new javax.swing.JLabel();
+        lblMay2 = new javax.swing.JLabel();
         pnlItem3 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        pnlItem5 = new javax.swing.JPanel();
+        lblMay3 = new javax.swing.JLabel();
+        pnlItem4 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
+        lblMay4 = new javax.swing.JLabel();
         pnlTittle = new javax.swing.JPanel();
         lblTittle1 = new javax.swing.JLabel();
 
@@ -169,15 +196,9 @@ public class AD_Chat extends javax.swing.JFrame {
 
         pnlMain.setBackground(new java.awt.Color(51, 51, 255));
 
-        pnlMain2.setBackground(new java.awt.Color(153, 255, 153));
+        pnlMainMessage.setBackground(new java.awt.Color(153, 255, 153));
 
         pnlRegister.setBackground(new java.awt.Color(30, 30, 47));
-
-        lblTittle.setBackground(new java.awt.Color(255, 255, 255));
-        lblTittle.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
-        lblTittle.setForeground(new java.awt.Color(255, 255, 255));
-        lblTittle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTittle.setText("MÁY 1");
 
         pnlZoneMessage.setBackground(new java.awt.Color(30, 30, 47));
 
@@ -195,27 +216,33 @@ public class AD_Chat extends javax.swing.JFrame {
         lblSend.setForeground(new java.awt.Color(153, 255, 255));
         lblSend.setText("Send");
 
+        lblTittle.setBackground(new java.awt.Color(255, 255, 255));
+        lblTittle.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
+        lblTittle.setForeground(new java.awt.Color(153, 255, 255));
+        lblTittle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTittle.setText("Máy X");
+
         javax.swing.GroupLayout pnlRegisterLayout = new javax.swing.GroupLayout(pnlRegister);
         pnlRegister.setLayout(pnlRegisterLayout);
         pnlRegisterLayout.setHorizontalGroup(
             pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlRegisterLayout.createSequentialGroup()
-                .addComponent(txtText)
+                .addComponent(txtText, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblSend)
                 .addGap(13, 13, 13))
             .addComponent(pnlZoneMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(pnlRegisterLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblTittle, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
+                .addComponent(lblTittle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         pnlRegisterLayout.setVerticalGroup(
             pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlRegisterLayout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addComponent(lblTittle, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24)
+                .addGap(23, 23, 23)
+                .addComponent(lblTittle)
+                .addGap(28, 28, 28)
                 .addComponent(pnlZoneMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(1, 1, 1)
                 .addGroup(pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -223,18 +250,18 @@ public class AD_Chat extends javax.swing.JFrame {
                     .addComponent(lblSend)))
         );
 
-        javax.swing.GroupLayout pnlMain2Layout = new javax.swing.GroupLayout(pnlMain2);
-        pnlMain2.setLayout(pnlMain2Layout);
-        pnlMain2Layout.setHorizontalGroup(
-            pnlMain2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlMain2Layout.createSequentialGroup()
+        javax.swing.GroupLayout pnlMainMessageLayout = new javax.swing.GroupLayout(pnlMainMessage);
+        pnlMainMessage.setLayout(pnlMainMessageLayout);
+        pnlMainMessageLayout.setHorizontalGroup(
+            pnlMainMessageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlMainMessageLayout.createSequentialGroup()
                 .addGap(2, 2, 2)
                 .addComponent(pnlRegister, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(2, 2, 2))
         );
-        pnlMain2Layout.setVerticalGroup(
-            pnlMain2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlMain2Layout.createSequentialGroup()
+        pnlMainMessageLayout.setVerticalGroup(
+            pnlMainMessageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlMainMessageLayout.createSequentialGroup()
                 .addGap(2, 2, 2)
                 .addComponent(pnlRegister, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(2, 2, 2))
@@ -244,13 +271,13 @@ public class AD_Chat extends javax.swing.JFrame {
 
         pnlItem1.setBackground(new java.awt.Color(30, 30, 47));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(153, 255, 255));
-        jLabel1.setText("HH:mm");
+        lblTime1.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
+        lblTime1.setForeground(new java.awt.Color(153, 255, 255));
+        lblTime1.setText("HH:mm");
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(153, 255, 255));
-        jLabel2.setText("MÁY X: Order mới");
+        lblMay1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblMay1.setForeground(new java.awt.Color(153, 255, 255));
+        lblMay1.setText("MÁY X: Order mới");
 
         javax.swing.GroupLayout pnlItem1Layout = new javax.swing.GroupLayout(pnlItem1);
         pnlItem1.setLayout(pnlItem1Layout);
@@ -258,30 +285,30 @@ public class AD_Chat extends javax.swing.JFrame {
             pnlItem1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlItem1Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel1)
-                .addGap(6, 6, 6))
+                .addComponent(lblMay1, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblTime1)
+                .addContainerGap())
         );
         pnlItem1Layout.setVerticalGroup(
             pnlItem1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlItem1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlItem1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblMay1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblTime1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pnlItem2.setBackground(new java.awt.Color(30, 30, 47));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(153, 255, 255));
-        jLabel3.setText("HH:mm");
+        lblTime2.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
+        lblTime2.setForeground(new java.awt.Color(153, 255, 255));
+        lblTime2.setText("HH:mm");
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(153, 255, 255));
-        jLabel4.setText("MÁY X: Order mới");
+        lblMay2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblMay2.setForeground(new java.awt.Color(153, 255, 255));
+        lblMay2.setText("MÁY X: Order mới");
 
         javax.swing.GroupLayout pnlItem2Layout = new javax.swing.GroupLayout(pnlItem2);
         pnlItem2.setLayout(pnlItem2Layout);
@@ -289,30 +316,30 @@ public class AD_Chat extends javax.swing.JFrame {
             pnlItem2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlItem2Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
-                .addGap(6, 6, 6))
+                .addComponent(lblMay2, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblTime2)
+                .addContainerGap())
         );
         pnlItem2Layout.setVerticalGroup(
             pnlItem2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlItem2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlItem2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblMay2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblTime2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pnlItem3.setBackground(new java.awt.Color(30, 30, 47));
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(153, 255, 255));
         jLabel5.setText("HH:mm");
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(153, 255, 255));
-        jLabel6.setText("MÁY X: Order mới");
+        lblMay3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblMay3.setForeground(new java.awt.Color(153, 255, 255));
+        lblMay3.setText("MÁY X: Order mới");
 
         javax.swing.GroupLayout pnlItem3Layout = new javax.swing.GroupLayout(pnlItem3);
         pnlItem3.setLayout(pnlItem3Layout);
@@ -320,48 +347,48 @@ public class AD_Chat extends javax.swing.JFrame {
             pnlItem3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlItem3Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblMay3, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel5)
-                .addGap(6, 6, 6))
+                .addContainerGap())
         );
         pnlItem3Layout.setVerticalGroup(
             pnlItem3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlItem3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlItem3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblMay3, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        pnlItem5.setBackground(new java.awt.Color(30, 30, 47));
+        pnlItem4.setBackground(new java.awt.Color(30, 30, 47));
 
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(153, 255, 255));
         jLabel9.setText("HH:mm");
 
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(153, 255, 255));
-        jLabel10.setText("MÁY X: Order mới");
+        lblMay4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblMay4.setForeground(new java.awt.Color(153, 255, 255));
+        lblMay4.setText("MÁY X: Order mới");
 
-        javax.swing.GroupLayout pnlItem5Layout = new javax.swing.GroupLayout(pnlItem5);
-        pnlItem5.setLayout(pnlItem5Layout);
-        pnlItem5Layout.setHorizontalGroup(
-            pnlItem5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlItem5Layout.createSequentialGroup()
+        javax.swing.GroupLayout pnlItem4Layout = new javax.swing.GroupLayout(pnlItem4);
+        pnlItem4.setLayout(pnlItem4Layout);
+        pnlItem4Layout.setHorizontalGroup(
+            pnlItem4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlItem4Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblMay4, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel9)
-                .addGap(6, 6, 6))
+                .addContainerGap())
         );
-        pnlItem5Layout.setVerticalGroup(
-            pnlItem5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlItem5Layout.createSequentialGroup()
+        pnlItem4Layout.setVerticalGroup(
+            pnlItem4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlItem4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(pnlItem5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(pnlItem4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblMay4, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -405,7 +432,7 @@ public class AD_Chat extends javax.swing.JFrame {
                     .addComponent(pnlItem1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pnlItem2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pnlItem3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pnlItem5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnlItem4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pnlTittle, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(2, 2, 2))
         );
@@ -421,7 +448,7 @@ public class AD_Chat extends javax.swing.JFrame {
                 .addGap(2, 2, 2)
                 .addComponent(pnlItem3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
-                .addComponent(pnlItem5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(pnlItem4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(168, Short.MAX_VALUE))
         );
 
@@ -433,18 +460,16 @@ public class AD_Chat extends javax.swing.JFrame {
                 .addGap(2, 2, 2)
                 .addComponent(pnlSender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
-                .addComponent(pnlMain2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(pnlMainMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(2, 2, 2))
         );
         pnlMainLayout.setVerticalGroup(
             pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlMainLayout.createSequentialGroup()
                 .addGap(2, 2, 2)
-                .addComponent(pnlMain2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(2, 2, 2))
-            .addGroup(pnlMainLayout.createSequentialGroup()
-                .addGap(2, 2, 2)
-                .addComponent(pnlSender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlMainMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnlSender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(2, 2, 2))
         );
 
@@ -471,26 +496,23 @@ public class AD_Chat extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel lblMay1;
+    private javax.swing.JLabel lblMay2;
+    private javax.swing.JLabel lblMay3;
+    private javax.swing.JLabel lblMay4;
     private javax.swing.JLabel lblSend;
+    private javax.swing.JLabel lblTime1;
+    private javax.swing.JLabel lblTime2;
     private javax.swing.JLabel lblTittle;
     private javax.swing.JLabel lblTittle1;
     private javax.swing.JPanel pnlItem1;
     private javax.swing.JPanel pnlItem2;
     private javax.swing.JPanel pnlItem3;
     private javax.swing.JPanel pnlItem4;
-    private javax.swing.JPanel pnlItem5;
     private javax.swing.JPanel pnlMain;
-    private javax.swing.JPanel pnlMain2;
+    private javax.swing.JPanel pnlMainMessage;
     private javax.swing.JPanel pnlRegister;
     private javax.swing.JPanel pnlSender;
     private javax.swing.JPanel pnlTittle;

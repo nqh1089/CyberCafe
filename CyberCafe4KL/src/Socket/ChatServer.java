@@ -15,6 +15,7 @@ public class ChatServer implements Runnable {
     public ChatServer(int port) {
         this.port = port;
 
+        // Khởi tạo ở login r, k cần khởi tạo lại ở form này
         // Nếu đã chạy rồi thì không khởi tạo lại nữa
         if (instance != null) {
             System.out.println("ChatServer đã chạy trước đó.");

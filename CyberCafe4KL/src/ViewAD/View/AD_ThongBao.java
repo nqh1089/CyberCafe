@@ -1,18 +1,18 @@
-package ViewAD.Code;
+package ViewAD.View;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 import javax.swing.*;
 
-public class CN_Dropdown extends javax.swing.JFrame {
+public class AD_ThongBao extends javax.swing.JFrame {
 
-    public CN_Dropdown() {
+    public AD_ThongBao() {
         initComponents();
     }
 
     // Constructor dùng khi mở dropdown từ nút Chat / TB
-    public CN_Dropdown(JFrame parent, String tieuDe, List<String[]> danhSachThongTin, Point viTriNut) {
+    public AD_ThongBao(JFrame parent, String tieuDe, List<String[]> danhSachThongTin, Point viTriNut) {
         super();
         initComponents();
 
@@ -95,7 +95,7 @@ public class CN_Dropdown extends javax.swing.JFrame {
         lblTittle.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
         lblTittle.setForeground(new java.awt.Color(153, 255, 255));
         lblTittle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTittle.setText("CHAT");
+        lblTittle.setText("Thông Báo");
 
         javax.swing.GroupLayout pnlTittleLayout = new javax.swing.GroupLayout(pnlTittle);
         pnlTittle.setLayout(pnlTittleLayout);
@@ -120,7 +120,7 @@ public class CN_Dropdown extends javax.swing.JFrame {
 
         pnlItem1.setBackground(new java.awt.Color(30, 30, 47));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(153, 255, 255));
         jLabel1.setText("HH:mm");
 
@@ -151,13 +151,13 @@ public class CN_Dropdown extends javax.swing.JFrame {
 
         pnlItem2.setBackground(new java.awt.Color(30, 30, 47));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(153, 255, 255));
         jLabel3.setText("HH:mm");
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(153, 255, 255));
-        jLabel4.setText("MÁY X: Order mới");
+        jLabel4.setText("MÁY X: Đã đăng xuất");
 
         javax.swing.GroupLayout pnlItem2Layout = new javax.swing.GroupLayout(pnlItem2);
         pnlItem2.setLayout(pnlItem2Layout);
@@ -165,7 +165,7 @@ public class CN_Dropdown extends javax.swing.JFrame {
             pnlItem2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlItem2Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3)
                 .addGap(31, 31, 31))
@@ -182,13 +182,13 @@ public class CN_Dropdown extends javax.swing.JFrame {
 
         pnlItem3.setBackground(new java.awt.Color(30, 30, 47));
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(153, 255, 255));
         jLabel5.setText("HH:mm");
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(153, 255, 255));
-        jLabel6.setText("MÁY X: Order mới");
+        jLabel6.setText("MÁY X: Đã đăng xuất");
 
         javax.swing.GroupLayout pnlItem3Layout = new javax.swing.GroupLayout(pnlItem3);
         pnlItem3.setLayout(pnlItem3Layout);
@@ -196,7 +196,7 @@ public class CN_Dropdown extends javax.swing.JFrame {
             pnlItem3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlItem3Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5)
                 .addGap(31, 31, 31))
@@ -213,7 +213,7 @@ public class CN_Dropdown extends javax.swing.JFrame {
 
         pnlItem4.setBackground(new java.awt.Color(30, 30, 47));
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(153, 255, 255));
         jLabel7.setText("HH:mm");
 
@@ -227,7 +227,7 @@ public class CN_Dropdown extends javax.swing.JFrame {
             pnlItem4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlItem4Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+                .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel7)
                 .addGap(31, 31, 31))
@@ -302,20 +302,21 @@ public class CN_Dropdown extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CN_Dropdown.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AD_ThongBao.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CN_Dropdown.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AD_ThongBao.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CN_Dropdown.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AD_ThongBao.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(CN_Dropdown.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AD_ThongBao.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new CN_Dropdown().setVisible(true);
+                new AD_ThongBao().setVisible(true);
             }
         });
     }

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Cilent {
+public class Client {
     public static void main(String[] args) {
         try {
             Socket socket = new Socket("localhost", 3333);
@@ -22,7 +22,7 @@ public class Cilent {
                         System.out.println("Admin: " + response);
                     }
                 } catch (IOException e) {
-                    System.out.println("🛑 Server đã ngắt kết nối.");
+                    System.out.println("Server đã ngắt kết nối.");
                 }
             });
             receiveThread.start();
@@ -33,7 +33,7 @@ public class Cilent {
                 dataOutputStream.writeUTF(input);
                 dataOutputStream.flush();
                 if (input.equals("!end")) {
-                    System.out.println("🛑 Admin đã ngắt kết nối.");
+                    System.out.println("Admin đã ngắt kết nối.");
                     socket.close(); // Đảm bảo đóng socket để readerThread cũng kết thúc
                     break;
                 }
