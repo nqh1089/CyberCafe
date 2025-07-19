@@ -1,6 +1,6 @@
 package ViewC.View;
 
-import Socket.ChatClient;
+import Socket.CM_CN_ChatClientHandler; // Thay đổi import
 import ViewC.Code.CN_BienToanCuc;
 
 import javax.swing.*;
@@ -11,8 +11,10 @@ import java.time.LocalTime;
 
 public class C2_Chat extends javax.swing.JFrame {
 
-    private ChatClient clientSocket;
+    private CM_CN_ChatClientHandler clientSocketHandler;
     private JTextPane txtChat;
+
+    private static final int ADMIN_ACCOUNT_ID = 1;
 
     public C2_Chat() {
         initComponents();
@@ -20,15 +22,15 @@ public class C2_Chat extends javax.swing.JFrame {
         setResizable(false);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-
-        // Gán icon gửi
         String iconPath = "E:/SU25/BL2/PRO230_DATN/CyberCafe4KL/CyberCafe4KL/src/Assets/Client/Send.png";
         ImageIcon icon = new ImageIcon(iconPath);
+        if (icon.getImageLoadStatus() == MediaTracker.ERRORED) {
+            System.err.println("Lỗi tải icon Send.png. Kiểm tra đường dẫn: " + iconPath);
+        }
         Image img = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         lblSend.setIcon(new ImageIcon(img));
         lblSend.setText("");
 
-        // Tạo vùng chat
         txtChat = new JTextPane();
         txtChat.setEditable(false);
         txtChat.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -38,12 +40,19 @@ public class C2_Chat extends javax.swing.JFrame {
         pnlZoneMessage.setLayout(new BorderLayout());
         pnlZoneMessage.add(scrollPane, BorderLayout.CENTER);
 
-        // Tên thật & tên hiển thị
-        String nameAccount = CN_BienToanCuc.TenTaiKhoan; // dùng để gửi & lưu DB
-        String tenMay = "Máy " + CN_BienToanCuc.IDComputer; // dùng để hiển thị
-        clientSocket = new ChatClient("26.150.90.74", 1902, nameAccount, tenMay, this::hienThiTinNhan);
+        // Khởi tạo CM_CN_ChatClientHandler
+        clientSocketHandler = new CM_CN_ChatClientHandler("26.150.90.74", 1902,
+                this::hienThiTinNhan);
 
-        // Gửi bằng chuột
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (clientSocketHandler != null) {
+                    clientSocketHandler.disconnect();
+                }
+            }
+        });
+
         lblSend.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -51,12 +60,11 @@ public class C2_Chat extends javax.swing.JFrame {
             }
         });
 
-        // Gửi bằng Enter
         txtText.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    e.consume(); // chặn xuống dòng
+                    e.consume();
                     guiTinNhan();
                 }
             }
@@ -66,23 +74,37 @@ public class C2_Chat extends javax.swing.JFrame {
     private void guiTinNhan() {
         String msg = txtText.getText().trim();
         if (!msg.isEmpty()) {
-            clientSocket.guiTinNhan(msg);
-            String time = LocalTime.now().withNano(0).toString().substring(0, 5);
-            appendTinNhan(clientSocket.getTenHienThi(), msg, time, new Color(204, 255, 255)); // Client: Cyan
-            txtText.setText("");
+            if (clientSocketHandler != null && clientSocketHandler.isConnected()) {
+                clientSocketHandler.sendChatMessage(msg);
+                String time = LocalTime.now().withNano(0).toString().substring(0, 5);
+                appendTinNhan(CN_BienToanCuc.TenTaiKhoan + " (Bạn)", msg, time, new Color(204, 255, 255));
+                txtText.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Không thể gửi tin nhắn: Kết nối đến Admin chưa sẵn sàng.", "Lỗi", JOptionPane.WARNING_MESSAGE);
+            }
         }
     }
 
-    public void hienThiTinNhan(String nguoiGui, String noiDung, String thoiGian) {
-        appendTinNhan(nguoiGui, noiDung, thoiGian, new Color(153, 255, 0)); // Admin: Xanh
+    public void hienThiTinNhan(String[] messageData) {
+        SwingUtilities.invokeLater(() -> {
+            String nguoiGui = messageData[0];
+            String noiDung = messageData[1];
+            String thoiGian = messageData[2];
+            appendTinNhan(nguoiGui, noiDung, thoiGian, new Color(153, 255, 0));
+        });
     }
 
-    private void appendTinNhan(String ten, String nd, String time, Color color) {
+    private void appendTinNhan(String sender, String content, String time, Color color) {
         StyledDocument doc = txtChat.getStyledDocument();
         try {
-            Style style = txtChat.addStyle("style", null);
+            Style style = txtChat.addStyle("ChatStyle", null);
             StyleConstants.setForeground(style, color);
-            doc.insertString(doc.getLength(), ten + " [" + time + "]: " + nd + "\n", style);
+
+            doc.insertString(doc.getLength(), sender + " [" + time + "]: ", style);
+
+            StyleConstants.setForeground(style, Color.WHITE);
+            doc.insertString(doc.getLength(), content + "\n", style);
+
             txtChat.setCaretPosition(doc.getLength());
         } catch (BadLocationException e) {
             e.printStackTrace();
@@ -149,7 +171,7 @@ public class C2_Chat extends javax.swing.JFrame {
         pnlRegisterLayout.setVerticalGroup(
             pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlRegisterLayout.createSequentialGroup()
-                .addGap(15, 15, 15)
+                .addGap(20, 20, 20)
                 .addComponent(lblTittle, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(26, 26, 26)
                 .addComponent(pnlZoneMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -206,6 +228,7 @@ public class C2_Chat extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
