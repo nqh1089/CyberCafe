@@ -2,7 +2,7 @@ package ViewAD.View;
 
 import Socket.ChatServer;
 import Socket.ChatTargetManager;
-import ViewAD.Code.AD_Chat_pnlSender;
+import ViewAD.Code.CN_ChatAdmin;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
@@ -23,8 +23,9 @@ public class AD_Chat extends javax.swing.JFrame {
         setTitle("CyberCafe4KL_Admin");
         this.setResizable(false);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
         
+        CN_ChatAdmin.HienThiGiaoDien(pnlMain);
+
 //        AD_Chat_pnlSender.LoadDanhSachChat(pnlSender);
         // Nếu có máy đang được chọn để nhắn tin
         if (ChatTargetManager.hasTarget()) {
@@ -138,30 +139,6 @@ public class AD_Chat extends javax.swing.JFrame {
             txtChat.setCaretPosition(doc.getLength()); // Scroll cuối
         } catch (BadLocationException e) {
             e.printStackTrace();
-        }
-    }
-
-    public class TestChatDanhSach {
-
-        public static void main(String[] args) {
-            JFrame f = new JFrame("Test Danh sách máy");
-            f.setSize(270, 700);
-            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-            JPanel pnlSender = new JPanel(null);
-            pnlSender.setPreferredSize(new Dimension(245, 1000));
-            pnlSender.setBackground(Color.CYAN);
-
-            JScrollPane scroll = new JScrollPane(pnlSender);
-            scroll.setBounds(0, 0, 255, 700);
-            scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-            scroll.setBorder(null);
-
-            f.setLayout(null);
-            f.add(scroll);
-
-            AD_Chat_pnlSender.LoadDanhSachChat(pnlSender);
-            f.setVisible(true);
         }
     }
 
