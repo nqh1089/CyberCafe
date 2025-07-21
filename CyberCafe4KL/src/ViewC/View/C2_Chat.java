@@ -1,114 +1,200 @@
 package ViewC.View;
 
-import Socket.CM_CN_ChatClientHandler; // Thay đổi import
+import Socket.NC_ChatClient;
+import Socket.NC_Message;
 import ViewC.Code.CN_BienToanCuc;
 
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.time.LocalTime;
+import java.util.Date;
 
 public class C2_Chat extends javax.swing.JFrame {
 
-    private CM_CN_ChatClientHandler clientSocketHandler;
-    private JTextPane txtChat;
-
-    private static final int ADMIN_ACCOUNT_ID = 1;
+    // Khai báo NC_ChatClient
+    private NC_ChatClient chatClient;
+    // Khai báo JTextPane để hiển thị tin nhắn
+    private JTextPane chatDisplayPane;
+    private StyledDocument doc;
 
     public C2_Chat() {
         initComponents();
-        setTitle("CyberCafe4KL_Client");
+        setTitle("CyberCafe4KL_Client - Máy: " + CN_BienToanCuc.TenMay); // Đặt tiêu đề rõ ràng hơn
         setResizable(false);
+        // Thay đổi DefaultCloseOperation để xử lý ngắt kết nối khi đóng cửa sổ
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
+        // Gán icon gửi
         String iconPath = "E:/SU25/BL2/PRO230_DATN/CyberCafe4KL/CyberCafe4KL/src/Assets/Client/Send.png";
         ImageIcon icon = new ImageIcon(iconPath);
-        if (icon.getImageLoadStatus() == MediaTracker.ERRORED) {
-            System.err.println("Lỗi tải icon Send.png. Kiểm tra đường dẫn: " + iconPath);
-        }
         Image img = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         lblSend.setIcon(new ImageIcon(img));
         lblSend.setText("");
 
-        txtChat = new JTextPane();
-        txtChat.setEditable(false);
-        txtChat.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        txtChat.setBackground(new Color(30, 30, 47));
-        txtChat.setForeground(Color.WHITE);
-        JScrollPane scrollPane = new JScrollPane(txtChat);
+        // --- Khởi tạo và tích hợp JTextPane vào pnlZoneMessage (phần này vẫn nằm trong constructor) ---
+        chatDisplayPane = new JTextPane();
+        chatDisplayPane.setEditable(false); // Không cho phép chỉnh sửa trực tiếp
+        doc = chatDisplayPane.getStyledDocument(); // Lấy StyledDocument để định dạng văn bản
+
+        // Tạo một JScrollPane để cuộn nội dung chatDisplayPane
+        JScrollPane scrollPane = new JScrollPane(chatDisplayPane);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        // Đảm bảo pnlZoneMessage sử dụng BorderLayout để JScrollPane lấp đầy
         pnlZoneMessage.setLayout(new BorderLayout());
         pnlZoneMessage.add(scrollPane, BorderLayout.CENTER);
+        // --- Kết thúc tích hợp JTextPane ---
 
-        // Khởi tạo CM_CN_ChatClientHandler
-        clientSocketHandler = new CM_CN_ChatClientHandler("26.150.90.74", 1902,
-                this::hienThiTinNhan);
+        // --- ĐẶT MÀU NỀN CHO KHU VỰC HIỂN THỊ TIN NHẮN TẠI ĐÂY (NGOÀI initComponents) ---
+        // Đặt màu nền cho chính JTextPane
+        chatDisplayPane.setBackground(new java.awt.Color(30, 30, 47));
+        // Đặt màu nền cho viewport của JScrollPane (phần nền mà nội dung chat sẽ hiển thị)
+        scrollPane.getViewport().setBackground(new java.awt.Color(30, 30, 47));
+        // Đặt màu nền cho pnlZoneMessage (mặc dù JScrollPane sẽ che phần lớn nó, nhưng tốt cho sự nhất quán)
+        pnlZoneMessage.setBackground(new java.awt.Color(30, 30, 47));
+        // --- KẾT THÚC PHẦN ĐẶT MÀU NỀN ---
 
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                if (clientSocketHandler != null) {
-                    clientSocketHandler.disconnect();
-                }
-            }
-        });
 
+        // Khởi tạo và kết nối NC_ChatClient
+        // Đảm bảo IDComputer và TenMay đã được thiết lập từ CN_BienToanCuc
+        if (CN_BienToanCuc.IDComputer == -1 || CN_BienToanCuc.TenMay.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Thông tin máy tính chưa được thiết lập. Vui lòng kiểm tra CN_BienToanCuc.", "Lỗi khởi tạo", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        chatClient = new NC_ChatClient(CN_BienToanCuc.IDComputer, CN_BienToanCuc.TenMay);
+
+        // Đặt callback để nhận tin nhắn từ Admin
+        chatClient.setMessageReceiver(this::displayMessage);
+
+        // Đặt callback để cập nhật trạng thái (tùy chọn, có thể hiển thị trong console hoặc một label nhỏ)
+        chatClient.setStatusUpdater(this::updateConnectionStatus);
+
+        chatClient.connect(); // Kết nối tới server
+
+        // Thêm Listener cho nút gửi (lblSend)
         lblSend.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                guiTinNhan();
+                sendMessage();
             }
         });
 
-        txtText.addKeyListener(new KeyAdapter() {
+        // Thêm Listener cho trường nhập văn bản (txtText) khi nhấn Enter
+        txtText.addActionListener(new ActionListener() {
             @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    e.consume();
-                    guiTinNhan();
+            public void actionPerformed(ActionEvent e) {
+                sendMessage();
+            }
+        });
+
+        // Thêm WindowListener để xử lý ngắt kết nối khi đóng cửa sổ
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (chatClient != null && chatClient.isConnected()) {
+                    // Nếu tài khoản đang đăng nhập, gửi logout trước khi disconnect
+                    if (CN_BienToanCuc.IDAccount != -1) {
+                        chatClient.logoutAccount();
+                    }
+                    // Gửi thông báo CLIENT_DISCONNECT và đóng kết nối
+                    chatClient.disconnect("Cửa sổ chat Client đóng.");
                 }
             }
         });
+
+        SwingUtilities.invokeLater(() -> {
+            try {
+                // Đợi một chút để kết nối ổn định (không phải cách lý tưởng cho ứng dụng lớn)
+                Thread.sleep(1000);
+                if (chatClient.isConnected() && CN_BienToanCuc.IDAccount != -1) {
+                    chatClient.loginAccount(CN_BienToanCuc.IDAccount, CN_BienToanCuc.TenTaiKhoan);
+                }
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+        });
     }
 
-    private void guiTinNhan() {
-        String msg = txtText.getText().trim();
-        if (!msg.isEmpty()) {
-            if (clientSocketHandler != null && clientSocketHandler.isConnected()) {
-                clientSocketHandler.sendChatMessage(msg);
-                String time = LocalTime.now().withNano(0).toString().substring(0, 5);
-                appendTinNhan(CN_BienToanCuc.TenTaiKhoan + " (Bạn)", msg, time, new Color(204, 255, 255));
-                txtText.setText("");
+    // Phương thức hiển thị tin nhắn trên JTextPane
+    private void displayMessage(NC_Message message) {
+        SwingUtilities.invokeLater(() -> {
+            SimpleAttributeSet style = new SimpleAttributeSet();
+            String textToDisplay;
+
+            // Kiểm tra loại tin nhắn và ID người gửi/người nhận
+            if (message.getType() == NC_Message.NC_MessageType.CHAT) {
+                if (message.getSenderId() == CN_BienToanCuc.IDAccount) {
+                    // Tin nhắn gửi đi (từ client này)
+                    StyleConstants.setForeground(style, new Color(51, 255, 255)); // Xanh lam
+                    StyleConstants.setAlignment(style, StyleConstants.ALIGN_RIGHT);
+                    textToDisplay = "Bạn (" + message.getSenderName() + ") : " + message.getContent() + "\n";
+                } else if (message.getSenderId() == 0 && message.getSenderName().equals("Admin")) {
+                    // Tin nhắn từ Admin (senderId = 0, senderName = "Admin" theo logic của bạn)
+                    StyleConstants.setForeground(style, new Color(153, 255, 0)); // Xanh lá cây (Admin)
+                    StyleConstants.setAlignment(style, StyleConstants.ALIGN_LEFT);
+                    textToDisplay = message.getSenderName() + ": " + message.getContent() + "\n";
+                } else {
+                    // Tin nhắn từ các nguồn khác (nếu có, ví dụ hệ thống)
+                    StyleConstants.setForeground(style, Color.WHITE); // Mặc định trắng
+                    StyleConstants.setAlignment(style, StyleConstants.ALIGN_LEFT);
+                    textToDisplay = message.getSenderName() + ": " + message.getContent() + "\n";
+                }
             } else {
-                JOptionPane.showMessageDialog(this, "Không thể gửi tin nhắn: Kết nối đến Admin chưa sẵn sàng.", "Lỗi", JOptionPane.WARNING_MESSAGE);
+                // Các loại tin nhắn trạng thái hoặc hệ thống
+                StyleConstants.setForeground(style, Color.YELLOW); // Màu vàng cho thông báo hệ thống
+                StyleConstants.setAlignment(style, StyleConstants.ALIGN_CENTER);
+                textToDisplay = "[" + message.getType() + "] " + message.getContent() + "\n";
+            }
+
+            try {
+                doc.insertString(doc.getLength(), textToDisplay, style);
+                // Cuộn xuống cuối
+                chatDisplayPane.setCaretPosition(doc.getLength());
+            } catch (BadLocationException e) {
+                System.err.println("Lỗi chèn văn bản vào JTextPane: " + e.getMessage());
+            }
+        });
+    }
+
+    // Phương thức gửi tin nhắn
+    private void sendMessage() {
+        String content = txtText.getText().trim();
+        if (!content.isEmpty()) {
+            if (chatClient != null && chatClient.isConnected()) {
+                // ID của Admin (server) là 0 hoặc một ID cụ thể. Giả sử là 0 cho Admin.
+                // SenderId là ID của tài khoản đang đăng nhập trên Client
+                int senderId = CN_BienToanCuc.IDAccount;
+                String senderName = CN_BienToanCuc.TenTaiKhoan;
+                int receiverId = 0; // Gửi tới Admin (receiverId của Admin)
+
+                NC_Message chatMessage = new NC_Message(
+                        NC_Message.NC_MessageType.CHAT,
+                        senderId,
+                        receiverId,
+                        senderName,
+                        content,
+                        new Date()
+                );
+                chatClient.sendMessage(chatMessage);
+                // Hiển thị tin nhắn của chính mình ngay lập tức
+                displayMessage(chatMessage);
+                txtText.setText(""); // Xóa nội dung đã gửi
+            } else {
+                displayMessage(new NC_Message(NC_Message.NC_MessageType.ADMIN_READY, "Bạn chưa kết nối với Server hoặc đang ngắt kết nối."));
             }
         }
     }
 
-    public void hienThiTinNhan(String[] messageData) {
+    // Phương thức cập nhật trạng thái kết nối (có thể hiển thị trong console hoặc một JLabel nhỏ)
+    private void updateConnectionStatus(String status) {
         SwingUtilities.invokeLater(() -> {
-            String nguoiGui = messageData[0];
-            String noiDung = messageData[1];
-            String thoiGian = messageData[2];
-            appendTinNhan(nguoiGui, noiDung, thoiGian, new Color(153, 255, 0));
+            System.out.println("Client Connection Status: " + status);
+            // Nếu bạn có một JLabel để hiển thị trạng thái, bạn có thể cập nhật nó ở đây
+            // Ví dụ: lblStatus.setText(status);
         });
-    }
-
-    private void appendTinNhan(String sender, String content, String time, Color color) {
-        StyledDocument doc = txtChat.getStyledDocument();
-        try {
-            Style style = txtChat.addStyle("ChatStyle", null);
-            StyleConstants.setForeground(style, color);
-
-            doc.insertString(doc.getLength(), sender + " [" + time + "]: ", style);
-
-            StyleConstants.setForeground(style, Color.WHITE);
-            doc.insertString(doc.getLength(), content + "\n", style);
-
-            txtChat.setCaretPosition(doc.getLength());
-        } catch (BadLocationException e) {
-            e.printStackTrace();
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -138,6 +224,7 @@ public class C2_Chat extends javax.swing.JFrame {
         lblTittle.setText("CHAT");
 
         pnlZoneMessage.setBackground(new java.awt.Color(30, 30, 47));
+        pnlZoneMessage.setForeground(new java.awt.Color(30, 30, 47));
 
         javax.swing.GroupLayout pnlZoneMessageLayout = new javax.swing.GroupLayout(pnlZoneMessage);
         pnlZoneMessage.setLayout(pnlZoneMessageLayout);
@@ -171,7 +258,7 @@ public class C2_Chat extends javax.swing.JFrame {
         pnlRegisterLayout.setVerticalGroup(
             pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlRegisterLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addGap(15, 15, 15)
                 .addComponent(lblTittle, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(26, 26, 26)
                 .addComponent(pnlZoneMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -228,7 +315,6 @@ public class C2_Chat extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {

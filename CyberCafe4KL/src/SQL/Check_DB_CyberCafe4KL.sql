@@ -99,3 +99,5 @@ FROM Account
 WHERE RoleAccount IN ('ADMIN', 'BOSS')
 ORDER BY IDAccount ASC;
 
+SELECT * FROM Message
+

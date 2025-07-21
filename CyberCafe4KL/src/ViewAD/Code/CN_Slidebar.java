@@ -24,7 +24,7 @@ public class CN_Slidebar {
         setIcon(lblHD, "icHD1.png", " HÓA ĐƠN", 32);
         setIcon(lblMT, "icMT.png", " MÁY TÍNH", 32);
         setIcon(lblTKe, "icTKe.png", " THỐNG KÊ", 32);
-        setIcon(lblTKhoan, "icTKhoan.png", " TÀI KHOẢN", 32);
+        setIcon(lblTKhoan, "icTKhoan.png", " NHÂN VIÊN", 32);
         setIcon(lblDMK, "icDMK.png", " Đổi mật khẩu", 18);
         setIcon(lblDX, "icDX.png", " Đăng xuất", 20);
         setIcon(lblChat, "icChat.png", "", 24);
