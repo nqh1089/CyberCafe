@@ -214,11 +214,11 @@ public class AD_LoginForm extends javax.swing.JFrame {
                     // Gán thông tin đnhap
                     CN_TaiKhoanDangNhap.setTenTaiKhoan(name);
                     // Khởi động ChatServer nếu chưa có
-                    if (Socket.ChatServer.instance == null) {
-                        Socket.ChatServer server = new Socket.ChatServer(1902);
-                        Socket.ChatServer.instance = server;
-                        new Thread(server).start();
-                    }
+//                    if (Socket.ChatServer.instance == null) {
+//                        Socket.ChatServer server = new Socket.ChatServer(1902);
+//                        Socket.ChatServer.instance = server;
+//                        new Thread(server).start();
+//                    }
                     //Mở giao diện chính (TAB1)
                     new ViewAD.View.AD_TAB1_DatMay().setVisible(true);
                     this.dispose();
