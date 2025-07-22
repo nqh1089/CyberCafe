@@ -16,8 +16,11 @@ import java.time.Instant;
 
 public class C2_Menu extends JFrame {
 
+    public static C2_Menu instance;
+
     public C2_Menu() {
         initComponents();
+        instance = this;
         LoadThongTinMay();
         C2_ClientIcons.LoadIcons(pnlCN);
         C2_SetImage.SetPanelBackgroundTLQL(pnlTLQL);
@@ -44,25 +47,34 @@ public class C2_Menu extends JFrame {
 
         try {
             Connection conn = DBConnection.getConnection();
-            String sql = "SELECT TOP 1 StartTime FROM ComputerUsage WHERE IDComputer = ? ORDER BY StartTime DESC";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, CN_BienToanCuc.IDComputer);
-            ResultSet rs = ps.executeQuery();
+            if (conn != null) {
+                String sql = "SELECT TOP 1 StartTime FROM ComputerUsage "
+                        + "WHERE IDComputer = ? AND IDAccount = ? AND EndTime IS NULL "
+                        + "ORDER BY StartTime DESC";
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, CN_BienToanCuc.IDComputer);
+                ps.setInt(2, CN_BienToanCuc.IDAccount);
 
-            if (rs.next()) {
-                Timestamp startTime = rs.getTimestamp("StartTime");
+                ResultSet rs = ps.executeQuery();
 
-                lblTrangThai.setText("Đang sử dụng");
-                lblGioBatDau.setText(new SimpleDateFormat("HH:mm:ss").format(startTime));
+                if (rs.next()) {
+                    Timestamp startTime = rs.getTimestamp("StartTime");
 
-                long usedMin = Duration.between(startTime.toInstant(), Instant.now()).toMinutes();
-                lblThoiGianSD.setText(usedMin + " phút");
+                    lblTrangThai.setText("Đang sử dụng");
+                    lblGioBatDau.setText(new SimpleDateFormat("HH:mm:ss").format(startTime));
 
-                int cost = (int) usedMin * 200;
-                lblChiPhiGio.setText(cost + " đ");
+                    long usedMin = Duration.between(startTime.toInstant(), Instant.now()).toMinutes();
+                    lblThoiGianSD.setText(usedMin + " phút");
 
-                lblThoiGianConLai.setText("--:--");
-                lblChiPhiDV.setText("0 đ");
+                    int cost = (int) usedMin * 200;
+                    lblChiPhiGio.setText(cost + " đ");
+                }
+
+                rs.close();
+                ps.close();
+                conn.close();
+            } else {
+                System.out.println("Không thể kết nối DB khi LoadThongTinMay");
             }
         } catch (Exception e) {
             System.out.println("Lỗi LoadThongTinMay: " + e.getMessage());
@@ -142,7 +154,7 @@ public class C2_Menu extends JFrame {
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        lblTaiKhoan = new javax.swing.JLabel();
+        lblSoDu = new javax.swing.JLabel();
         lblTrangThai = new javax.swing.JLabel();
         lblGioBatDau = new javax.swing.JLabel();
         lblThoiGianSD = new javax.swing.JLabel();
@@ -150,7 +162,7 @@ public class C2_Menu extends JFrame {
         lblChiPhiGio = new javax.swing.JLabel();
         lblChiPhiDV = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        lblTaiKhoan1 = new javax.swing.JLabel();
+        lblTaiKhoan = new javax.swing.JLabel();
         pnlMainCN = new javax.swing.JPanel();
         pnlCN = new javax.swing.JPanel();
         pnlTLQL = new javax.swing.JPanel();
@@ -193,10 +205,10 @@ public class C2_Menu extends JFrame {
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("Số dư khả dụng:");
 
-        lblTaiKhoan.setBackground(new java.awt.Color(255, 255, 255));
-        lblTaiKhoan.setForeground(new java.awt.Color(255, 255, 255));
-        lblTaiKhoan.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblTaiKhoan.setText("jLabel7");
+        lblSoDu.setBackground(new java.awt.Color(255, 255, 255));
+        lblSoDu.setForeground(new java.awt.Color(255, 255, 255));
+        lblSoDu.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblSoDu.setText("jLabel7");
 
         lblTrangThai.setForeground(new java.awt.Color(255, 255, 255));
         lblTrangThai.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -226,10 +238,10 @@ public class C2_Menu extends JFrame {
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("Tài khoản:");
 
-        lblTaiKhoan1.setBackground(new java.awt.Color(255, 255, 255));
-        lblTaiKhoan1.setForeground(new java.awt.Color(255, 255, 255));
-        lblTaiKhoan1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblTaiKhoan1.setText("jLabel7");
+        lblTaiKhoan.setBackground(new java.awt.Color(255, 255, 255));
+        lblTaiKhoan.setForeground(new java.awt.Color(255, 255, 255));
+        lblTaiKhoan.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblTaiKhoan.setText("jLabel7");
 
         javax.swing.GroupLayout pnlTTMLayout = new javax.swing.GroupLayout(pnlTTM);
         pnlTTM.setLayout(pnlTTMLayout);
@@ -253,14 +265,14 @@ public class C2_Menu extends JFrame {
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(pnlTTMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(lblTaiKhoan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblSoDu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lblTrangThai, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lblGioBatDau, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lblThoiGianSD, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lblThoiGianConLai, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblChiPhiDV, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblChiPhiGio, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblTaiKhoan1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblTaiKhoan, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlTTMLayout.setVerticalGroup(
@@ -271,7 +283,7 @@ public class C2_Menu extends JFrame {
                 .addGap(26, 26, 26)
                 .addGroup(pnlTTMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
-                    .addComponent(lblTaiKhoan1))
+                    .addComponent(lblTaiKhoan))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(pnlTTMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlTTMLayout.createSequentialGroup()
@@ -291,7 +303,7 @@ public class C2_Menu extends JFrame {
                             .addComponent(jLabel6)
                             .addComponent(lblChiPhiDV)))
                     .addGroup(pnlTTMLayout.createSequentialGroup()
-                        .addComponent(lblTaiKhoan)
+                        .addComponent(lblSoDu)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(lblTrangThai)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -421,8 +433,8 @@ public class C2_Menu extends JFrame {
     private javax.swing.JLabel lblChiPhiDV;
     private javax.swing.JLabel lblChiPhiGio;
     private javax.swing.JLabel lblGioBatDau;
+    private javax.swing.JLabel lblSoDu;
     private javax.swing.JLabel lblTaiKhoan;
-    private javax.swing.JLabel lblTaiKhoan1;
     private javax.swing.JLabel lblTenMay;
     private javax.swing.JLabel lblThoiGianConLai;
     private javax.swing.JLabel lblThoiGianSD;

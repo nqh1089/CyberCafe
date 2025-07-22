@@ -139,14 +139,14 @@
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="lblTaiKhoan" max="32767" attributes="0"/>
+                              <Component id="lblSoDu" max="32767" attributes="0"/>
                               <Component id="lblTrangThai" max="32767" attributes="0"/>
                               <Component id="lblGioBatDau" alignment="0" max="32767" attributes="0"/>
                               <Component id="lblThoiGianSD" alignment="0" max="32767" attributes="0"/>
                               <Component id="lblThoiGianConLai" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
                               <Component id="lblChiPhiDV" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
                               <Component id="lblChiPhiGio" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
-                              <Component id="lblTaiKhoan1" alignment="1" min="-2" pref="90" max="-2" attributes="0"/>
+                              <Component id="lblTaiKhoan" alignment="1" min="-2" pref="90" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
@@ -160,7 +160,7 @@
                           <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="lblTaiKhoan1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="lblTaiKhoan" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -183,7 +183,7 @@
                                   </Group>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="lblTaiKhoan" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblSoDu" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Component id="lblTrangThai" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -273,7 +273,7 @@
                     <Property name="text" type="java.lang.String" value="S&#x1ed1; d&#x1b0; kh&#x1ea3; d&#x1ee5;ng:"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="lblTaiKhoan">
+                <Component class="javax.swing.JLabel" name="lblSoDu">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="ff" green="ff" red="ff" type="rgb"/>
@@ -350,7 +350,7 @@
                     <Property name="text" type="java.lang.String" value="T&#xe0;i kho&#x1ea3;n:"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="lblTaiKhoan1">
+                <Component class="javax.swing.JLabel" name="lblTaiKhoan">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="ff" green="ff" red="ff" type="rgb"/>

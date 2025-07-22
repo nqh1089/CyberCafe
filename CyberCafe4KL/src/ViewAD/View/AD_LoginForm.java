@@ -1,6 +1,8 @@
 package ViewAD.View;
 
 import Controller.DBConnection;
+import Socket.CN_ChatAdmin;
+import Socket.NC_ChatServer;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,6 +10,8 @@ import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 
 public class AD_LoginForm extends javax.swing.JFrame {
+
+    public static NC_ChatServer chatServer = null;
 
     public AD_LoginForm() {
         initComponents();
@@ -204,6 +208,7 @@ public class AD_LoginForm extends javax.swing.JFrame {
             if (rs.next()) {
                 boolean isActive = rs.getBoolean("AccountStatus");
                 String role = rs.getString("RoleAccount");
+                int adminId = rs.getInt("IDAccount");
 
                 if (!isActive) {
                     JOptionPane.showMessageDialog(this, "Tài khoản đã ngừng hoạt động.");
@@ -211,17 +216,24 @@ public class AD_LoginForm extends javax.swing.JFrame {
                 }
 
                 if (role.equalsIgnoreCase("ADMIN") || role.equalsIgnoreCase("BOSS")) {
-                    // Gán thông tin đnhap
+                    // ✅ Lưu thông tin đăng nhập
                     CN_TaiKhoanDangNhap.setTenTaiKhoan(name);
-                    // Khởi động ChatServer nếu chưa có
-//                    if (Socket.ChatServer.instance == null) {
-//                        Socket.ChatServer server = new Socket.ChatServer(1902);
-//                        Socket.ChatServer.instance = server;
-//                        new Thread(server).start();
-//                    }
-                    //Mở giao diện chính (TAB1)
+
+                    // ✅ Khởi động server nếu chưa có
+                    if (CN_ChatAdmin.ncChatServer == null || !CN_ChatAdmin.ncChatServer.isServerRunning()) {
+                        CN_ChatAdmin.ncChatServer = new NC_ChatServer();
+                        CN_ChatAdmin.ncChatServer.setAdminAccountId(adminId);
+
+                        new Thread(CN_ChatAdmin.ncChatServer).start();
+                    }
+
+                    // ✅ Đặt ID Admin luôn (phòng khi server đã chạy)
+                    CN_ChatAdmin.SetAdminInfo(adminId, name);
+
+                    // ✅ Mở giao diện chính
                     new ViewAD.View.AD_TAB1_DatMay().setVisible(true);
                     this.dispose();
+
                 } else {
                     JOptionPane.showMessageDialog(this, "Tài khoản không có quyền truy cập.");
                 }

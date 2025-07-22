@@ -59,19 +59,19 @@ public class NC_ChatServer implements Runnable {
         this.clientStatusUpdater = clientStatusUpdater;
     }
 
-    public String LayNCTenTaiKhoanTuID(int accountId) {
+    public String LayTenTaiKhoanTuID(int accountId) {
         return accountNames.get(accountId);
     }
 
-    public boolean IsNCComputerOnline(int computerId) {
+    public boolean IsComputerOnline(int computerId) {
         return connectedComputers.containsKey(computerId);
     }
 
-    public boolean IsNCAccountLoggedInOnComputer(int computerId) {
+    public boolean IsAccountLoggedInOnComputer(int computerId) {
         return loggedInAccountsOnComputers.containsKey(computerId) && loggedInAccountsOnComputers.get(computerId) != 0;
     }
 
-    public Integer GetNCIdAccountDangNhapTuIdComputer(int computerId) {
+    public Integer GetIdAccountDangNhapTuIdComputer(int computerId) {
         return loggedInAccountsOnComputers.getOrDefault(computerId, 0);
     }
 
@@ -102,32 +102,48 @@ public class NC_ChatServer implements Runnable {
     }
 
     public void startServer() {
+        if (isRunning) {
+            System.out.println("Server đã chạy, không khởi chạy lại.");
+            return; // Nếu đã chạy, không chạy lại nữa!
+        }
+
         try {
             serverSocket = new ServerSocket(PORT);
             isRunning = true;
             System.out.println("Server đang chạy tại cổng " + PORT);
+
             if (statusListener != null) {
                 statusListener.accept("Server đang chạy tại cổng " + PORT);
             }
 
             while (isRunning) {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Client mới kết nối: " + clientSocket.getInetAddress());
-                if (statusListener != null) {
-                    statusListener.accept("Client mới kết nối từ " + clientSocket.getInetAddress());
-                }
+                try {
+                    Socket clientSocket = serverSocket.accept();
+                    System.out.println("Client mới kết nối: " + clientSocket.getInetAddress());
 
-                NC_ClientHandler handler = new NC_ClientHandler(clientSocket, this);
-                new Thread(handler).start();
+                    if (statusListener != null) {
+                        statusListener.accept("Client mới kết nối từ " + clientSocket.getInetAddress());
+                    }
+
+                    NC_ClientHandler handler = new NC_ClientHandler(clientSocket, this);
+                    new Thread(handler).start();
+
+                } catch (IOException e) {
+                    if (isRunning) {
+                        System.err.println("Lỗi Server: " + e.getMessage());
+                        if (statusListener != null) {
+                            statusListener.accept("Lỗi Server: " + e.getMessage());
+                        }
+                    }
+                }
             }
 
         } catch (IOException e) {
-            if (isRunning) {
-                System.err.println("Lỗi Server: " + e.getMessage());
-                if (statusListener != null) {
-                    statusListener.accept("Lỗi Server: " + e.getMessage());
-                }
+            System.err.println("Không thể mở cổng: " + e.getMessage());
+            if (statusListener != null) {
+                statusListener.accept("Không thể mở cổng: " + e.getMessage());
             }
+
         } finally {
             stopServer();
         }
@@ -142,7 +158,7 @@ public class NC_ChatServer implements Runnable {
         isRunning = false;
         try {
             for (NC_ClientHandler handler : clientHandlers) {
-                handler.disconnectClient("Server đóng.");
+                handler.disconnectClient("Server đóng");
             }
             clientHandlers.clear();
             connectedComputers.clear();
@@ -150,9 +166,9 @@ public class NC_ChatServer implements Runnable {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
             }
-            System.out.println("Server đã dừng.");
+            System.out.println("Server đã dừng");
             if (statusListener != null) {
-                statusListener.accept("Server đã dừng.");
+                statusListener.accept("Server đã dừng");
             }
         } catch (IOException e) {
             System.err.println("Lỗi dừng Server: " + e.getMessage());
@@ -213,11 +229,11 @@ public class NC_ChatServer implements Runnable {
 
     public void guiTinNhanDenClient(int targetComputerId, NC_Message message) {
         try {
-            LuuNCTinNhanVaoDB(message);
+            LuuTinNhanVaoDB(message);
             NC_ClientHandler handler = connectedComputers.get(targetComputerId);
             if (handler != null && loggedInAccountsOnComputers.containsKey(targetComputerId)
                     && loggedInAccountsOnComputers.get(targetComputerId).equals(message.getReceiverId())) {
-                handler.sendNCMessage(message);
+                handler.sendMessage(message);
                 System.out.println("Đã gửi tin nhắn từ Admin đến máy " + targetComputerId);
             } else {
                 System.out.println("Không thể gửi: Máy không online hoặc tài khoản không đăng nhập.");
@@ -243,10 +259,10 @@ public class NC_ChatServer implements Runnable {
             return;
         }
         try {
-            // ✅ 1. Lưu DB
-            LuuNCTinNhanVaoDB(message);
+            // Lưu DB
+            LuuTinNhanVaoDB(message);
 
-            // ✅ 2. Gửi sang Admin UI
+            // Gửi sang Admin UI
             if (message.getReceiverId() == adminAccountId && messageProcessor != null) {
                 messageProcessor.accept(message);
                 System.out.println("Đã chuyển tiếp tin nhắn Client → Admin.");
@@ -254,11 +270,11 @@ public class NC_ChatServer implements Runnable {
                 System.out.println("Tin không gửi cho Admin hoặc messageProcessor chưa set.");
             }
 
-            // ✅ 3. Gửi phản hồi về chính Client (máy gửi)
+            // Gửi phản hồi về chính Client (máy gửi)
             int computerId = GetNCComputerIdFromClientAccountId(message.getSenderId());
             NC_ClientHandler handler = connectedComputers.get(computerId);
             if (handler != null) {
-                handler.sendNCMessage(message);
+                handler.sendMessage(message);
             }
 
         } catch (SQLException e) {
@@ -266,7 +282,7 @@ public class NC_ChatServer implements Runnable {
         }
     }
 
-    private void LuuNCTinNhanVaoDB(NC_Message message) throws SQLException {
+    private void LuuTinNhanVaoDB(NC_Message message) throws SQLException {
         String sql = "INSERT INTO Message (SenderID, ReceiverID, Content, SentAt) VALUES (?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, message.getSenderId());

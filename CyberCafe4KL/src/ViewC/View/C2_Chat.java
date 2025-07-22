@@ -16,9 +16,11 @@ public class C2_Chat extends javax.swing.JFrame {
     private NC_ChatClient chatClient;
     private JTextPane chatDisplayPane;
     private StyledDocument doc;
+    public static C2_Chat instance;
 
     public C2_Chat() {
         initComponents();
+        instance = this;
         setTitle("CyberCafe4KL_Client - Máy: " + CN_BienToanCuc.TenMay);
         setResizable(false);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);

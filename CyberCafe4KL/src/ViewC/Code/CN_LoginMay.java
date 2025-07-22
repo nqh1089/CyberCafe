@@ -1,19 +1,15 @@
 package ViewC.Code;
 
 import Controller.DBConnection;
-import Socket.CM_CN_LoginSessionManager; // Import lớp mới
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.net.*;
-import java.sql.*;
-import java.util.Enumeration;
+import java.sql.Timestamp;
 
 public class CN_LoginMay {
 
     public static boolean loginMay(String username, String password) {
-        Connection conn = null; // Khai báo conn ở đây để có thể đóng trong finally
+        Connection conn = null;
 
         try {
             conn = DBConnection.getConnection();
@@ -36,7 +32,7 @@ public class CN_LoginMay {
                 return false;
             }
 
-            int idAcc = rsAcc.getInt("IDAccount");
+            int idAccount = rsAcc.getInt("IDAccount");
             String tenTK = rsAcc.getString("NameAccount");
             rsAcc.close();
             psAcc.close();
@@ -66,54 +62,52 @@ public class CN_LoginMay {
             rsComp.close();
             psComp.close();
 
-            // 4. Ghi log vào LogAccess và lấy LogAccessID (Gọi từ lớp mới trong package Socket)
-            // Đóng kết nối hiện tại trước khi gọi hàm mới để tránh vấn đề quản lý kết nối
-            // Hoặc truyền kết nối vào hàm nếu muốn dùng lại kết nối này.
-            // Để đơn giản, tôi sẽ đóng kết nối ở đây và để hàm mới tự mở/đóng kết nối riêng.
-            // Điều này có thể không tối ưu về hiệu suất nhưng an toàn hơn về quản lý kết nối.
-            try {
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                System.err.println("Lỗi đóng kết nối trước khi tạo LogAccess: " + ex.getMessage());
-            }
+            // 4. Tạo LogAccess trực tiếp ở đây
+            String sqlLog = "INSERT INTO LogAccess (IDComputer, ThoiGianBatDau, IDAccount) VALUES (?, GETDATE(), ?)";
+            PreparedStatement psLog = conn.prepareStatement(sqlLog, PreparedStatement.RETURN_GENERATED_KEYS);
+            psLog.setInt(1, idComputer);
+            psLog.setInt(2, idAccount);
+            psLog.executeUpdate();
 
-            // Gọi hàm từ CM_CN_LoginSessionManager để tạo LogAccess và lấy ID
-            int logAccessID = CM_CN_LoginSessionManager.createAndGetLogAccessID(idComputer, idAcc);
+            ResultSet rsLog = psLog.getGeneratedKeys();
+            int logAccessID = -1;
+            if (rsLog.next()) {
+                logAccessID = rsLog.getInt(1);
+            }
+            rsLog.close();
+            psLog.close();
+
             if (logAccessID == -1) {
                 System.out.println("Không thể tạo LogAccess ID.");
                 return false;
             }
-            // LogAccessID đã được cập nhật vào CN_BienToanCuc bên trong CM_CN_LoginSessionManager
 
-            // Tiếp tục với các bước còn lại, cần mở lại kết nối nếu cần
-            conn = DBConnection.getConnection(); // Mở lại kết nối sau khi tạo LogAccess
-            if (conn == null) {
-                System.out.println("Không thể kết nối CSDL sau khi tạo LogAccess.");
-                return false;
-            }
+            CN_BienToanCuc.LogAccessID = logAccessID;
 
-            // 5. Ghi log vào ComputerUsage
-            String sqlUsage = "INSERT INTO ComputerUsage (IDComputer, StartTime, IDAccount) VALUES (?, GETDATE(), ?)";
+            // 5. Ghi ComputerUsage
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            String sqlUsage = "INSERT INTO ComputerUsage (IDComputer, IDAccount, StartTime) VALUES (?, ?, ?)";
             PreparedStatement psUsage = conn.prepareStatement(sqlUsage);
             psUsage.setInt(1, idComputer);
-            psUsage.setInt(2, idAcc);
+            psUsage.setInt(2, idAccount);
+            psUsage.setTimestamp(3, now);
             psUsage.executeUpdate();
             psUsage.close();
 
-            // 6. Cập nhật trạng thái máy (0 = đang hoạt động)
+            // 6. Cập nhật trạng thái máy
             String sqlUpdate = "UPDATE Computer SET ComputerStatus = 0 WHERE IDComputer = ?";
             PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate);
             psUpdate.setInt(1, idComputer);
             psUpdate.executeUpdate();
             psUpdate.close();
 
-            // 7. Gán vào biến toàn cục
-            CN_BienToanCuc.IDAccount = idAcc;
+            // 7. Gán biến toàn cục
+            CN_BienToanCuc.IDAccount = idAccount;
             CN_BienToanCuc.TenTaiKhoan = tenTK;
             CN_BienToanCuc.IDComputer = idComputer;
             CN_BienToanCuc.TenMay = tenMay;
 
-            System.out.println("Đăng nhập thành công: " + tenTK + " - " + tenMay + " (LogAccessID: " + CN_BienToanCuc.LogAccessID + ")");
+            System.out.println("Đăng nhập thành công: " + tenTK + " - " + tenMay + " (LogAccessID: " + logAccessID + ")");
             return true;
 
         } catch (Exception e) {
@@ -122,7 +116,9 @@ public class CN_LoginMay {
 
         } finally {
             try {
-                if (conn != null) conn.close();
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.out.println("Lỗi đóng kết nối: " + ex.getMessage());
             }

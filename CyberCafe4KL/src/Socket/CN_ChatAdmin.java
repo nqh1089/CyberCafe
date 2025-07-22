@@ -40,8 +40,8 @@ public class CN_ChatAdmin {
     private static final Map<Integer, Integer> ncMapLoggedInClientAccounts = new HashMap<>();
 
     // ID và tên tài khoản của Admin đang đăng nhập
-    private static int ncAdminAccountId = 2; // THAY THẾ BẰNG ID ADMIN THỰC TẾ (ví dụ: từ màn hình đăng nhập)
-    private static String ncAdminAccountName = "ADMIN"; // THAY THẾ BẰNG TÊN ADMIN THỰC TẾ
+    private static int ncAdminAccountId = 1; // THAY THẾ BẰNG ID ADMIN THỰC TẾ (ví dụ: từ màn hình đăng nhập)
+    private static String ncAdminAccountName = "Admin"; // THAY THẾ BẰNG TÊN ADMIN THỰC TẾ
 
     /**
      * Set thông tin tài khoản Admin sau khi đăng nhập thành công.
@@ -107,24 +107,25 @@ public class CN_ChatAdmin {
         pnlMain.setLayout(new BorderLayout(4, 4));
         pnlMain.setPreferredSize(new Dimension(650, 450));
 
-        // Khởi tạo server chat nếu chưa có
+        // Chỉ kiểm tra nếu server có sẵn từ nút đăng nhập
         if (ncChatServer == null) {
-            ncChatServer = new NC_ChatServer(); // Tạo instance của server
-            ncChatServer.setAdminAccountId(GetAdminAccountId()); // Set ID Admin cho server
-
-            // Đặt callbacks để server có thể thông báo về UI
-            ncChatServer.setMessageProcessor(CN_ChatAdmin::processIncomingMessage);
-            ncChatServer.setStatusListener(status -> System.out.println("Server Status: " + status)); // In ra console
-            ncChatServer.setClientStatusUpdater((computerId, computerName, accountId, accountName, isOnline) -> {
-                CapNhatTrangThaiMay(computerId, computerName, accountId, accountName, isOnline);
-                if (isOnline && accountId != null && accountId != 0) {
-                    ncMapLoggedInClientAccounts.put(computerId, accountId); // Cập nhật ID tài khoản đang đăng nhập
-                } else {
-                    ncMapLoggedInClientAccounts.remove(computerId); // Xóa khỏi map khi offline hoặc không có tài khoản
-                }
-            });
-            new Thread(() -> ncChatServer.startServer()).start(); // Chạy server trong một luồng riêng
+            System.err.println("Server Chat chưa khởi động! Vui lòng đăng nhập Admin trước.");
+            JOptionPane.showMessageDialog(null, "Hệ thống Chat chưa được khởi động. Vui lòng đăng nhập Admin!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return; // Không làm tiếp nếu không có server
         }
+
+        // Nếu có, gán lại callbacks nếu cần (OK)
+        ncChatServer.setAdminAccountId(GetAdminAccountId());
+        ncChatServer.setMessageProcessor(CN_ChatAdmin::processIncomingMessage);
+        ncChatServer.setStatusListener(status -> System.out.println("Server Status: " + status));
+        ncChatServer.setClientStatusUpdater((computerId, computerName, accountId, accountName, isOnline) -> {
+            CapNhatTrangThaiMay(computerId, computerName, accountId, accountName, isOnline);
+            if (isOnline && accountId != null && accountId != 0) {
+                ncMapLoggedInClientAccounts.put(computerId, accountId);
+            } else {
+                ncMapLoggedInClientAccounts.remove(computerId);
+            }
+        });
 
         // === Panel DANH SÁCH MÁY ===
         JPanel pnlDanhSachMay = new JPanel();
@@ -232,8 +233,8 @@ public class CN_ChatAdmin {
                             if (oldLblTrangThai != null && oldLblTrangThai.getForeground().equals(new Color(255, 165, 0))) { // Màu cam
                                 // Gọi lại hàm cập nhật trạng thái thực tế sau khi click vào
                                 Integer oldAccountId = ncMapLoggedInClientAccounts.getOrDefault(oldIdComputer, 0);
-                                String oldAccountName = (ncChatServer != null && oldAccountId != 0) ? ncChatServer.LayNCTenTaiKhoanTuID(oldAccountId) : null;
-                                CapNhatTrangThaiMay(oldIdComputer, ncMapComputerNames.get(oldIdComputer), oldAccountId, oldAccountName, ncChatServer.IsNCComputerOnline(oldIdComputer));
+                                String oldAccountName = (ncChatServer != null && oldAccountId != 0) ? ncChatServer.LayTenTaiKhoanTuID(oldAccountId) : null;
+                                CapNhatTrangThaiMay(oldIdComputer, ncMapComputerNames.get(oldIdComputer), oldAccountId, oldAccountName, ncChatServer.IsComputerOnline(oldIdComputer));
                             }
                         }
                         pnlMay.setBackground(new Color(60, 60, 90));
@@ -321,7 +322,7 @@ public class CN_ChatAdmin {
 
         ncLblTenMayChatHeader = new JLabel(tenMay, SwingConstants.CENTER);
         // Lấy tên tài khoản hiện tại từ map đã được cập nhật bởi server
-        String currentClientAccountName = ncMapLoggedInClientAccounts.containsKey(idComputer) && idClientAccount != 0 ? ncChatServer.LayNCTenTaiKhoanTuID(idClientAccount) : null;
+        String currentClientAccountName = ncMapLoggedInClientAccounts.containsKey(idComputer) && idClientAccount != 0 ? ncChatServer.LayTenTaiKhoanTuID(idClientAccount) : null;
 
         if (currentClientAccountName != null && !currentClientAccountName.isEmpty() && idClientAccount != null && idClientAccount != 0) {
             ncLblTenMayChatHeader.setText(tenMay + " (" + currentClientAccountName + ")");
@@ -397,7 +398,7 @@ public class CN_ChatAdmin {
         // Lấy thông tin hiện tại của client từ map cục bộ (đã được cập nhật từ server)
         Integer targetClientAccountId = ncMapLoggedInClientAccounts.getOrDefault(idComputer, 0);
 
-        if (!ncChatServer.IsNCComputerOnline(idComputer)) {
+        if (!ncChatServer.IsComputerOnline(idComputer)) {
             HienThiNCThongBaoLoi("Máy " + tenMay + " hiện không online. Không thể gửi tin.");
             return;
         }
@@ -439,7 +440,7 @@ public class CN_ChatAdmin {
                     // Tin nhắn này đến từ client, người nhận là Admin
                     if (message.getReceiverId() == GetAdminAccountId()) {
                         int senderComputerId = ncChatServer.GetNCComputerIdFromClientAccountId(message.getSenderId());
-                        String clientAccountName = ncChatServer.LayNCTenTaiKhoanTuID(message.getSenderId());
+                        String clientAccountName = ncChatServer.LayTenTaiKhoanTuID(message.getSenderId());
 
                         if (ncCurrentSelectedComputerId == senderComputerId) {
                             // Nếu tin nhắn từ client đang được chọn, cập nhật hiển thị chat
@@ -737,7 +738,7 @@ public class CN_ChatAdmin {
 
                 String senderDisplayName = (msg.getSenderId() == GetAdminAccountId())
                         ? "Admin"
-                        : ncChatServer.LayNCTenTaiKhoanTuID(msg.getSenderId());
+                        : ncChatServer.LayTenTaiKhoanTuID(msg.getSenderId());
 
                 if (senderDisplayName == null || senderDisplayName.isEmpty()) {
                     senderDisplayName = "Client (" + msg.getSenderId() + ")";
@@ -890,7 +891,7 @@ public class CN_ChatAdmin {
             System.err.println("CN_ChatAdmin: Lỗi SQL khi lấy tin nhắn gần nhất từ DB cho máy " + computerId + ": " + e.getMessage());
             e.printStackTrace();
         } catch (Exception e) {
-            System.err.println("CN_ChatAdmin: Lỗi tổng quát khi lấy tin nhắn gần nhất: " + e.getMessage());
+            System.err.println("CN_ChatAdmin: Lỗi khi lấy tin nhắn gần nhất: " + e.getMessage());
             e.printStackTrace();
         }
         return lastMsg;

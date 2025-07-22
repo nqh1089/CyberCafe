@@ -10,8 +10,11 @@ import javax.swing.JOptionPane;
 
 public class C2_ChangePW extends javax.swing.JFrame {
 
+    public static C2_ChangePW instance;
+
     public C2_ChangePW() {
         initComponents();
+        instance = this;
         this.setResizable(false); // Không cho phóng to
         setTitle("CyberCafe4KL");
     }

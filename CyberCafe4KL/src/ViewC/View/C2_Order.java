@@ -2,8 +2,11 @@ package ViewC.View;
 
 public class C2_Order extends javax.swing.JFrame {
 
+    public static C2_Order instance;
+
     public C2_Order() {
         initComponents();
+        instance = this;
 
     }
 

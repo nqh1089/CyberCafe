@@ -92,11 +92,11 @@ public class NC_ClientHandler implements Runnable {
                         NC_Message.NC_MessageType.CHAT_HISTORY_ITEM,
                         rs.getInt("SenderID"),
                         rs.getInt("ReceiverID"),
-                        server.LayNCTenTaiKhoanTuID(rs.getInt("SenderID")),
+                        server.LayTenTaiKhoanTuID(rs.getInt("SenderID")),
                         rs.getString("Content"),
                         rs.getTimestamp("SentAt")
                 );
-                sendNCMessage(history);
+                sendMessage(history);
             }
 
         } catch (Exception e) {
@@ -105,12 +105,12 @@ public class NC_ClientHandler implements Runnable {
         }
     }
 
-    public void sendNCMessage(NC_Message message) {
+    public void sendMessage(NC_Message message) {
         try {
             out.writeObject(message);
             out.flush();
         } catch (Exception e) {
-            disconnectClient("Lỗi gửi tin nhắn về Client.");
+            disconnectClient("Lỗi gửi tin nhắn về Client");
         }
     }
 

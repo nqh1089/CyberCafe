@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 public class NC_ChatClient {
 
-    private static final String SERVER_IP = "26.150.90.74"; // ✅ IP Admin cố định
+    private static final String SERVER_IP = "26.150.90.74"; // IP Admin cố định
     private static final int SERVER_PORT = 1902;
 
     private Socket socket;
@@ -41,7 +41,7 @@ public class NC_ChatClient {
             socket = new Socket(SERVER_IP, SERVER_PORT);
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
-            updateStatus("Đã kết nối tới Server.");
+            updateStatus("Đã kết nối tới Server");
 
             NC_Message initialMessage = new NC_Message(
                 NC_Message.NC_MessageType.CLIENT_CONNECT,
@@ -66,7 +66,7 @@ public class NC_ChatClient {
                 }
             }
         } catch (Exception e) {
-            disconnect("Mất kết nối.");
+            disconnect("Mất kết nối");
         }
     }
 
@@ -77,7 +77,7 @@ public class NC_ChatClient {
                 out.flush();
             }
         } catch (IOException e) {
-            disconnect("Lỗi gửi tin nhắn.");
+            disconnect("Lỗi gửi tin nhắn");
         }
     }
 
@@ -97,7 +97,7 @@ public class NC_ChatClient {
                 in.close();
                 out.close();
                 socket.close();
-                updateStatus("Đã ngắt kết nối.");
+                updateStatus("Đã ngắt kết nối");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -113,7 +113,7 @@ public class NC_ChatClient {
         ));
         updateStatus("Đã đăng nhập: " + accountName);
 
-        // ✅ Gửi yêu cầu lịch sử chat cho phiên hiện tại
+        // Gửi yêu cầu lịch sử chat cho phiên hiện tại
         sendMessage(new NC_Message(
             NC_Message.NC_MessageType.REQUEST_HISTORY,
             idComputer, accountId, ViewC.Code.CN_BienToanCuc.LogAccessID
@@ -138,7 +138,6 @@ public class NC_ChatClient {
         }
     }
 
-    // ✅ FIX: isConnected() đúng — dùng biến `socket` chứ không phải `Socket`!
     public boolean isConnected() {
         return socket != null && socket.isConnected() && !socket.isClosed();
     }
