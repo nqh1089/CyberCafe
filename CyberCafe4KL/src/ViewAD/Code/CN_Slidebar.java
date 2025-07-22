@@ -89,7 +89,7 @@ public class CN_Slidebar {
 
         lblChat.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                new CN_ChatAdminJF().setVisible(true); // Mở form Chat nhưng k đóng form tab
+                new AD_Chat().setVisible(true); // Mở form Chat nhưng k đóng form tab
             }
         });
 

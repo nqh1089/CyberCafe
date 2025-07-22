@@ -22,10 +22,10 @@ public class AD_Chat extends javax.swing.JFrame {
         // Bạn cần thay thế giá trị này bằng ID và tên Admin thực tế sau khi đăng nhập.
         // Ví dụ: Lấy từ biến toàn cục hoặc một phương thức getter sau khi đăng nhập thành công.
         // Đây là ví dụ, bạn hãy thay đổi 1 và "AD_Test" bằng ID và tên tài khoản Admin thực tế của bạn.
-        CN_ChatAdmin.SetNCAdminInfo(1, "Admin"); 
+        CN_ChatAdmin.SetAdminInfo(1, "Admin"); 
 
         // Gọi CN_ChatAdmin để vẽ lên pnlMain
-        CN_ChatAdmin.HienThiNCGiaoDien(pnlMain);
+        CN_ChatAdmin.HienThiGiaoDien(pnlMain);
         // --- Kết thúc tích hợp CN_ChatAdmin ---
         
         // Thêm WindowListener để đóng server khi JFrame đóng
