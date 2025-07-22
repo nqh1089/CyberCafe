@@ -1,24 +1,23 @@
 package Socket;
 
 import Controller.DBConnection;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class NC_ClientHandler implements Runnable {
+
     private Socket clientSocket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private NC_ChatServer server; // Tham chiếu đến server
-    private int computerId = -1; // ID của máy tính Client này
-    private String computerName = "Unknown Computer"; // Tên của máy tính Client này
-    private int currentLoggedInAccountId = 0; // ID của tài khoản đang đăng nhập trên máy này (0 nếu chưa đăng nhập)
-    private String currentLoggedInAccountName = null; // Tên tài khoản đang đăng nhập
+    private NC_ChatServer server;
+
+    private int computerId = -1;
+    private String computerName = "Unknown";
+    private int currentLoggedInAccountId = 0;
 
     public NC_ClientHandler(Socket clientSocket, NC_ChatServer server) {
         this.clientSocket = clientSocket;
@@ -26,121 +25,110 @@ public class NC_ClientHandler implements Runnable {
         try {
             this.out = new ObjectOutputStream(clientSocket.getOutputStream());
             this.in = new ObjectInputStream(clientSocket.getInputStream());
-        } catch (IOException e) {
-            System.err.println("NC_ClientHandler: Lỗi tạo luồng I/O: " + e.getMessage());
-            e.printStackTrace();
-            disconnectClient("Lỗi nội bộ server.");
+        } catch (Exception e) {
+            disconnectClient("Lỗi IO khi khởi tạo streams.");
         }
     }
 
     @Override
     public void run() {
         try {
-            // Bước 1: Nhận thông tin kết nối ban đầu từ client (IDComputer, NameComputer)
-            NC_Message initialMessage = (NC_Message) in.readObject();
-            if (initialMessage.getType() == NC_Message.NC_MessageType.CLIENT_CONNECT) {
-                this.computerId = initialMessage.getComputerId();
-                this.computerName = initialMessage.getComputerName();
+            NC_Message initial = (NC_Message) in.readObject();
+            if (initial.getType() == NC_Message.NC_MessageType.CLIENT_CONNECT) {
+                this.computerId = initial.getComputerId();
+                this.computerName = initial.getComputerName();
                 server.registerConnectedComputer(computerId, computerName, this);
-                System.out.println("NC_ClientHandler: Client " + computerName + " (ID: " + computerId + ") đã xác định.");
-                // Gửi phản hồi rằng server đã sẵn sàng (tùy chọn)
-                sendNCMessage(new NC_Message(NC_Message.NC_MessageType.ADMIN_READY, "Server đã kết nối."));
             } else {
-                System.err.println("NC_ClientHandler: Tin nhắn đầu tiên không phải CLIENT_CONNECT. Ngắt kết nối.");
-                disconnectClient("Tin nhắn khởi tạo không hợp lệ.");
+                disconnectClient("Tin nhắn đầu tiên không hợp lệ.");
                 return;
             }
 
-            // Vòng lặp nhận tin nhắn từ client
             while (clientSocket.isConnected()) {
-                NC_Message message = (NC_Message) in.readObject();
-                if (message != null) {
-                    processIncomingMessage(message);
-                }
+                NC_Message msg = (NC_Message) in.readObject();
+                processIncomingMessage(msg);
             }
-        } catch (IOException e) {
-            System.out.println("NC_ClientHandler: Client " + computerName + " (ID: " + computerId + ") đã ngắt kết nối đột ngột: " + e.getMessage());
-        } catch (ClassNotFoundException e) {
-            System.err.println("NC_ClientHandler: Lỗi ClassNotFoundException: " + e.getMessage());
-        } finally {
-            disconnectClient("Client đã ngắt kết nối.");
+
+        } catch (Exception e) {
+            disconnectClient("Client ngắt kết nối hoặc lỗi IO.");
         }
     }
 
     private void processIncomingMessage(NC_Message message) {
         switch (message.getType()) {
             case CHAT:
-                // Tin nhắn chat từ client gửi đến Admin
-                System.out.println("NC_ClientHandler (" + computerName + "): Nhận tin nhắn CHAT từ Client " + message.getSenderId() + " đến Admin " + message.getReceiverId() + ": " + message.getContent());
-                server.processClientMessage(message); // Chuyển tiếp đến server để xử lý và gửi đến Admin UI
+                server.processClientMessage(message);
                 break;
             case CLIENT_LOGIN:
-                // Client báo hiệu đã đăng nhập tài khoản
-                this.currentLoggedInAccountId = message.getSenderId(); // ID tài khoản là senderId trong tin nhắn LOGIN
-                this.currentLoggedInAccountName = message.getAccountName();
-                System.out.println("NC_ClientHandler (" + computerName + "): Client đăng nhập: IDAccount=" + currentLoggedInAccountId + ", NameAccount=" + currentLoggedInAccountName);
-                server.registerLoggedInAccount(computerId, currentLoggedInAccountId, currentLoggedInAccountName); // Báo server cập nhật trạng thái
+                this.currentLoggedInAccountId = message.getSenderId();
+                server.registerLoggedInAccount(computerId, currentLoggedInAccountId, message.getAccountName());
                 break;
             case CLIENT_LOGOUT:
-                // Client báo hiệu đã đăng xuất tài khoản
-                System.out.println("NC_ClientHandler (" + computerName + "): Client đăng xuất: IDAccount=" + currentLoggedInAccountId);
-                server.unregisterLoggedInAccount(computerId, currentLoggedInAccountId); // Báo server cập nhật trạng thái
-                this.currentLoggedInAccountId = 0; // Đặt lại về 0
-                this.currentLoggedInAccountName = null;
+                server.unregisterLoggedInAccount(computerId, currentLoggedInAccountId);
+                this.currentLoggedInAccountId = 0;
                 break;
             case REQUEST_HISTORY:
-                // Client yêu cầu lịch sử chat (tùy chọn)
-                // Bạn có thể implement logic lấy lịch sử từ DB và gửi lại cho client ở đây
-                System.out.println("NC_ClientHandler (" + computerName + "): Client yêu cầu lịch sử chat (chưa implement).");
+                handleRequestHistory(message);
                 break;
             default:
-                System.out.println("NC_ClientHandler (" + computerName + "): Nhận loại tin nhắn không xác định: " + message.getType());
-                break;
+                System.out.println("Nhận tin nhắn loại không xác định: " + message.getType());
+        }
+    }
+
+    private void handleRequestHistory(NC_Message message) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(
+                     "SELECT * FROM Message " +
+                     "WHERE (SenderID = ? OR ReceiverID = ?) " +
+                     "AND SentAt >= (SELECT ThoiGianBatDau FROM LogAccess WHERE IDLog = ?)"
+             )) {
+
+            ps.setInt(1, currentLoggedInAccountId);
+            ps.setInt(2, currentLoggedInAccountId);
+            ps.setInt(3, message.getLogAccessId());
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                NC_Message history = new NC_Message(
+                        NC_Message.NC_MessageType.CHAT_HISTORY_ITEM,
+                        rs.getInt("SenderID"),
+                        rs.getInt("ReceiverID"),
+                        server.LayNCTenTaiKhoanTuID(rs.getInt("SenderID")),
+                        rs.getString("Content"),
+                        rs.getTimestamp("SentAt")
+                );
+                sendNCMessage(history);
+            }
+
+        } catch (Exception e) {
+            System.err.println("Lỗi xử lý REQUEST_HISTORY: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public void sendNCMessage(NC_Message message) {
         try {
-            if (out != null) {
-                out.writeObject(message);
-                out.flush();
-            }
-        } catch (IOException e) {
-            System.err.println("NC_ClientHandler: Lỗi gửi tin nhắn đến Client " + computerName + " (ID: " + computerId + "): " + e.getMessage());
-            // Nếu gửi thất bại, có thể client đã ngắt kết nối
-            disconnectClient("Lỗi gửi tin nhắn.");
+            out.writeObject(message);
+            out.flush();
+        } catch (Exception e) {
+            disconnectClient("Lỗi gửi tin nhắn về Client.");
         }
     }
 
     public void disconnectClient(String reason) {
+        System.out.println("Đóng kết nối Client: " + reason);
         try {
             if (in != null) in.close();
             if (out != null) out.close();
             if (clientSocket != null && !clientSocket.isClosed()) {
                 clientSocket.close();
             }
-            // Chỉ unregister nếu computerId đã được xác định
-            if (computerId != -1) {
-                server.unregisterConnectedComputer(computerId, computerName);
-                if (currentLoggedInAccountId != 0) {
-                    server.unregisterLoggedInAccount(computerId, currentLoggedInAccountId);
-                }
-            }
-            System.out.println("NC_ClientHandler: Client " + computerName + " (ID: " + computerId + ") đã ngắt kết nối. Lý do: " + reason);
-        } catch (IOException e) {
-            System.err.println("NC_ClientHandler: Lỗi đóng kết nối cho Client " + computerName + " (ID: " + computerId + "): " + e.getMessage());
-        }
+        } catch (Exception ignored) {}
     }
 
-    public int getComputerId() {
-        return computerId;
-    }
-
+    /**
+     * ✅ Getter để NC_ChatServer gọi lấy tên máy.
+     */
     public String getComputerName() {
-        return computerName;
-    }
-
-    public int getCurrentLoggedInAccountId() {
-        return currentLoggedInAccountId;
+        return this.computerName;
     }
 }

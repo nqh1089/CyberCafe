@@ -8,73 +8,54 @@ import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class C2_Chat extends javax.swing.JFrame {
 
-    // Khai báo NC_ChatClient
     private NC_ChatClient chatClient;
-    // Khai báo JTextPane để hiển thị tin nhắn
     private JTextPane chatDisplayPane;
     private StyledDocument doc;
 
     public C2_Chat() {
         initComponents();
-        setTitle("CyberCafe4KL_Client - Máy: " + CN_BienToanCuc.TenMay); // Đặt tiêu đề rõ ràng hơn
+        setTitle("CyberCafe4KL_Client - Máy: " + CN_BienToanCuc.TenMay);
         setResizable(false);
-        // Thay đổi DefaultCloseOperation để xử lý ngắt kết nối khi đóng cửa sổ
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        // Gán icon gửi
         String iconPath = "E:/SU25/BL2/PRO230_DATN/CyberCafe4KL/CyberCafe4KL/src/Assets/Client/Send.png";
         ImageIcon icon = new ImageIcon(iconPath);
         Image img = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         lblSend.setIcon(new ImageIcon(img));
         lblSend.setText("");
 
-        // --- Khởi tạo và tích hợp JTextPane vào pnlZoneMessage (phần này vẫn nằm trong constructor) ---
         chatDisplayPane = new JTextPane();
-        chatDisplayPane.setEditable(false); // Không cho phép chỉnh sửa trực tiếp
-        doc = chatDisplayPane.getStyledDocument(); // Lấy StyledDocument để định dạng văn bản
+        chatDisplayPane.setEditable(false);
+        doc = chatDisplayPane.getStyledDocument();
 
-        // Tạo một JScrollPane để cuộn nội dung chatDisplayPane
         JScrollPane scrollPane = new JScrollPane(chatDisplayPane);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        // Đảm bảo pnlZoneMessage sử dụng BorderLayout để JScrollPane lấp đầy
         pnlZoneMessage.setLayout(new BorderLayout());
         pnlZoneMessage.add(scrollPane, BorderLayout.CENTER);
-        // --- Kết thúc tích hợp JTextPane ---
 
-        // --- ĐẶT MÀU NỀN CHO KHU VỰC HIỂN THỊ TIN NHẮN TẠI ĐÂY (NGOÀI initComponents) ---
-        // Đặt màu nền cho chính JTextPane
         chatDisplayPane.setBackground(new java.awt.Color(30, 30, 47));
-        // Đặt màu nền cho viewport của JScrollPane (phần nền mà nội dung chat sẽ hiển thị)
         scrollPane.getViewport().setBackground(new java.awt.Color(30, 30, 47));
-        // Đặt màu nền cho pnlZoneMessage (mặc dù JScrollPane sẽ che phần lớn nó, nhưng tốt cho sự nhất quán)
         pnlZoneMessage.setBackground(new java.awt.Color(30, 30, 47));
-        // --- KẾT THÚC PHẦN ĐẶT MÀU NỀN ---
 
-
-        // Khởi tạo và kết nối NC_ChatClient
-        // Đảm bảo IDComputer và TenMay đã được thiết lập từ CN_BienToanCuc
         if (CN_BienToanCuc.IDComputer == -1 || CN_BienToanCuc.TenMay.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Thông tin máy tính chưa được thiết lập. Vui lòng kiểm tra CN_BienToanCuc.", "Lỗi khởi tạo", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Thông tin máy tính chưa được thiết lập.", "Lỗi khởi tạo", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         chatClient = new NC_ChatClient(CN_BienToanCuc.IDComputer, CN_BienToanCuc.TenMay);
 
-        // Đặt callback để nhận tin nhắn từ Admin
         chatClient.setMessageReceiver(this::displayMessage);
-
-        // Đặt callback để cập nhật trạng thái (tùy chọn, có thể hiển thị trong console hoặc một label nhỏ)
         chatClient.setStatusUpdater(this::updateConnectionStatus);
 
-        chatClient.connect(); // Kết nối tới server
+        chatClient.connect();
 
-        // Thêm Listener cho nút gửi (lblSend)
         lblSend.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -82,24 +63,15 @@ public class C2_Chat extends javax.swing.JFrame {
             }
         });
 
-        // Thêm Listener cho trường nhập văn bản (txtText) khi nhấn Enter
-        txtText.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendMessage();
-            }
-        });
+        txtText.addActionListener(e -> sendMessage());
 
-        // Thêm WindowListener để xử lý ngắt kết nối khi đóng cửa sổ
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 if (chatClient != null && chatClient.isConnected()) {
-                    // Nếu tài khoản đang đăng nhập, gửi logout trước khi disconnect
                     if (CN_BienToanCuc.IDAccount != -1) {
                         chatClient.logoutAccount();
                     }
-                    // Gửi thông báo CLIENT_DISCONNECT và đóng kết nối
                     chatClient.disconnect("Cửa sổ chat Client đóng.");
                 }
             }
@@ -107,7 +79,6 @@ public class C2_Chat extends javax.swing.JFrame {
 
         SwingUtilities.invokeLater(() -> {
             try {
-                // Đợi một chút để kết nối ổn định (không phải cách lý tưởng cho ứng dụng lớn)
                 Thread.sleep(1000);
                 if (chatClient.isConnected() && CN_BienToanCuc.IDAccount != -1) {
                     chatClient.loginAccount(CN_BienToanCuc.IDAccount, CN_BienToanCuc.TenTaiKhoan);
@@ -118,57 +89,36 @@ public class C2_Chat extends javax.swing.JFrame {
         });
     }
 
-    // Phương thức hiển thị tin nhắn trên JTextPane
     private void displayMessage(NC_Message message) {
         SwingUtilities.invokeLater(() -> {
             SimpleAttributeSet style = new SimpleAttributeSet();
+            String time = new java.text.SimpleDateFormat("HH:mm").format(message.getSentAt());
             String textToDisplay;
 
-            // Kiểm tra loại tin nhắn và ID người gửi/người nhận
-            if (message.getType() == NC_Message.NC_MessageType.CHAT) {
-                if (message.getSenderId() == CN_BienToanCuc.IDAccount) {
-                    // Tin nhắn gửi đi (từ client này)
-                    StyleConstants.setForeground(style, new Color(51, 255, 255)); // Xanh lam
-                    StyleConstants.setAlignment(style, StyleConstants.ALIGN_RIGHT);
-                    textToDisplay = "Bạn (" + message.getSenderName() + ") : " + message.getContent() + "\n";
-                } else if (message.getSenderId() == 0 && message.getSenderName().equals("Admin")) {
-                    // Tin nhắn từ Admin (senderId = 0, senderName = "Admin" theo logic của bạn)
-                    StyleConstants.setForeground(style, new Color(153, 255, 0)); // Xanh lá cây (Admin)
-                    StyleConstants.setAlignment(style, StyleConstants.ALIGN_LEFT);
-                    textToDisplay = message.getSenderName() + ": " + message.getContent() + "\n";
-                } else {
-                    // Tin nhắn từ các nguồn khác (nếu có, ví dụ hệ thống)
-                    StyleConstants.setForeground(style, Color.WHITE); // Mặc định trắng
-                    StyleConstants.setAlignment(style, StyleConstants.ALIGN_LEFT);
-                    textToDisplay = message.getSenderName() + ": " + message.getContent() + "\n";
-                }
+            if ("Admin".equals(message.getSenderName())) {
+                StyleConstants.setForeground(style, new Color(153, 255, 0)); // Xanh lá
+                textToDisplay = "Admin [" + time + "]: " + message.getContent() + "\n";
             } else {
-                // Các loại tin nhắn trạng thái hoặc hệ thống
-                StyleConstants.setForeground(style, Color.YELLOW); // Màu vàng cho thông báo hệ thống
-                StyleConstants.setAlignment(style, StyleConstants.ALIGN_CENTER);
-                textToDisplay = "[" + message.getType() + "] " + message.getContent() + "\n";
+                StyleConstants.setForeground(style, new Color(51, 255, 255)); // Xanh cyan
+                textToDisplay = "Máy " + CN_BienToanCuc.IDComputer + " [" + time + "]: " + message.getContent() + "\n";
             }
 
             try {
                 doc.insertString(doc.getLength(), textToDisplay, style);
-                // Cuộn xuống cuối
                 chatDisplayPane.setCaretPosition(doc.getLength());
             } catch (BadLocationException e) {
-                System.err.println("Lỗi chèn văn bản vào JTextPane: " + e.getMessage());
+                System.err.println("Lỗi hiển thị: " + e.getMessage());
             }
         });
     }
 
-    // Phương thức gửi tin nhắn
     private void sendMessage() {
         String content = txtText.getText().trim();
         if (!content.isEmpty()) {
             if (chatClient != null && chatClient.isConnected()) {
-                // ID của Admin (server) là 0 hoặc một ID cụ thể. Giả sử là 0 cho Admin.
-                // SenderId là ID của tài khoản đang đăng nhập trên Client
                 int senderId = CN_BienToanCuc.IDAccount;
                 String senderName = CN_BienToanCuc.TenTaiKhoan;
-                int receiverId = 0; // Gửi tới Admin (receiverId của Admin)
+                int receiverId = 1; // ✅ ID Admin THẬT
 
                 NC_Message chatMessage = new NC_Message(
                         NC_Message.NC_MessageType.CHAT,
@@ -179,22 +129,15 @@ public class C2_Chat extends javax.swing.JFrame {
                         new Date()
                 );
                 chatClient.sendMessage(chatMessage);
-                // Hiển thị tin nhắn của chính mình ngay lập tức
-                displayMessage(chatMessage);
-                txtText.setText(""); // Xóa nội dung đã gửi
+                txtText.setText("");
             } else {
-                displayMessage(new NC_Message(NC_Message.NC_MessageType.ADMIN_READY, "Bạn chưa kết nối với Server hoặc đang ngắt kết nối."));
+                System.out.println("Chưa kết nối server.");
             }
         }
     }
 
-    // Phương thức cập nhật trạng thái kết nối (có thể hiển thị trong console hoặc một JLabel nhỏ)
     private void updateConnectionStatus(String status) {
-        SwingUtilities.invokeLater(() -> {
-            System.out.println("Client Connection Status: " + status);
-            // Nếu bạn có một JLabel để hiển thị trạng thái, bạn có thể cập nhật nó ở đây
-            // Ví dụ: lblStatus.setText(status);
-        });
+        SwingUtilities.invokeLater(() -> System.out.println("Trạng thái: " + status));
     }
 
     @SuppressWarnings("unchecked")
