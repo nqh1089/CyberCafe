@@ -262,7 +262,7 @@ public class C2_Menu extends JFrame {
             pnlTTMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlTTMLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblTenMay, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+                .addComponent(lblTenMay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(pnlTTMLayout.createSequentialGroup()
                 .addGap(47, 47, 47)
@@ -286,12 +286,12 @@ public class C2_Menu extends JFrame {
                     .addComponent(lblChiPhiDV, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblChiPhiGio, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblTaiKhoan, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
         pnlTTMLayout.setVerticalGroup(
             pnlTTMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlTTMLayout.createSequentialGroup()
-                .addGap(31, 31, 31)
+                .addContainerGap(31, Short.MAX_VALUE)
                 .addComponent(lblTenMay)
                 .addGap(26, 26, 26)
                 .addGroup(pnlTTMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -401,6 +401,9 @@ public class C2_Menu extends JFrame {
         );
 
         pnlTLQL.setBackground(new java.awt.Color(204, 255, 204));
+        pnlTLQL.setMaximumSize(new java.awt.Dimension(330, 150));
+        pnlTLQL.setMinimumSize(new java.awt.Dimension(330, 150));
+        pnlTLQL.setPreferredSize(new java.awt.Dimension(330, 150));
 
         javax.swing.GroupLayout pnlTLQLLayout = new javax.swing.GroupLayout(pnlTLQL);
         pnlTLQL.setLayout(pnlTLQLLayout);
@@ -418,7 +421,10 @@ public class C2_Menu extends JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(pnlSDM1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(pnlTLQL, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(1, 1, 1)
+                .addComponent(pnlTLQL, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addGap(1, 1, 1))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

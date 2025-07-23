@@ -9,7 +9,7 @@ public class C2_SetImage {
         SwingUtilities.invokeLater(() -> {
             try {
                 // Set kích thước đúng với ảnh
-                int width = 318;
+                int width = 330;
                 int height = 150;
                 panel.setPreferredSize(new Dimension(width, height));
                 panel.setSize(width, height);  // ép kích thước
