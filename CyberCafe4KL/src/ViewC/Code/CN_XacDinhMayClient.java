@@ -22,7 +22,7 @@ public class CN_XacDinhMayClient {
                     InetAddress addr = addresses.nextElement();
                     String ip = addr.getHostAddress();
 
-                    // IPv4 & IP Radmin VPN (26.x.x.x)
+                    // IP Radmin VPN (26.x.x.x)
                     if (ip.startsWith("26.") && addr instanceof Inet4Address) {
                         return ip;
                     }

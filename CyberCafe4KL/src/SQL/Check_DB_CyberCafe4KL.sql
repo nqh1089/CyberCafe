@@ -11,6 +11,8 @@ SELECT
 FROM Computer
 ORDER BY IDComputer;
 
+SELECT * FROM Account
+
 -- Cấu hình máy
 SELECT NameComputer, CPU, RAM, GPU, Monitor, PricePerMinute FROM Computer;
 

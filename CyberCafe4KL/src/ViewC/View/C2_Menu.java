@@ -1,9 +1,13 @@
 package ViewC.View;
 
 import Controller.DBConnection;
+import ViewAD.View.AD_ChangePW;
+import ViewC.Code.C2_ChiPhiGio;
 import ViewC.Code.CN_BienToanCuc;
 import ViewC.Code.C2_SetImage;
 import ViewC.Code.C2_ClientIcons;
+import ViewC.Code.C2_ThoiGianConLai;
+import ViewC.Code.C2_ThoiGianSuDung;
 import ViewC.Code.CN_LogoutMay;
 
 import javax.swing.*;
@@ -17,6 +21,7 @@ import java.time.Instant;
 public class C2_Menu extends JFrame {
 
     public static C2_Menu instance;
+    public Timer timer;
 
     public C2_Menu() {
         initComponents();
@@ -28,71 +33,101 @@ public class C2_Menu extends JFrame {
 
         this.setResizable(false); // Không cho phóng to
         chanDongX(); // Không cho tắt giao diện khi đang đăng nhập
+
+        // 60 giây load lại tt 1 lần
+        Timer timer = new Timer(60_000, e -> CapNhatThongTinDongBo());
+        timer.start();
+
+    }
+
+    private void CapNhatThongTinDongBo() {
+        long usedMin = C2_ThoiGianSuDung.getThoiGianSuDungPhut(CN_BienToanCuc.IDComputer, CN_BienToanCuc.IDAccount);
+        lblThoiGianSD.setText(usedMin + " phút");
+
+        long conLaiMin = C2_ThoiGianConLai.getThoiGianConLaiPhut(CN_BienToanCuc.IDAccount, CN_BienToanCuc.IDComputer);
+        lblThoiGianConLai.setText(conLaiMin + " phút");
+
+        double chiPhiGio = C2_ChiPhiGio.getChiPhiGio(CN_BienToanCuc.IDComputer, usedMin);
+        lblChiPhiGio.setText(formatTien(chiPhiGio) + " đ");
+
+        System.out.println("[AutoUpdate] Đã cập nhật thông tin máy");
     }
 
     private void LoadThongTinMay() {
-    lblTaiKhoan.setText(
-            CN_BienToanCuc.TenTaiKhoan.equals("") ? "--" : CN_BienToanCuc.TenTaiKhoan
-    );
+        lblTaiKhoan.setText(
+                CN_BienToanCuc.TenTaiKhoan.equals("") ? "--" : CN_BienToanCuc.TenTaiKhoan
+        );
 
-    String tenMay = CN_BienToanCuc.TenMay.equals("") ? "MÁY " : CN_BienToanCuc.TenMay;
-    lblTenMay.setText(tenMay);
+        String tenMay = CN_BienToanCuc.TenMay.equals("") ? "MÁY " : CN_BienToanCuc.TenMay;
+        lblTenMay.setText(tenMay);
 
-    lblTrangThai.setText("--");
-    lblGioBatDau.setText("--:--");
-    lblThoiGianSD.setText("-- phút");
-    lblThoiGianConLai.setText("-- phút");
-    lblChiPhiGio.setText("0 đ");
-    lblChiPhiDV.setText("0 đ");
-    lblSoDu.setText("-- đ"); // ✅ Mặc định
+        lblTrangThai.setText("--");
+        lblGioBatDau.setText("--:--");
+        lblThoiGianSD.setText("-- phút");
+        lblThoiGianConLai.setText("-- phút");
+        lblChiPhiGio.setText("0 đ");
+        lblChiPhiDV.setText("0 đ");
+        lblSoDu.setText("-- đ"); // Mặc định
 
-    try {
-        Connection conn = DBConnection.getConnection();
-        if (conn != null) {
-            String sql = "SELECT TOP 1 StartTime FROM ComputerUsage "
-                    + "WHERE IDComputer = ? AND IDAccount = ? AND EndTime IS NULL "
-                    + "ORDER BY StartTime DESC";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, CN_BienToanCuc.IDComputer);
-            ps.setInt(2, CN_BienToanCuc.IDAccount);
+        try {
+            Connection conn = DBConnection.getConnection();
+            if (conn != null) {
+                String sql = "SELECT TOP 1 StartTime FROM ComputerUsage "
+                        + "WHERE IDComputer = ? AND IDAccount = ? AND EndTime IS NULL "
+                        + "ORDER BY StartTime DESC";
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, CN_BienToanCuc.IDComputer);
+                ps.setInt(2, CN_BienToanCuc.IDAccount);
 
-            ResultSet rs = ps.executeQuery();
+                ResultSet rs = ps.executeQuery();
 
-            if (rs.next()) {
-                Timestamp startTime = rs.getTimestamp("StartTime");
+                if (rs.next()) {
+                    Timestamp startTime = rs.getTimestamp("StartTime");
 
-                lblTrangThai.setText("Đang sử dụng");
-                lblGioBatDau.setText(new SimpleDateFormat("HH:mm:ss").format(startTime));
+                    lblTrangThai.setText("Đang sử dụng");
+                    lblGioBatDau.setText(new SimpleDateFormat("HH:mm:ss").format(startTime));
 
-                long usedMin = Duration.between(startTime.toInstant(), Instant.now()).toMinutes();
+                    long usedMin = Duration.between(startTime.toInstant(), Instant.now()).toMinutes();
+                    lblThoiGianSD.setText(usedMin + " phút");
+
+                    int cost = (int) usedMin * 200;
+                    lblChiPhiGio.setText(formatTien(cost) + " đ");
+                }
+
+                rs.close();
+                ps.close();
+
+                // Lấy số dư
+                String sqlBal = "SELECT Balance FROM Account WHERE IDAccount = ?";
+                PreparedStatement psBal = conn.prepareStatement(sqlBal);
+                psBal.setInt(1, CN_BienToanCuc.IDAccount);
+                ResultSet rsBal = psBal.executeQuery();
+                if (rsBal.next()) {
+                    lblSoDu.setText(formatTien(rsBal.getDouble("Balance")) + " đ");
+                }
+
+                // Thời gian sử dụng
+                long usedMin = C2_ThoiGianSuDung.getThoiGianSuDungPhut(CN_BienToanCuc.IDComputer, CN_BienToanCuc.IDAccount);
                 lblThoiGianSD.setText(usedMin + " phút");
 
-                int cost = (int) usedMin * 200;
-                lblChiPhiGio.setText(cost + " đ");
+                // Thời gian còn lại
+                long conLaiMin = C2_ThoiGianConLai.getThoiGianConLaiPhut(CN_BienToanCuc.IDAccount, CN_BienToanCuc.IDComputer);
+                lblThoiGianConLai.setText(conLaiMin + " phút");
+
+                // Chi phí giờ chơi
+                double chiPhiGio = C2_ChiPhiGio.getChiPhiGio(CN_BienToanCuc.IDComputer, usedMin);
+                lblChiPhiGio.setText(formatTien(chiPhiGio) + " đ");
+                rsBal.close();
+                psBal.close();
+
+                conn.close();
+            } else {
+                System.out.println("Không thể kết nối DB khi LoadThongTinMay");
             }
-
-            rs.close();
-            ps.close();
-
-            // ✅ Lấy số dư
-            String sqlBal = "SELECT Balance FROM Account WHERE IDAccount = ?";
-            PreparedStatement psBal = conn.prepareStatement(sqlBal);
-            psBal.setInt(1, CN_BienToanCuc.IDAccount);
-            ResultSet rsBal = psBal.executeQuery();
-            if (rsBal.next()) {
-                lblSoDu.setText(rsBal.getDouble("Balance") + " đ");
-            }
-            rsBal.close();
-            psBal.close();
-
-            conn.close();
-        } else {
-            System.out.println("Không thể kết nối DB khi LoadThongTinMay");
+        } catch (Exception e) {
+            System.out.println("Lỗi LoadThongTinMay: " + e.getMessage());
         }
-    } catch (Exception e) {
-        System.out.println("Lỗi LoadThongTinMay: " + e.getMessage());
     }
-}
 
     // Hàm xử lý sự kiện click từ tất cả JLabel trong pnlCN
     private void addEventHandlers() {
@@ -109,7 +144,7 @@ public class C2_Menu extends JFrame {
                     }
                 });
             } else if (comp instanceof Container inner) {
-                addLabelMouseListeners(inner); // đệ quy cho mọi container lồng nhau
+                addLabelMouseListeners(inner);
             }
         }
     }
@@ -127,7 +162,7 @@ public class C2_Menu extends JFrame {
                 this.dispose();
                 break;
             case "matkhau":
-                JOptionPane.showMessageDialog(this, "Chức năng Đổi mật khẩu đang phát triển");
+                new AD_ChangePW().setVisible(true);
                 break;
             case "khoamay":
                 new C1_GiaoDienTreo().setVisible(true); // Mở form khóa máy
@@ -136,6 +171,10 @@ public class C2_Menu extends JFrame {
             default:
                 JOptionPane.showMessageDialog(this, "Không xác định chức năng: " + tenNut);
         }
+    }
+
+    private String formatTien(double soTien) {
+        return String.format("%,.0f", soTien).replace(',', ' ');
     }
 
     private void chanDongX() {

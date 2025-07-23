@@ -34,11 +34,11 @@ public class CN_LoginMay {
 
             int idAccount = rsAcc.getInt("IDAccount");
             String tenTK = rsAcc.getString("NameAccount");
-            double balance = rsAcc.getDouble("Balance"); // ✅ Lấy số dư
+            double balance = rsAcc.getDouble("Balance"); // Lấy số dư
             rsAcc.close();
             psAcc.close();
 
-            // ✅ Kiểm tra số dư > 0
+            // Kiểm tra số dư > 0
             if (balance <= 0) {
                 System.out.println("Số dư tài khoản không đủ. Vui lòng nạp thêm tiền.");
                 return false;
