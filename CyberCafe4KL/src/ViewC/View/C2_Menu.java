@@ -31,55 +31,68 @@ public class C2_Menu extends JFrame {
     }
 
     private void LoadThongTinMay() {
-        lblTaiKhoan.setText(
-                CN_BienToanCuc.TenTaiKhoan.equals("") ? "--" : CN_BienToanCuc.TenTaiKhoan
-        );
+    lblTaiKhoan.setText(
+            CN_BienToanCuc.TenTaiKhoan.equals("") ? "--" : CN_BienToanCuc.TenTaiKhoan
+    );
 
-        String tenMay = CN_BienToanCuc.TenMay.equals("") ? "MÁY " : CN_BienToanCuc.TenMay;
-        lblTenMay.setText(tenMay);
+    String tenMay = CN_BienToanCuc.TenMay.equals("") ? "MÁY " : CN_BienToanCuc.TenMay;
+    lblTenMay.setText(tenMay);
 
-        lblTrangThai.setText("--");
-        lblGioBatDau.setText("--:--");
-        lblThoiGianSD.setText("-- phút");
-        lblThoiGianConLai.setText("-- phút");
-        lblChiPhiGio.setText("0 đ");
-        lblChiPhiDV.setText("0 đ");
+    lblTrangThai.setText("--");
+    lblGioBatDau.setText("--:--");
+    lblThoiGianSD.setText("-- phút");
+    lblThoiGianConLai.setText("-- phút");
+    lblChiPhiGio.setText("0 đ");
+    lblChiPhiDV.setText("0 đ");
+    lblSoDu.setText("-- đ"); // ✅ Mặc định
 
-        try {
-            Connection conn = DBConnection.getConnection();
-            if (conn != null) {
-                String sql = "SELECT TOP 1 StartTime FROM ComputerUsage "
-                        + "WHERE IDComputer = ? AND IDAccount = ? AND EndTime IS NULL "
-                        + "ORDER BY StartTime DESC";
-                PreparedStatement ps = conn.prepareStatement(sql);
-                ps.setInt(1, CN_BienToanCuc.IDComputer);
-                ps.setInt(2, CN_BienToanCuc.IDAccount);
+    try {
+        Connection conn = DBConnection.getConnection();
+        if (conn != null) {
+            String sql = "SELECT TOP 1 StartTime FROM ComputerUsage "
+                    + "WHERE IDComputer = ? AND IDAccount = ? AND EndTime IS NULL "
+                    + "ORDER BY StartTime DESC";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, CN_BienToanCuc.IDComputer);
+            ps.setInt(2, CN_BienToanCuc.IDAccount);
 
-                ResultSet rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
 
-                if (rs.next()) {
-                    Timestamp startTime = rs.getTimestamp("StartTime");
+            if (rs.next()) {
+                Timestamp startTime = rs.getTimestamp("StartTime");
 
-                    lblTrangThai.setText("Đang sử dụng");
-                    lblGioBatDau.setText(new SimpleDateFormat("HH:mm:ss").format(startTime));
+                lblTrangThai.setText("Đang sử dụng");
+                lblGioBatDau.setText(new SimpleDateFormat("HH:mm:ss").format(startTime));
 
-                    long usedMin = Duration.between(startTime.toInstant(), Instant.now()).toMinutes();
-                    lblThoiGianSD.setText(usedMin + " phút");
+                long usedMin = Duration.between(startTime.toInstant(), Instant.now()).toMinutes();
+                lblThoiGianSD.setText(usedMin + " phút");
 
-                    int cost = (int) usedMin * 200;
-                    lblChiPhiGio.setText(cost + " đ");
-                }
-
-                rs.close();
-                ps.close();
-                conn.close();
-            } else {
-                System.out.println("Không thể kết nối DB khi LoadThongTinMay");
+                int cost = (int) usedMin * 200;
+                lblChiPhiGio.setText(cost + " đ");
             }
-        } catch (Exception e) {
-            System.out.println("Lỗi LoadThongTinMay: " + e.getMessage());
+
+            rs.close();
+            ps.close();
+
+            // ✅ Lấy số dư
+            String sqlBal = "SELECT Balance FROM Account WHERE IDAccount = ?";
+            PreparedStatement psBal = conn.prepareStatement(sqlBal);
+            psBal.setInt(1, CN_BienToanCuc.IDAccount);
+            ResultSet rsBal = psBal.executeQuery();
+            if (rsBal.next()) {
+                lblSoDu.setText(rsBal.getDouble("Balance") + " đ");
+            }
+            rsBal.close();
+            psBal.close();
+
+            conn.close();
+        } else {
+            System.out.println("Không thể kết nối DB khi LoadThongTinMay");
         }
+    } catch (Exception e) {
+        System.out.println("Lỗi LoadThongTinMay: " + e.getMessage());
     }
+}
 
     // Hàm xử lý sự kiện click từ tất cả JLabel trong pnlCN
     private void addEventHandlers() {

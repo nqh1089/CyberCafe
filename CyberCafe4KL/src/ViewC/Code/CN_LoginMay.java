@@ -19,7 +19,7 @@ public class CN_LoginMay {
             }
 
             // 1. Kiểm tra tài khoản hợp lệ
-            String sqlAcc = "SELECT IDAccount, NameAccount FROM Account WHERE NameAccount = ? AND PWAccount = ?";
+            String sqlAcc = "SELECT IDAccount, NameAccount, Balance FROM Account WHERE NameAccount = ? AND PWAccount = ?";
             PreparedStatement psAcc = conn.prepareStatement(sqlAcc);
             psAcc.setString(1, username);
             psAcc.setString(2, password);
@@ -34,8 +34,15 @@ public class CN_LoginMay {
 
             int idAccount = rsAcc.getInt("IDAccount");
             String tenTK = rsAcc.getString("NameAccount");
+            double balance = rsAcc.getDouble("Balance"); // ✅ Lấy số dư
             rsAcc.close();
             psAcc.close();
+
+            // ✅ Kiểm tra số dư > 0
+            if (balance <= 0) {
+                System.out.println("Số dư tài khoản không đủ. Vui lòng nạp thêm tiền.");
+                return false;
+            }
 
             // 2. Lấy IP Radmin VPN của máy
             String ipMay = CN_LayTenMayTheoIP.getIPRadminHienTai();

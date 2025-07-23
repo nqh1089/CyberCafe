@@ -26,13 +26,13 @@ public class CN_LogoutMay {
             Connection conn = DBConnection.getConnection();
             if (conn != null) {
 
-                // Cập nhật trạng thái máy
+                // ✅ 1. Cập nhật trạng thái máy
                 String sqlUpdateComputer = "UPDATE Computer SET ComputerStatus = 1 WHERE IDComputer = ?";
                 PreparedStatement psComputer = conn.prepareStatement(sqlUpdateComputer);
                 psComputer.setInt(1, idComputer);
                 psComputer.executeUpdate();
 
-                // Cập nhật trạng thái tài khoản
+                // ✅ 2. Cập nhật trạng thái tài khoản
                 if (idAccount != -1) {
                     String sqlUpdateAccount = "UPDATE Account SET OnlineStatus = 0 WHERE IDAccount = ?";
                     PreparedStatement psAccount = conn.prepareStatement(sqlUpdateAccount);
@@ -40,7 +40,7 @@ public class CN_LogoutMay {
                     psAccount.executeUpdate();
                 }
 
-                // Chốt ComputerUsage
+                // ✅ 3. Chốt ComputerUsage
                 String sqlUsage = "UPDATE ComputerUsage SET EndTime = GETDATE() "
                         + "WHERE IDComputer = ? AND IDAccount = ? AND EndTime IS NULL";
                 PreparedStatement psUsage = conn.prepareStatement(sqlUsage);
@@ -49,7 +49,43 @@ public class CN_LogoutMay {
                 psUsage.executeUpdate();
                 psUsage.close();
 
-                // Chốt LogAccess
+                // ✅ 4. Tính Cost và cập nhật vào ComputerUsage + trừ Balance
+                String sqlGetCost = """
+                    SELECT TOP 1 CU.IDUsage, DATEDIFF(MINUTE, CU.StartTime, CU.EndTime) * C.PricePerMinute AS Cost
+                    FROM ComputerUsage CU JOIN Computer C ON CU.IDComputer = C.IDComputer
+                    WHERE CU.IDComputer = ? AND CU.IDAccount = ? AND CU.EndTime IS NOT NULL
+                    ORDER BY CU.EndTime DESC
+                    """;
+                PreparedStatement psCost = conn.prepareStatement(sqlGetCost);
+                psCost.setInt(1, idComputer);
+                psCost.setInt(2, idAccount);
+                var rsCost = psCost.executeQuery();
+                if (rsCost.next()) {
+                    int idUsage = rsCost.getInt("IDUsage");
+                    double cost = rsCost.getDouble("Cost");
+
+                    // Update lại Cost cho ComputerUsage
+                    String sqlUpdateCU = "UPDATE ComputerUsage SET Cost = ? WHERE IDUsage = ?";
+                    PreparedStatement psUpdateCU = conn.prepareStatement(sqlUpdateCU);
+                    psUpdateCU.setDouble(1, cost);
+                    psUpdateCU.setInt(2, idUsage);
+                    psUpdateCU.executeUpdate();
+                    psUpdateCU.close();
+
+                    // Trừ tiền Balance
+                    String sqlTruBalance = "UPDATE Account SET Balance = Balance - ? WHERE IDAccount = ?";
+                    PreparedStatement psTruBalance = conn.prepareStatement(sqlTruBalance);
+                    psTruBalance.setDouble(1, cost);
+                    psTruBalance.setInt(2, idAccount);
+                    psTruBalance.executeUpdate();
+                    psTruBalance.close();
+
+                    System.out.println("Đã tính phí: " + cost + " đ → Trừ vào Balance");
+                }
+                rsCost.close();
+                psCost.close();
+
+                // ✅ 5. Chốt LogAccess
                 String sqlLog = "UPDATE LogAccess SET ThoiGianKetThuc = GETDATE() WHERE IDComputer = ? AND IDAccount = ? AND ThoiGianKetThuc IS NULL";
                 PreparedStatement psLog = conn.prepareStatement(sqlLog);
                 psLog.setInt(1, idComputer);
@@ -59,16 +95,16 @@ public class CN_LogoutMay {
                 conn.close();
             }
 
-            // Reset biến toàn cục
+            // ✅ 6. Reset biến toàn cục
             CN_BienToanCuc.IDAccount = -1;
             CN_BienToanCuc.IDComputer = -1;
             CN_BienToanCuc.TenMay = "";
             CN_BienToanCuc.TenTaiKhoan = "";
 
-            // ✅ 6. Đóng tất cả form đang mở
+            // ✅ 7. Đóng tất cả form đang mở
             closeAllClientForms();
 
-            // ✅ 7. Mở lại giao diện chờ
+            // ✅ 8. Mở lại giao diện chờ
             new C1_GiaoDienCho().setVisible(true);
 
             System.out.println("Đăng xuất thành công → Máy Trống");
@@ -80,22 +116,18 @@ public class CN_LogoutMay {
 
     private static void closeAllClientForms() {
         try {
-            // Đóng Menu
             if (C2_Menu.instance != null) {
                 C2_Menu.instance.dispose();
                 C2_Menu.instance = null;
             }
-            // Đóng Chat
             if (C2_Chat.instance != null) {
                 C2_Chat.instance.dispose();
                 C2_Chat.instance = null;
             }
-            // Đóng Order
             if (C2_Order.instance != null) {
                 C2_Order.instance.dispose();
                 C2_Order.instance = null;
             }
-            // Đóng Đổi mật khẩu
             if (C2_ChangePW.instance != null) {
                 C2_ChangePW.instance.dispose();
                 C2_ChangePW.instance = null;

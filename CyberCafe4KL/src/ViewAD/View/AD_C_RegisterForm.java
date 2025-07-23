@@ -1,16 +1,19 @@
 package ViewAD.View;
 
+import ViewAD.Code.RG_QR;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import java.sql.CallableStatement;
-
+import java.sql.ResultSet;
+import javax.swing.JFrame;
 
 public class AD_C_RegisterForm extends javax.swing.JFrame {
 
     public AD_C_RegisterForm() {
         initComponents();
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
     @SuppressWarnings("unchecked")
@@ -30,6 +33,8 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
         txtCCCD = new javax.swing.JTextField();
         btnRegister = new javax.swing.JButton();
         cbxGender = new javax.swing.JComboBox<>();
+        cbxBalance = new javax.swing.JComboBox<>();
+        Balance = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -88,6 +93,12 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
 
         cbxGender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nam", "Nữ" }));
 
+        cbxBalance.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "20.000", "50.000", "100.000", "200.000", "500.000" }));
+
+        Balance.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        Balance.setForeground(new java.awt.Color(255, 255, 255));
+        Balance.setText("Nạp tiền:");
+
         javax.swing.GroupLayout pnlRegisterLayout = new javax.swing.GroupLayout(pnlRegister);
         pnlRegister.setLayout(pnlRegisterLayout);
         pnlRegisterLayout.setHorizontalGroup(
@@ -105,8 +116,10 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
                             .addComponent(txtPhoneNumber)
                             .addComponent(txtNameAccount, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
                             .addComponent(Gender)
-                            .addComponent(btnRegister, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addComponent(PhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(btnRegister, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(Balance))
+                        .addComponent(PhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbxBalance, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(73, 73, 73))
         );
         pnlRegisterLayout.setVerticalGroup(
@@ -130,9 +143,13 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
                 .addComponent(Gender)
                 .addGap(15, 15, 15)
                 .addComponent(cbxGender, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(39, 39, 39)
+                .addGap(18, 18, 18)
+                .addComponent(Balance)
+                .addGap(15, 15, 15)
+                .addComponent(cbxBalance, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(49, 49, 49)
                 .addComponent(btnRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(73, Short.MAX_VALUE))
+                .addContainerGap(54, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout pnlMain2Layout = new javax.swing.GroupLayout(pnlMain2);
@@ -201,13 +218,14 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
         String cccd = txtCCCD.getText().trim();
         String gender = cbxGender.getSelectedItem().toString();
 
-        // Kiểm tra rỗng
+        String balanceStr = cbxBalance.getSelectedItem().toString().replace(".", "").replace(",", "");
+        double balance = Double.parseDouble(balanceStr);
+
         if (name.isEmpty() || phone.isEmpty() || cccd.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.");
             return;
         }
 
-        // Kiểm tra định dạng
         if (!cccd.matches("\\d{12}")) {
             JOptionPane.showMessageDialog(this, "CCCD phải gồm đúng 12 chữ số.");
             return;
@@ -218,78 +236,48 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
             return;
         }
 
+        // Lấy tên admin đang đăng nhập từ CN_TaiKhoanDangNhap
+        String adminName = ViewAD.Code.CN_TaiKhoanDangNhap.getTenTaiKhoan();
+
+        int idAccountAdmin = -1;  // Khai báo biến ở đây!
+
         try (Connection conn = Controller.DBConnection.getConnection()) {
-            CallableStatement cs = conn.prepareCall("{? = call SP_DangKyNhanhClient(?, ?, ?, ?)}");
-            cs.registerOutParameter(1, java.sql.Types.INTEGER);
-            cs.setString(2, name);
-            cs.setString(3, phone);
-            cs.setString(4, gender);
-            cs.setString(5, cccd);
-
-            cs.execute();
-
-            int result = cs.getInt(1);
-
-            switch (result) {
-                case 0 -> {
-                    JOptionPane.showMessageDialog(this,
-                            "Đăng ký thành công!\nMật khẩu mặc định: khach123",
-                            "THÀNH CÔNG",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
-                    this.dispose();
-                }
-                case 1 ->
-                    JOptionPane.showMessageDialog(this, "Tên tài khoản đã tồn tại.", "Trùng dữ liệu", JOptionPane.WARNING_MESSAGE);
-                case 2 ->
-                    JOptionPane.showMessageDialog(this, "Số điện thoại đã tồn tại.", "Trùng dữ liệu", JOptionPane.WARNING_MESSAGE);
-                case 3 ->
-                    JOptionPane.showMessageDialog(this, "CCCD đã tồn tại.", "Trùng dữ liệu", JOptionPane.WARNING_MESSAGE);
-                default ->
-                    JOptionPane.showMessageDialog(this, "Lỗi không xác định!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            String sql = "SELECT IDAccount FROM Account WHERE NameAccount = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, adminName);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                idAccountAdmin = rs.getInt("IDAccount");
             }
-
+            rs.close();
+            ps.close();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi hệ thống: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi lấy ID Admin: " + e.getMessage());
+            return;
         }
+
+        if (idAccountAdmin == -1) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy ID của tài khoản Admin đang đăng nhập.");
+            return;
+        }
+
+        RG_QR qrForm = new RG_QR(
+                null,
+                name,
+                (int) balance,
+                0,
+                (int) balance,
+                phone,
+                gender,
+                cccd,
+                idAccountAdmin,
+                this
+        );
+        qrForm.setVisible(true);
+
+
     }//GEN-LAST:event_btnRegisterActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AD_C_RegisterForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AD_C_RegisterForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AD_C_RegisterForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AD_C_RegisterForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new AD_C_RegisterForm().setVisible(true);
@@ -298,11 +286,13 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel Balance;
     private javax.swing.JLabel CCCD;
     private javax.swing.JLabel Gender;
     private javax.swing.JLabel NameAccount;
     private javax.swing.JLabel PhoneNumber;
     private javax.swing.JButton btnRegister;
+    private javax.swing.JComboBox<String> cbxBalance;
     private javax.swing.JComboBox<String> cbxGender;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel pnlMain;
