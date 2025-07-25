@@ -103,3 +103,6 @@ ORDER BY IDAccount ASC;
 
 SELECT * FROM Message
 
+
+
+SELECT * FROM Assets_Anh

@@ -26,7 +26,7 @@ public class C2_Chat extends javax.swing.JFrame {
         // k cho đóng form (Vô hiệu hoá nút X)
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
-        String iconPath = "E:/SU25/BL2/PRO230_DATN/CyberCafe4KL/CyberCafe4KL/src/Assets/Client/Send.png";
+        String iconPath = "src/Assets/img/Send.png";
         ImageIcon icon = new ImageIcon(iconPath);
         Image img = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         lblSend.setIcon(new ImageIcon(img));
@@ -79,7 +79,6 @@ public class C2_Chat extends javax.swing.JFrame {
 //                }
 //            }
 //        });
-
         SwingUtilities.invokeLater(() -> {
             try {
                 Thread.sleep(1000);
@@ -91,8 +90,8 @@ public class C2_Chat extends javax.swing.JFrame {
             }
         });
     }
-    
-        public static void showChat() {
+
+    public static void showChat() {
         if (instance == null) {
             instance = new C2_Chat();
         }

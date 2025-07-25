@@ -214,7 +214,13 @@ public class C1_GiaoDienCho extends JFrame {
 
     class BackgroundPanel extends JPanel {
 
-        private final ImageIcon gifIcon = new ImageIcon("E:/SU25/BL2/img/0701.gif");
+        private final ImageIcon gifIcon;
+
+        public BackgroundPanel() {
+            String fileName = "GiaoDienCho.gif"; // SELECT DuongDan FROM Assets_Anh WHERE TenAnh = 'GiaoDienCho'
+            String path = "src/Assets/img/" + fileName;
+            gifIcon = new ImageIcon(path);
+        }
 
         @Override
         protected void paintComponent(Graphics g) {

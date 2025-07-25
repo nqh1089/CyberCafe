@@ -200,7 +200,13 @@ public class C1_GiaoDienTreo extends JFrame {
 
     class BackgroundPanel extends JPanel {
 
-        private final ImageIcon gifIcon = new ImageIcon("E:/SU25/BL2/img/TreoMay.jpg");
+        private final ImageIcon gifIcon;
+
+        public BackgroundPanel() {
+            String fileName = "TreoMay.jpg"; // SELECT DuongDan FROM Assets_Anh WHERE TenAnh = 'GiaoDienTreo'
+            String path = "src/Assets/img/" + fileName;
+            gifIcon = new ImageIcon(path);
+        }
 
         @Override
         protected void paintComponent(Graphics g) {

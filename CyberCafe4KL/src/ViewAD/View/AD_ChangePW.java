@@ -23,7 +23,6 @@ public class AD_ChangePW extends javax.swing.JFrame {
         pnlMain2 = new javax.swing.JPanel();
         pnlRegister = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        txtOldPW = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         txtNewPW = new javax.swing.JPasswordField();
         cbShow = new javax.swing.JCheckBox();
@@ -31,6 +30,7 @@ public class AD_ChangePW extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         txtName = new javax.swing.JTextField();
+        txtOldPW = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -43,12 +43,6 @@ public class AD_ChangePW extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Old Password:");
-
-        txtOldPW.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtOldPWActionPerformed(evt);
-            }
-        });
 
         jLabel3.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
@@ -94,6 +88,12 @@ public class AD_ChangePW extends javax.swing.JFrame {
             }
         });
 
+        txtOldPW.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtOldPWActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnlRegisterLayout = new javax.swing.GroupLayout(pnlRegister);
         pnlRegister.setLayout(pnlRegisterLayout);
         pnlRegisterLayout.setHorizontalGroup(
@@ -108,14 +108,15 @@ public class AD_ChangePW extends javax.swing.JFrame {
                         .addGap(0, 68, Short.MAX_VALUE)
                         .addGroup(pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(pnlRegisterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(pnlRegisterLayout.createSequentialGroup()
                                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txtOldPW, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(13, 13, 13))
                             .addComponent(btnChangePW, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtNewPW, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cbShow, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtOldPW, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(74, 74, 74))))
         );
         pnlRegisterLayout.setVerticalGroup(
@@ -123,15 +124,15 @@ public class AD_ChangePW extends javax.swing.JFrame {
             .addGroup(pnlRegisterLayout.createSequentialGroup()
                 .addGap(35, 35, 35)
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                .addGap(31, 31, 31)
                 .addComponent(jLabel5)
                 .addGap(15, 15, 15)
                 .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
                 .addComponent(jLabel2)
                 .addGap(15, 15, 15)
-                .addComponent(txtOldPW, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
+                .addComponent(txtOldPW, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
                 .addComponent(jLabel3)
                 .addGap(15, 15, 15)
                 .addComponent(txtNewPW, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -139,7 +140,7 @@ public class AD_ChangePW extends javax.swing.JFrame {
                 .addComponent(cbShow)
                 .addGap(24, 24, 24)
                 .addComponent(btnChangePW, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(105, 105, 105))
+                .addContainerGap(94, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout pnlMain2Layout = new javax.swing.GroupLayout(pnlMain2);
@@ -190,10 +191,6 @@ public class AD_ChangePW extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtOldPWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtOldPWActionPerformed
-
-    }//GEN-LAST:event_txtOldPWActionPerformed
-
     private void btnChangePWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangePWActionPerformed
         String name = txtName.getText().trim();
         String oldPw = txtOldPW.getText().trim();
@@ -243,11 +240,9 @@ public class AD_ChangePW extends javax.swing.JFrame {
     }//GEN-LAST:event_btnChangePWActionPerformed
 
     private void cbShowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbShowActionPerformed
-        if (cbShow.isSelected()) {
-            txtNewPW.setEchoChar((char) 0); // Hiện mật khẩu rõ
-        } else {
-            txtNewPW.setEchoChar('*'); // Ẩn lại mật khẩu
-        }
+        char echoChar = cbShow.isSelected() ? 0 : '*';
+        txtOldPW.setEchoChar(echoChar);
+        txtNewPW.setEchoChar(echoChar);
     }//GEN-LAST:event_cbShowActionPerformed
 
     private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
@@ -257,6 +252,10 @@ public class AD_ChangePW extends javax.swing.JFrame {
     private void txtNewPWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNewPWActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNewPWActionPerformed
+
+    private void txtOldPWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtOldPWActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtOldPWActionPerformed
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -278,6 +277,6 @@ public class AD_ChangePW extends javax.swing.JFrame {
     private javax.swing.JPanel pnlRegister;
     private javax.swing.JTextField txtName;
     private javax.swing.JPasswordField txtNewPW;
-    private javax.swing.JTextField txtOldPW;
+    private javax.swing.JPasswordField txtOldPW;
     // End of variables declaration//GEN-END:variables
 }

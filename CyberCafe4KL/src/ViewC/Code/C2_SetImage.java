@@ -14,8 +14,11 @@ public class C2_SetImage {
                 panel.setPreferredSize(new Dimension(width, height));
                 panel.setSize(width, height);  // ép kích thước
 
-                // Load ảnh từ đường dẫn tuyệt đối
-                ImageIcon icon = new ImageIcon("E:/SU25/BL2/img/imgTLQL.jpg");
+                // Ví dụ: tên file đã lấy từ DB
+                String imgName = "imgTLQL.jpg"; // SELECT DuongDan FROM Assets_Anh WHERE TenAnh = 'TLQL'
+                String path = "src/Assets/img/" + imgName;
+
+                ImageIcon icon = new ImageIcon(path);
                 Image img = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
                 JLabel lbl = new JLabel(new ImageIcon(img));
 

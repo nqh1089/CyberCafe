@@ -22,7 +22,7 @@ public class TAB2_CardSP {
         lblImg.setPreferredSize(new Dimension(130, 130));
 
         try {
-            String DuongDanAnh = "E:/SU25/BL2/CyberCafe4KL/CyberCafe4KL/src/Assets/Products/" + sp.getHinhAnh();
+            String DuongDanAnh = "src/Assets/Products/" + sp.getHinhAnh();
             ImageIcon icon = new ImageIcon(DuongDanAnh);
             Image img = icon.getImage().getScaledInstance(130, 130, Image.SCALE_SMOOTH);
             lblImg.setIcon(new ImageIcon(img));

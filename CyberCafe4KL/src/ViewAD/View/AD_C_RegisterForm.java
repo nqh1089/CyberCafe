@@ -13,7 +13,8 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
 
     public AD_C_RegisterForm() {
         initComponents();
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     }
 
     @SuppressWarnings("unchecked")
