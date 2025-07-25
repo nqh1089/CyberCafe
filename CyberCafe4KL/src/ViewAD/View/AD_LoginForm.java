@@ -216,10 +216,10 @@ public class AD_LoginForm extends javax.swing.JFrame {
                 }
 
                 if (role.equalsIgnoreCase("ADMIN") || role.equalsIgnoreCase("BOSS")) {
-                    // ✅ Lưu thông tin đăng nhập
+                    // Lưu thông tin đăng nhập
                     CN_TaiKhoanDangNhap.setTenTaiKhoan(name);
 
-                    // ✅ Khởi động server nếu chưa có
+                    // Khởi động server nếu chưa có
                     if (CN_ChatAdmin.ncChatServer == null || !CN_ChatAdmin.ncChatServer.isServerRunning()) {
                         CN_ChatAdmin.ncChatServer = new NC_ChatServer();
                         CN_ChatAdmin.ncChatServer.setAdminAccountId(adminId);
@@ -227,10 +227,10 @@ public class AD_LoginForm extends javax.swing.JFrame {
                         new Thread(CN_ChatAdmin.ncChatServer).start();
                     }
 
-                    // ✅ Đặt ID Admin luôn (phòng khi server đã chạy)
+                    // Đặt ID Admin luôn (phòng khi server đã chạy)
                     CN_ChatAdmin.SetAdminInfo(adminId, name);
 
-                    // ✅ Mở giao diện chính
+                    // Mở giao diện chính
                     new ViewAD.View.AD_TAB1_DatMay().setVisible(true);
                     this.dispose();
 

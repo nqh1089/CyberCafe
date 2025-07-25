@@ -353,7 +353,7 @@ public class CN_ChatAdmin {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    GuiNCTinNhanTuAdmin(idComputer, tenMay);
+                    GuiTinNhanTuAdmin(idComputer, tenMay);
                 }
             }
         });
@@ -362,7 +362,7 @@ public class CN_ChatAdmin {
         btnSend.setBackground(Color.CYAN);
         btnSend.setForeground(Color.BLACK);
         btnSend.setFocusPainted(false);
-        btnSend.addActionListener(e -> GuiNCTinNhanTuAdmin(idComputer, tenMay));
+        btnSend.addActionListener(e -> GuiTinNhanTuAdmin(idComputer, tenMay));
 
         pnlSend.add(ncTxtSendMessage, BorderLayout.CENTER);
         pnlSend.add(btnSend, BorderLayout.EAST);
@@ -383,7 +383,7 @@ public class CN_ChatAdmin {
      * @param idComputer ID của máy Client đích.
      * @param tenMay Tên máy của Client đích.
      */
-    private static void GuiNCTinNhanTuAdmin(int idComputer, String tenMay) {
+    private static void GuiTinNhanTuAdmin(int idComputer, String tenMay) {
         String msgContent = ncTxtSendMessage.getText().trim();
         if (msgContent.isEmpty()) {
             return;
@@ -391,7 +391,7 @@ public class CN_ChatAdmin {
 
         // Kiểm tra xem server chat có đang chạy không
         if (ncChatServer == null || !ncChatServer.isServerRunning()) {
-            HienThiNCThongBaoLoi("Hệ thống chat chưa khởi động hoặc đã dừng.");
+            HienThiThongBaoLoi("Hệ thống chat chưa khởi động hoặc đã dừng.");
             return;
         }
 
@@ -399,11 +399,11 @@ public class CN_ChatAdmin {
         Integer targetClientAccountId = ncMapLoggedInClientAccounts.getOrDefault(idComputer, 0);
 
         if (!ncChatServer.IsComputerOnline(idComputer)) {
-            HienThiNCThongBaoLoi("Máy " + tenMay + " hiện không online. Không thể gửi tin.");
+            HienThiThongBaoLoi("Máy " + tenMay + " hiện không online. Không thể gửi tin.");
             return;
         }
         if (targetClientAccountId == null || targetClientAccountId == 0) {
-            HienThiNCThongBaoLoi("Máy " + tenMay + " online nhưng chưa có tài khoản đăng nhập. Không thể gửi tin.");
+            HienThiThongBaoLoi("Máy " + tenMay + " online nhưng chưa có tài khoản đăng nhập. Không thể gửi tin.");
             return;
         }
 
@@ -609,7 +609,7 @@ public class CN_ChatAdmin {
      *
      * @param message Nội dung thông báo.
      */
-    public static void HienThiNCThongBaoLoi(String message) {
+    public static void HienThiThongBaoLoi(String message) {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(null, message, "Lỗi Chat", JOptionPane.ERROR_MESSAGE);
         });
