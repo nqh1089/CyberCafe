@@ -1,31 +1,29 @@
 package ViewC.Code;
 
-/**
- * Lớp chứa các biến toàn cục được sử dụng trong ứng dụng Client.
- * Các biến này lưu trữ thông tin về máy tính hiện tại và tài khoản người dùng đang đăng nhập.
- */
+// Lớp chứa các biến toàn cục được sử dụng trong phía Client.
+//Các biến này lưu trữ thông tin về máy tính hiện tại và tài khoản người dùng đang đăng nhập.
 public class CN_BienToanCuc {
 
     /**
-     * ID tài khoản người dùng sau khi đăng nhập (tương ứng với cột IDAccount trong bảng Account).
+     * ID tài khoản người dùng sau khi đăng nhập (tương ứng với IDAccount trong bảng Account).
      * Mặc định là -1 khi chưa có tài khoản nào đăng nhập.
      */
     public static int IDAccount = -1;
 
     /**
-     * ID của máy tính đang chạy ứng dụng Client (tương ứng với cột IDComputer trong bảng Computer).
+     * ID của máy tính đang chạy ứng dụng Client (tương ứng với IDComputer trong bảng Computer).
      * Mặc định là -1 khi ID máy chưa được xác định.
      */
     public static int IDComputer = -1;
 
     /**
-     * Tên của máy tính đang chạy ứng dụng Client (tương ứng với cột NameComputer trong bảng Computer).
+     * Tên của máy tính đang chạy ứng dụng Client (tương ứng với NameComputer trong bảng Computer).
      * Mặc định là chuỗi rỗng khi tên máy chưa được xác định.
      */
     public static String TenMay = "";
 
     /**
-     * Tên tài khoản người dùng vừa đăng nhập (tương ứng với cột NameAccount trong bảng Account).
+     * Tên tài khoản người dùng vừa đăng nhập (tương ứng với NameAccount trong bảng Account).
      * Mặc định là chuỗi rỗng khi chưa có tài khoản nào đăng nhập.
      */
     public static String TenTaiKhoan = "";

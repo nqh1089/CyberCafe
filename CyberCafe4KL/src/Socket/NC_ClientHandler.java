@@ -125,9 +125,7 @@ public class NC_ClientHandler implements Runnable {
         } catch (Exception ignored) {}
     }
 
-    /**
-     * Getter để NC_ChatServer gọi lấy tên máy.
-     */
+    // Getter để NC_ChatServer gọi lấy tên máy.
     public String getComputerName() {
         return this.computerName;
     }

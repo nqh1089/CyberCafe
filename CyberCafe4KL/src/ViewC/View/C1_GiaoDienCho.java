@@ -76,7 +76,7 @@ public class C1_GiaoDienCho extends JFrame {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 
         dongHo = new Timer(1000, e -> {
-            // Nếu tên máy đang trống hoặc null → lấy lại từ IP
+            // Nếu tên máy đang trống hoặc null -> lấy lại từ IP
             if (CN_BienToanCuc.TenMay == null || CN_BienToanCuc.TenMay.isEmpty()) {
                 CN_BienToanCuc.TenMay = ViewC.Code.CN_XacDinhMayClient.getTenMayClient();
             }

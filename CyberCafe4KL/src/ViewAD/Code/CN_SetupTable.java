@@ -44,7 +44,7 @@ public class CN_SetupTable {
         scrollPane.getViewport().setBackground(nenToi);
         scrollPane.setBackground(nenToi);
 
-        // === Format tiền cho các cột nếu tên cột là "Đơn giá" hoặc "Thành tiền" ===
+        // Format tiền cho các cột nếu tên cột là "Đơn giá" hoặc "Thành tiền"
         for (int i = 0; i < columnNames.length; i++) {
             String tenCot = columnNames[i].trim().toLowerCase();
             if (tenCot.equals("đơn giá") || tenCot.equals("thành tiền")) {
