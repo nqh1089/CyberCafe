@@ -28,7 +28,7 @@ public class NC_Message implements Serializable {
     private String computerName;
     private String accountName;
 
-    private int logAccessId; // ✅ Thêm LogAccessID
+    private int logAccessId;
 
     public NC_Message(NC_MessageType type, int senderId, int receiverId, String senderName, String content, Date sentAt) {
         this.type = type;

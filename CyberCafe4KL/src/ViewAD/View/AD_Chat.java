@@ -2,38 +2,44 @@
 package ViewAD.View;
 
 import Socket.CN_ChatAdmin;
+import ViewC.Code.CN_BienToanCuc;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities; // Để cập nhật UI an toàn
 
 public class AD_Chat extends javax.swing.JFrame {
-    
+    // Chạy 1 form duy nhất
+    private static AD_Chat instance;
+
     public AD_Chat() {
         initComponents();
-
         setTitle("CyberCafe4KL_Admin Chat");
         setResizable(false);
-        // Thay đổi DefaultCloseOperation để xử lý việc đóng server một cách an toàn
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        
+        // Đặt instance khi khởi tạo lần đầu
+        instance = this;
+
+        // k cho đóng form (Vô hiệu hoá nút X)
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
         // --- Bắt đầu tích hợp CN_ChatAdmin ---
         // Set thông tin Admin trước khi hiển thị giao diện.
-        CN_ChatAdmin.SetAdminInfo(1, "Admin"); 
+        CN_ChatAdmin.SetAdminInfo(1, "Admin");
 
         // Gọi CN_ChatAdmin để vẽ lên pnlMain
         CN_ChatAdmin.HienThiGiaoDien(pnlMain);
         // --- Kết thúc tích hợp CN_ChatAdmin ---
-        
-        // Thêm WindowListener để đóng server khi JFrame đóng
-//        this.addWindowListener(new WindowAdapter() {
-//            @Override
-//            public void windowClosed(WindowEvent e) {
-//                System.out.println("AD_Chat: Cửa sổ Admin Chat đang đóng, đang tiến hành tắt server chat...");
-//                // Gọi phương thức tĩnh DongServerChat() từ CN_ChatAdmin
-//                CN_ChatAdmin.DongServerChat(); 
-//                System.out.println("AD_Chat: Server chat đã tắt.");
-//            }
-//        });
+    }
+
+    public static void showChat() {
+        if (instance == null) {
+            instance = new AD_Chat();
+        }
+        instance.setVisible(true);
+        instance.setState(JFrame.NORMAL); // Nếu đang thu nhỏ thì bật lại
+        instance.toFront(); // Đưa ra trước các cửa sổ khác
     }
 
     @SuppressWarnings("unchecked")

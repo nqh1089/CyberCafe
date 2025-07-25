@@ -399,11 +399,11 @@ public class CN_ChatAdmin {
         Integer targetClientAccountId = ncMapLoggedInClientAccounts.getOrDefault(idComputer, 0);
 
         if (!ncChatServer.IsComputerOnline(idComputer)) {
-            HienThiThongBaoLoi("Máy " + tenMay + " hiện không online. Không thể gửi tin.");
+            HienThiThongBaoLoi(tenMay + " hiện không online. Không thể gửi tin.");
             return;
         }
         if (targetClientAccountId == null || targetClientAccountId == 0) {
-            HienThiThongBaoLoi("Máy " + tenMay + " online nhưng chưa có tài khoản đăng nhập. Không thể gửi tin.");
+            HienThiThongBaoLoi(tenMay + " online nhưng chưa có tài khoản đăng nhập. Không thể gửi tin.");
             return;
         }
 
@@ -593,7 +593,7 @@ public class CN_ChatAdmin {
             JLabel lblTrangThai = ncMapLblTrangThai.get(idComputer);
             if (lblTrangThai != null) {
                 if (ncCurrentSelectedComputerId == idComputer) {
-                    // Đang mở sẵn ➜ reset Online
+                    // Đang mở sẵn -> reset Online
                     lblTrangThai.setText("Online");
                     lblTrangThai.setForeground(Color.GREEN);
                 } else {

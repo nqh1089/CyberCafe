@@ -232,6 +232,7 @@ public class AD_LoginForm extends javax.swing.JFrame {
 
                     // Mở giao diện chính
                     new ViewAD.View.AD_TAB1_DatMay().setVisible(true);
+                    new ViewAD.View.AD_Chat().setVisible(true);
                     this.dispose();
 
                 } else {

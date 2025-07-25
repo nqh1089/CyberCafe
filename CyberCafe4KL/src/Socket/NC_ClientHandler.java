@@ -26,7 +26,7 @@ public class NC_ClientHandler implements Runnable {
             this.out = new ObjectOutputStream(clientSocket.getOutputStream());
             this.in = new ObjectInputStream(clientSocket.getInputStream());
         } catch (Exception e) {
-            disconnectClient("Lỗi IO khi khởi tạo streams.");
+            disconnectClient("Lỗi");
         }
     }
 
@@ -49,7 +49,7 @@ public class NC_ClientHandler implements Runnable {
             }
 
         } catch (Exception e) {
-            disconnectClient("Client ngắt kết nối hoặc lỗi IO.");
+            disconnectClient("Client ngắt kết nối");
         }
     }
 
@@ -126,7 +126,7 @@ public class NC_ClientHandler implements Runnable {
     }
 
     /**
-     * ✅ Getter để NC_ChatServer gọi lấy tên máy.
+     * Getter để NC_ChatServer gọi lấy tên máy.
      */
     public String getComputerName() {
         return this.computerName;

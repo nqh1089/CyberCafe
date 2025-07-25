@@ -16,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
 public class AD_TAB1_DatMay extends javax.swing.JFrame {
 
     public AD_TAB1_DatMay() {
+//        this.setUndecorated(true); // Bỏ viền & thanh tiêu đề
         initComponents();
         CN_Slidebar.SetSlidebar(
                 lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan,
@@ -921,48 +922,11 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnTTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTTKActionPerformed
-        new AD_C_RegisterForm().setVisible(true); // hoặc bạn mở form login/đăng ký khác
+        new AD_C_RegisterForm().setVisible(true); // mở form login/đăng ký khác
     }//GEN-LAST:event_btnTTKActionPerformed
 
     private void btnMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMessageActionPerformed
-//        String tenMay = lblTenMay.getText().trim();
-//        String trangThai = lblTrangThai.getText().trim();
-//
-//        if (tenMay.isEmpty() || tenMay.equalsIgnoreCase("MÁY")) {
-//            JOptionPane.showMessageDialog(this, "Vui lòng chọn một máy.", "Thông báo", JOptionPane.WARNING_MESSAGE);
-//            return;
-//        }
-//
-//        if (!trangThai.equalsIgnoreCase("Đang sử dụng")) {
-//            JOptionPane.showMessageDialog(this, "Máy hiện không hoạt động, không thể gửi tin nhắn.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-//            return;
-//        }
-//
-//        try (Connection conn = Controller.DBConnection.getConnection()) {
-//            String sql = """
-//            SELECT TOP 1 A.NameAccount
-//            FROM LogAccess L
-//            JOIN Account A ON L.IDAccount = A.IDAccount
-//            JOIN Computer C ON C.IDComputer = L.IDComputer
-//            WHERE C.NameComputer = ?
-//            ORDER BY ThoiGianBatDau DESC
-//        """;
-//
-//            PreparedStatement ps = conn.prepareStatement(sql);
-//            ps.setString(1, tenMay);
-//            ResultSet rs = ps.executeQuery();
-//
-//            if (rs.next()) {
-//                String nameAcc = rs.getString("NameAccount");
-//                Socket.ChatTargetManager.setTargetNameAccount(nameAcc);
-//                new AD_Chat().setVisible(true);
-//            } else {
-//                JOptionPane.showMessageDialog(this, "Không tìm thấy tài khoản đang dùng máy.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi khi xử lý.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-//        }
+        AD_Chat.showChat();
     }//GEN-LAST:event_btnMessageActionPerformed
 
     private void btnLockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLockActionPerformed

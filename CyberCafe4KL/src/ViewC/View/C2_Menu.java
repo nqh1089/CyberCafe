@@ -152,7 +152,7 @@ public class C2_Menu extends JFrame {
     private void xuLyChucNang(String tenNut) {
         switch (tenNut) {
             case "chat":
-                new C2_Chat().setVisible(true);
+                C2_Chat.showChat();
                 break;
             case "order":
                 JOptionPane.showMessageDialog(this, "Chức năng Order đang phát triển");

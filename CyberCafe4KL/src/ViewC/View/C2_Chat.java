@@ -13,7 +13,7 @@ import java.util.Date;
 
 public class C2_Chat extends javax.swing.JFrame {
 
-    private NC_ChatClient chatClient;
+    public NC_ChatClient chatClient;
     private JTextPane chatDisplayPane;
     private StyledDocument doc;
     public static C2_Chat instance;
@@ -23,7 +23,8 @@ public class C2_Chat extends javax.swing.JFrame {
         instance = this;
         setTitle("CyberCafe4KL_Client - Máy: " + CN_BienToanCuc.TenMay);
         setResizable(false);
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        // k cho đóng form (Vô hiệu hoá nút X)
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
         String iconPath = "E:/SU25/BL2/PRO230_DATN/CyberCafe4KL/CyberCafe4KL/src/Assets/Client/Send.png";
         ImageIcon icon = new ImageIcon(iconPath);
@@ -67,17 +68,17 @@ public class C2_Chat extends javax.swing.JFrame {
 
         txtText.addActionListener(e -> sendMessage());
 
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                if (chatClient != null && chatClient.isConnected()) {
-                    if (CN_BienToanCuc.IDAccount != -1) {
-                        chatClient.logoutAccount();
-                    }
-                    chatClient.disconnect("Cửa sổ chat Client đóng.");
-                }
-            }
-        });
+//        this.addWindowListener(new WindowAdapter() {
+//            @Override
+//            public void windowClosing(WindowEvent e) {
+//                if (chatClient != null && chatClient.isConnected()) {
+//                    if (CN_BienToanCuc.IDAccount != -1) {
+//                        chatClient.logoutAccount();
+//                    }
+//                    chatClient.disconnect("Cửa sổ chat Client đóng.");
+//                }
+//            }
+//        });
 
         SwingUtilities.invokeLater(() -> {
             try {
@@ -89,6 +90,15 @@ public class C2_Chat extends javax.swing.JFrame {
                 Thread.currentThread().interrupt();
             }
         });
+    }
+    
+        public static void showChat() {
+        if (instance == null) {
+            instance = new C2_Chat();
+        }
+        instance.setVisible(true);
+        instance.setState(JFrame.NORMAL); // Nếu đang thu nhỏ thì bật lại
+        instance.toFront(); // Đưa ra trước các cửa sổ khác
     }
 
     private void displayMessage(NC_Message message) {
@@ -120,7 +130,7 @@ public class C2_Chat extends javax.swing.JFrame {
             if (chatClient != null && chatClient.isConnected()) {
                 int senderId = CN_BienToanCuc.IDAccount;
                 String senderName = CN_BienToanCuc.TenTaiKhoan;
-                int receiverId = 1; // ✅ ID Admin THẬT
+                int receiverId = 1; // ID Admin THẬT
 
                 NC_Message chatMessage = new NC_Message(
                         NC_Message.NC_MessageType.CHAT,
