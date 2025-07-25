@@ -140,6 +140,7 @@ public class C1_GiaoDienTreo extends JFrame {
         };
         txtUser.addKeyListener(resetTimer);
         txtPass.addKeyListener(resetTimer);
+        panelLogin.getRootPane().setDefaultButton(btnLogin); // Gán phím enter (Enter = Login)
     }
 
     private void HienThiLogin() {

@@ -662,18 +662,82 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
 
     private void btnThanhToanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThanhToanActionPerformed
         if (tableOrder.getRowCount() == 0) {
-            JOptionPane.showMessageDialog(this, "Hóa đơn trống. Vui lòng chọn sản phẩm để thanh toán!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
+        JOptionPane.showMessageDialog(this, "Hóa đơn trống. Vui lòng chọn sản phẩm để thanh toán!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    boolean coGoiNap = false;
+    int soTienNap = 0;
+
+    try (Connection con = DBConnection.getConnection()) {
+        for (int i = 0; i < tableOrder.getRowCount(); i++) {
+            int idFood = Integer.parseInt(tableOrder.getValueAt(i, 0).toString());
+            String sql = "SELECT Category, Price FROM FoodDrink WHERE IDFood = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, idFood);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String loai = rs.getString("Category");
+                if ("Gói nạp".equalsIgnoreCase(loai)) {
+                    coGoiNap = true;
+                    int price = rs.getInt("Price");
+                    int quantity = Integer.parseInt(tableOrder.getValueAt(i, 3).toString());
+                    soTienNap += price * quantity;
+                }
+            }
+            rs.close();
+            ps.close();
         }
 
+        if (coGoiNap) {
+            String tenTaiKhoan = JOptionPane.showInputDialog(this, "Nhập tên tài khoản muốn nạp:");
+            if (tenTaiKhoan == null || tenTaiKhoan.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Chưa nhập tên tài khoản. Dừng thanh toán.");
+                return;
+            }
+
+            String sqlCheck = "SELECT COUNT(*) FROM Account WHERE NameAccount = ?";
+            PreparedStatement psCheck = con.prepareStatement(sqlCheck);
+            psCheck.setString(1, tenTaiKhoan.trim());
+            ResultSet rsCheck = psCheck.executeQuery();
+            rsCheck.next();
+            int count = rsCheck.getInt(1);
+            rsCheck.close();
+            psCheck.close();
+
+            if (count == 0) {
+                JOptionPane.showMessageDialog(this, "Tên tài khoản không tồn tại. Dừng thanh toán.");
+                return;
+            }
+
+            String sqlUpdate = "UPDATE Account SET Balance = Balance + ? WHERE NameAccount = ?";
+            PreparedStatement psUpdate = con.prepareStatement(sqlUpdate);
+            psUpdate.setInt(1, soTienNap);
+            psUpdate.setString(2, tenTaiKhoan.trim());
+            int rows = psUpdate.executeUpdate();
+            psUpdate.close();
+
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(this, "Đã nạp " + soTienNap + " VNĐ vào tài khoản " + tenTaiKhoan);
+            } else {
+                JOptionPane.showMessageDialog(this, "Lỗi khi nạp tiền!");
+                return;
+            }
+        }
+
+        // ====== TIẾP TỤC THANH TOÁN NHƯ BÌNH THƯỜNG ======
         String maHD = lblMaHD.getText().trim();
         String nguoiTao = CN_TaiKhoanDangNhap.getTenTaiKhoan().trim();
-
         int tongTienSP = Integer.parseInt(jTextField1.getText().replace(" ", "").trim());
         int giamGia = Integer.parseInt(jTextField2.getText().replace(" ", "").trim());
         int thanhToan = Integer.parseInt(jTextField3.getText().replace(" ", "").trim());
 
         new TAB2_QR(maHD, nguoiTao, tongTienSP, giamGia, thanhToan, tableOrder, this).setVisible(true);
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Lỗi xử lý thanh toán: " + e.getMessage());
+        e.printStackTrace();
+    }
     }//GEN-LAST:event_btnThanhToanActionPerformed
 
     private void cbxLoaiSPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxLoaiSPActionPerformed

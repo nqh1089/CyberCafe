@@ -28,7 +28,7 @@ public class C2_Chat extends javax.swing.JFrame {
 
         String iconPath = "src/Assets/img/Send.png";
         ImageIcon icon = new ImageIcon(iconPath);
-        Image img = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+        Image img = icon.getImage().getScaledInstance(28, 28, Image.SCALE_SMOOTH);
         lblSend.setIcon(new ImageIcon(img));
         lblSend.setText("");
 
