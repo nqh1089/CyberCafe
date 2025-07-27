@@ -37,7 +37,6 @@ public class C2_Menu extends JFrame {
         // 60 giây load lại tt 1 lần
         Timer timer = new Timer(60_000, e -> CapNhatThongTinDongBo());
         timer.start();
-
     }
 
     private void CapNhatThongTinDongBo() {
@@ -462,7 +461,7 @@ public class C2_Menu extends JFrame {
             .addComponent(pnlSDM1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addGap(1, 1, 1)
-                .addComponent(pnlTLQL, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addComponent(pnlTLQL, javax.swing.GroupLayout.PREFERRED_SIZE, 328, Short.MAX_VALUE)
                 .addGap(1, 1, 1))
         );
         layout.setVerticalGroup(

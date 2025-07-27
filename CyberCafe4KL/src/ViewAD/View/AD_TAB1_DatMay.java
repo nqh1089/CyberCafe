@@ -930,7 +930,7 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
     }//GEN-LAST:event_btnMessageActionPerformed
 
     private void btnLockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLockActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_btnLockActionPerformed
 
     public static void main(String args[]) {
