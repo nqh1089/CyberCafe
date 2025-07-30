@@ -1,5 +1,6 @@
 package ViewC.View;
 
+import Controller.DBConnection;
 import ViewC.Code.CN_LoginMay;
 import ViewC.Code.CN_BienToanCuc;
 import ViewC.Code.CN_LayTenMayTheoIP;
@@ -9,6 +10,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.sql.*;
+import javax.swing.Timer;
 
 public class C1_GiaoDienCho extends JFrame {
 
@@ -47,6 +50,35 @@ public class C1_GiaoDienCho extends JFrame {
         panelLogin.setVisible(false);
         bgPanel.add(panelLogin);
         KhoiTaoLogin(panelLogin);
+
+        Timer timerCheckStatus = new Timer(5000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String tenMay = CN_BienToanCuc.TenMay; // ✅ lấy từ biến chuẩn
+
+                    Connection conn=DBConnection.getConnection();
+                    String sql = "SELECT ComputerStatus FROM Computer WHERE NameComputer = ?";
+                    PreparedStatement ps = conn.prepareStatement(sql);
+                    ps.setString(1, tenMay);
+                    ResultSet rs = ps.executeQuery();
+
+                    if (rs.next()) {
+                        int status = rs.getInt("ComputerStatus");
+                        if (status == 2) {
+                            ((Timer) e.getSource()).stop(); // ✅ dừng chính Timer này
+                            dispose(); // ✅ đóng GiaoDiệnChờ
+                            new C1_GiaoDienBaoTri().setVisible(true); // ✅ hiện GiaoDiệnBảoTrì
+                        }
+                    }
+
+                    conn.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        timerCheckStatus.start();
 
         // Click nền để hiện login
         bgPanel.addMouseListener(new MouseAdapter() {

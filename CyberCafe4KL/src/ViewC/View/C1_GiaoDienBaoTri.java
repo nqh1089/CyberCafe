@@ -31,6 +31,12 @@ import javax.swing.JTextField;
 import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
+import java.sql.*;
+import javax.swing.*;
+import javax.swing.Timer;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
 
 public class C1_GiaoDienBaoTri extends javax.swing.JFrame {
 
@@ -74,6 +80,38 @@ public class C1_GiaoDienBaoTri extends javax.swing.JFrame {
         if (CN_BienToanCuc.TenMay == null || CN_BienToanCuc.TenMay.isEmpty()) {
             CN_BienToanCuc.TenMay = ViewC.Code.CN_XacDinhMayClient.getTenMayClient();
         }
+Timer timerCheckBack = new Timer(5000, new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+            String tenMay = CN_BienToanCuc.TenMay;
+
+            Connection conn = DriverManager.getConnection(
+                "jdbc:sqlserver://localhost:1433;databaseName=CyberCafe4KL;encrypt=true;trustServerCertificate=true",
+                "sa", "1234"
+            );
+
+            String sql = "SELECT ComputerStatus FROM Computer WHERE NameComputer = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, tenMay);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int status = rs.getInt("ComputerStatus");
+                if (status == 1) {
+                    ((Timer) e.getSource()).stop(); // Dừng timer
+                    dispose(); // Đóng giao diện bảo trì
+                    new C1_GiaoDienCho().setVisible(true); // Mở lại giao diện chờ
+                }
+            }
+
+            conn.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+});
+timerCheckBack.start();
 
     }
 
@@ -177,4 +215,6 @@ public class C1_GiaoDienBaoTri extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
+
+
 }
