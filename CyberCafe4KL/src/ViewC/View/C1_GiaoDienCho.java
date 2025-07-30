@@ -136,6 +136,7 @@ public class C1_GiaoDienCho extends JFrame {
                 showFullScreenDialog("Đăng nhập thành công!");
 
                 new C2_Menu().setVisible(true);
+                C2_Chat.showChat();
                 C1_GiaoDienCho.this.dispose();
             } else {
                 showFullScreenDialog("Sai tài khoản hoặc máy không hợp lệ!");
