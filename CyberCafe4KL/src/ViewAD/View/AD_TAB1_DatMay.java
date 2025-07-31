@@ -27,17 +27,16 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
                 lblDMK, lblDX, lblChat, lblTB, this
         );
 
-        TAB1_LoadSDM.LoadSoDoMay(
-                pnlSDM,
+        TAB1_LoadSDM.LoadSoDoMay(pnlSDM,
                 lblTenMay, lblTrangThai,
                 lblTimeStart, lblTimeEnd, lblTimeUsed,
-                lblTamTinh, jLabel12, tblOrder
+                lblTamTinh, lblTongTien, tblOrder
         );
 
         TAB1_ClickMay handler = new TAB1_ClickMay(
                 lblTenMay, lblTrangThai,
                 lblTimeStart, lblTimeEnd, lblTimeUsed,
-                lblTamTinh, jLabel12, tblOrder
+                lblTamTinh, lblTongTien, tblOrder
         );
         handler.resetThongTinMayChuaChon();
 
@@ -152,7 +151,7 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
         btnMessage = new javax.swing.JButton();
         btnLock = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
+        lblTongTien = new javax.swing.JLabel();
 
         jScrollPane1.setViewportView(jTree1);
 
@@ -794,9 +793,9 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
         jLabel11.setForeground(new java.awt.Color(255, 255, 255));
         jLabel11.setText("Tổng tiền:");
 
-        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel12.setText("jLabel12");
+        lblTongTien.setForeground(new java.awt.Color(255, 255, 255));
+        lblTongTien.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblTongTien.setText("jLabel12");
 
         javax.swing.GroupLayout pnlSDM1Layout = new javax.swing.GroupLayout(pnlSDM1);
         pnlSDM1.setLayout(pnlSDM1Layout);
@@ -830,7 +829,7 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblTongTien, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(95, 95, 95))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSDM1Layout.createSequentialGroup()
                 .addContainerGap()
@@ -870,7 +869,7 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(pnlSDM1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel12)
+                    .addComponent(lblTongTien)
                     .addComponent(jLabel11))
                 .addGap(18, 18, 18)
                 .addComponent(pnlButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -937,113 +936,24 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
         try {
             int idMay = Integer.parseInt(lblTenMay.getText().replaceAll("[^0-9]", ""));
             Connection conn = DBConnection.getConnection();
-
-            // 1. Cập nhật trạng thái máy thành "Bảo trì"
             String sql = "UPDATE Computer SET ComputerStatus = 2 WHERE IDComputer = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, idMay);
             int result = ps.executeUpdate();
 
             if (result > 0) {
-                // 2. Tìm IDAccount và TenMay (để gửi socket)
-                String sqlInfo = """
-                SELECT TOP 1 A.IDAccount, C.TenMay
-                FROM Computer C
-                LEFT JOIN ComputerUsage CU ON CU.IDComputer = C.IDComputer AND CU.EndTime IS NULL
-                LEFT JOIN Account A ON A.IDAccount = CU.IDAccount
-                WHERE C.IDComputer = ?
-            """;
-                PreparedStatement psInfo = conn.prepareStatement(sqlInfo);
-                psInfo.setInt(1, idMay);
-                ResultSet rs = psInfo.executeQuery();
-
-                int idAccount = -1;
-                String tenMay = "";
-                if (rs.next()) {
-                    idAccount = rs.getInt("IDAccount");
-                    tenMay = rs.getString("TenMay");
-                }
-                rs.close();
-                psInfo.close();
-
-                // 3. Nếu có tài khoản đang sử dụng, cập nhật trạng thái Account và ComputerUsage
-                if (idAccount != -1) {
-                    // Cập nhật Account → Offline
-                    String sqlUpdateAcc = "UPDATE Account SET OnlineStatus = 0 WHERE IDAccount = ?";
-                    PreparedStatement psAcc = conn.prepareStatement(sqlUpdateAcc);
-                    psAcc.setInt(1, idAccount);
-                    psAcc.executeUpdate();
-
-                    // Kết thúc phiên sử dụng
-                    String sqlEndUsage = "UPDATE ComputerUsage SET EndTime = GETDATE() WHERE IDComputer = ? AND IDAccount = ? AND EndTime IS NULL";
-                    PreparedStatement psEnd = conn.prepareStatement(sqlEndUsage);
-                    psEnd.setInt(1, idMay);
-                    psEnd.setInt(2, idAccount);
-                    psEnd.executeUpdate();
-
-                    // Tính Cost và trừ Balance
-                    String sqlCost = """
-                    SELECT TOP 1 CU.IDUsage, DATEDIFF(MINUTE, CU.StartTime, GETDATE()) * C.PricePerMinute AS Cost
-                    FROM ComputerUsage CU
-                    JOIN Computer C ON CU.IDComputer = C.IDComputer
-                    WHERE CU.IDComputer = ? AND CU.IDAccount = ? AND CU.EndTime IS NOT NULL
-                    ORDER BY CU.EndTime DESC
-                """;
-                    PreparedStatement psCost = conn.prepareStatement(sqlCost);
-                    psCost.setInt(1, idMay);
-                    psCost.setInt(2, idAccount);
-                    ResultSet rsCost = psCost.executeQuery();
-                    if (rsCost.next()) {
-                        int idUsage = rsCost.getInt("IDUsage");
-                        double cost = rsCost.getDouble("Cost");
-
-                        // Update Cost
-                        PreparedStatement psUpdateCU = conn.prepareStatement("UPDATE ComputerUsage SET Cost = ? WHERE IDUsage = ?");
-                        psUpdateCU.setDouble(1, cost);
-                        psUpdateCU.setInt(2, idUsage);
-                        psUpdateCU.executeUpdate();
-
-                        // Trừ Balance
-                        PreparedStatement psTru = conn.prepareStatement("UPDATE Account SET Balance = Balance - ? WHERE IDAccount = ?");
-                        psTru.setDouble(1, cost);
-                        psTru.setInt(2, idAccount);
-                        psTru.executeUpdate();
-
-                        psUpdateCU.close();
-                        psTru.close();
-                    }
-                    rsCost.close();
-                    psCost.close();
-
-                    // Kết thúc LogAccess nếu có
-                    PreparedStatement psLog = conn.prepareStatement("UPDATE LogAccess SET ThoiGianKetThuc = GETDATE() WHERE IDComputer = ? AND IDAccount = ? AND ThoiGianKetThuc IS NULL");
-                    psLog.setInt(1, idMay);
-                    psLog.setInt(2, idAccount);
-                    psLog.executeUpdate();
-                    psLog.close();
-                }
-
-                // 4. Gửi socket tới client để khóa máy
-                try {
-                    Socket socket = new Socket(tenMay, 1902); // tenMay phải là IP hoặc tên máy trên mạng LAN
-                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                    out.println("LOCK"); // lệnh gửi sang Client
-                    out.close();
-                    socket.close();
-                    System.out.println("Đã gửi lệnh LOCK tới máy " + tenMay);
-                } catch (Exception ex) {
-                    System.out.println("❌ Không thể gửi socket tới máy client: " + ex.getMessage());
-                }
-
-                JOptionPane.showMessageDialog(this, "✅ Máy đã được khóa và tài khoản đã đăng xuất.");
+                JOptionPane.showMessageDialog(this, "✅ Máy đã được chuyển sang chế độ bảo trì/khóa.");
+                // Gợi ý: gọi lại hàm load sơ đồ máy nếu có
+                // loadDanhSachMay(); 
             } else {
                 JOptionPane.showMessageDialog(this, "⚠️ Không tìm thấy máy để cập nhật.");
             }
 
             conn.close();
+
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "❌ Đã xảy ra lỗi khi thực hiện khóa máy");
+            JOptionPane.showMessageDialog(this, "❌ Đã xảy ra lỗi khi cập nhật trạng thái máy");
         }
     }//GEN-LAST:event_btnLockActionPerformed
 
@@ -1062,7 +972,6 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
     private javax.swing.JButton btnTTK;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
@@ -1115,6 +1024,7 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
     private javax.swing.JLabel lblTimeEnd;
     private javax.swing.JLabel lblTimeStart;
     private javax.swing.JLabel lblTimeUsed;
+    private javax.swing.JLabel lblTongTien;
     private javax.swing.JLabel lblTrangThai;
     private javax.swing.JPanel pnlButton;
     private javax.swing.JPanel pnlCN;
