@@ -26,6 +26,8 @@ CREATE TABLE Account
 	-- 1: Online - 0: Offline 
 	AccountStatus BIT DEFAULT 1 NOT NULL,
 	-- 1: True (Tài Khoản Còn Hoạt Động) - 0: False (Tài Khoản Ngưng Hoạt Động)
+	Balance MONEY NOT NULL DEFAULT 0,
+	-- Số dư khả dụng của tài khoản Client
 	Created_at DATETIME DEFAULT GETDATE() NOT NULL
 );
 GO
@@ -116,7 +118,7 @@ BEGIN
 	INSERT INTO Account
 		(IDAccount, NameAccount, PWAccount, RoleAccount, CCCD, PhoneNumber, Gender)
 	VALUES
-		(@ID, @NameAccount, 'khach123', 'CLIENT', @CCCD, @PhoneNumber, @Gender);
+		(@ID, @NameAccount, '123', 'CLIENT', @CCCD, @PhoneNumber, @Gender);
 
 	RETURN 0;
 END
@@ -176,12 +178,12 @@ GO
 
 CREATE TABLE LogAccess
 (
-	IDLog INT IDENTITY(1,1) PRIMARY KEY,
-	IDComputer INT NOT NULL FOREIGN KEY REFERENCES Computer(IDComputer),
-	ThoiGianBatDau DATETIME NOT NULL,
-	IDAccount INT NULL FOREIGN KEY REFERENCES Account(IDAccount)
+    IDLog INT IDENTITY(1,1) PRIMARY KEY,
+    IDComputer INT NOT NULL FOREIGN KEY REFERENCES Computer(IDComputer),
+    ThoiGianBatDau DATETIME NOT NULL,
+    ThoiGianKetThuc DATETIME NULL,
+    IDAccount INT NULL FOREIGN KEY REFERENCES Account(IDAccount)
 );
-GO
 
 CREATE TABLE FoodDrink
 (
@@ -254,5 +256,15 @@ CREATE TABLE InvoiceDetail
 	TotalPrice MONEY NOT NULL CHECK (TotalPrice >= 0) DEFAULT 0,
 	-- Tính toán tổng giá trị của mặt hàng
 	TotalAmount MONEY NOT NULL CHECK (TotalAmount >= 0) DEFAULT 0
+);
+GO
+
+-- Bảng up ảnh
+CREATE TABLE Assets_Anh
+(
+    IDAsset INT IDENTITY(1,1) PRIMARY KEY,
+    TenAnh NVARCHAR(100) NOT NULL,
+    DuongDan NVARCHAR(255) NOT NULL,
+    MoTa NVARCHAR(255) NULL
 );
 GO

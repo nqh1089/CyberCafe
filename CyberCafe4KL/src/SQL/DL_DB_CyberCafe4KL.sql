@@ -37,6 +37,7 @@ INSERT INTO FoodDrink (NameFood, ImageFood, Price, Category, Available) VALUES
 (N'Mì kay', 'fMK.jpg', 9000, N'Đồ ăn', 1),
 
 -- GÓI NẠP THẺ
+(N'Gói nạp 20.000 VNĐ', '20.jpg', 50000, N'Gói nạp', 1),
 (N'Gói nạp 50.000 VNĐ', '50.jpg', 50000, N'Gói nạp', 1),
 (N'Gói nạp 100.000 VNĐ', '100.jpg', 100000, N'Gói nạp', 1),
 (N'Gói nạp 200.000 VNĐ', '200.jpg', 200000, N'Gói nạp', 1),
@@ -51,7 +52,7 @@ FROM FoodDrink
 IF NOT EXISTS (SELECT * FROM Account WHERE IDAccount = 200)
 BEGIN
     INSERT INTO Account (IDAccount, NameAccount, PWAccount, RoleAccount, CCCD, PhoneNumber, Email, Gender, OnlineStatus, AccountStatus)
-    VALUES (200, 'testmay02', '1234', 'CLIENT', '999999999999', '0999999999', 'test@may02.com', N'Nam', 1, 1);
+    VALUES (200, 'test2', '1234', 'CLIENT', '999999999999', '0999999999', 'test@may.com', N'Nam', 1, 1);
 END
 
 -- Log đang dùng máy 05
@@ -119,3 +120,13 @@ SELECT
     END AS TrangThai
 FROM Computer
 ORDER BY IDComputer;
+
+INSERT INTO Assets_Anh (TenAnh, DuongDan, MoTa)
+VALUES 
+(N'GiaoDienCho', 'GiaoDienCho.gif', N'Giao diện Chờ'),
+(N'GiaoDienTreo', 'TreoMay.jpg', N'Giao diện Treo'),
+(N'GiaoDienBT', 'BaoTri.jpg', N'Giao diện Bảo Trì'),
+(N'TLQL', 'imgTLQL.jpg', N'TLQL'),
+(N'btnSend', 'Send.png', N'btnSend');
+
+SELECT * FROM Assets_Anh
