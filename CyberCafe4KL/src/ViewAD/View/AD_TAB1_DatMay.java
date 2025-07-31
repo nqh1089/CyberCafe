@@ -45,6 +45,16 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
 
         String[] columns = {"Tên SP", "Đơn giá", "Số lượng", "Thành tiền"};
         CN_SetupTable.SetTable(tblOrder, jScrollPane2, columns);
+
+        // Timer cập nhật lại giao diện
+        new javax.swing.Timer(5000, e -> {
+            TAB1_LoadSDM.LoadSoDoMay(pnlSDM,
+                    lblTenMay, lblTrangThai,
+                    lblTimeStart, lblTimeEnd, lblTimeUsed,
+                    lblTamTinh, lblTongTien, tblOrder
+            );
+        }).start();
+
     }
 
     private void SetTableOrder() {

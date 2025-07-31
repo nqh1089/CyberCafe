@@ -40,17 +40,75 @@ public class C2_Menu extends JFrame {
     }
 
     private void CapNhatThongTinDongBo() {
-        long usedMin = C2_ThoiGianSuDung.getThoiGianSuDungPhut(CN_BienToanCuc.IDComputer, CN_BienToanCuc.IDAccount);
-        lblThoiGianSD.setText(usedMin + " phút");
+        try {
+            Connection conn = DBConnection.getConnection();
+            if (conn != null) {
+                // 1. Trạng thái và giờ bắt đầu
+                String sqlUsage = "SELECT TOP 1 StartTime FROM ComputerUsage "
+                        + "WHERE IDComputer = ? AND IDAccount = ? AND EndTime IS NULL "
+                        + "ORDER BY StartTime DESC";
+                PreparedStatement psUsage = conn.prepareStatement(sqlUsage);
+                psUsage.setInt(1, CN_BienToanCuc.IDComputer);
+                psUsage.setInt(2, CN_BienToanCuc.IDAccount);
+                ResultSet rsUsage = psUsage.executeQuery();
 
-        long conLaiMin = C2_ThoiGianConLai.getThoiGianConLaiPhut(CN_BienToanCuc.IDAccount, CN_BienToanCuc.IDComputer);
-        lblThoiGianConLai.setText(conLaiMin + " phút");
+                if (rsUsage.next()) {
+                    Timestamp startTime = rsUsage.getTimestamp("StartTime");
+                    lblTrangThai.setText("Đang sử dụng");
+                    lblGioBatDau.setText(new SimpleDateFormat("HH:mm:ss").format(startTime));
 
-        double chiPhiGio = C2_ChiPhiGio.getChiPhiGio(CN_BienToanCuc.IDComputer, usedMin);
-        lblChiPhiGio.setText(formatTien(chiPhiGio) + " đ");
+                    long usedMin = Duration.between(startTime.toInstant(), Instant.now()).toMinutes();
+                    lblThoiGianSD.setText(usedMin + " phút");
 
-        System.out.println("[AutoUpdate] Đã cập nhật thông tin máy");
+                    double chiPhiGio = C2_ChiPhiGio.getChiPhiGio(CN_BienToanCuc.IDComputer, usedMin);
+                    lblChiPhiGio.setText(formatTien(chiPhiGio) + " đ");
+                } else {
+                    lblTrangThai.setText("Chưa sử dụng");
+                    lblGioBatDau.setText("--:--");
+                }
+
+                rsUsage.close();
+                psUsage.close();
+
+                // 2. Số dư khả dụng
+                String sqlBal = "SELECT Balance FROM Account WHERE IDAccount = ?";
+                PreparedStatement psBal = conn.prepareStatement(sqlBal);
+                psBal.setInt(1, CN_BienToanCuc.IDAccount);
+                ResultSet rsBal = psBal.executeQuery();
+                if (rsBal.next()) {
+                    lblSoDu.setText(formatTien(rsBal.getDouble("Balance")) + " đ");
+                }
+                rsBal.close();
+                psBal.close();
+
+                // 3. Thời gian sử dụng
+                long usedMin = C2_ThoiGianSuDung.getThoiGianSuDungPhut(CN_BienToanCuc.IDComputer, CN_BienToanCuc.IDAccount);
+                lblThoiGianSD.setText(usedMin + " phút");
+
+                // 4. Thời gian còn lại
+                long conLaiMin = C2_ThoiGianConLai.getThoiGianConLaiPhut(CN_BienToanCuc.IDAccount, CN_BienToanCuc.IDComputer);
+                lblThoiGianConLai.setText(conLaiMin + " phút");
+                System.out.println("[AutoUpdate] Đã cập nhật thông tin máy");
+                conn.close();
+            } else {
+                System.out.println("Không thể kết nối DB khi CapNhatThongTinDongBo");
+            }
+        } catch (Exception e) {
+            System.out.println("Lỗi CapNhatThongTinDongBo: " + e.getMessage());
+        }
     }
+    //    private void CapNhatThongTinDongBo() {
+    //        long usedMin = C2_ThoiGianSuDung.getThoiGianSuDungPhut(CN_BienToanCuc.IDComputer, CN_BienToanCuc.IDAccount);
+    //        lblThoiGianSD.setText(usedMin + " phút");
+    //
+    //        long conLaiMin = C2_ThoiGianConLai.getThoiGianConLaiPhut(CN_BienToanCuc.IDAccount, CN_BienToanCuc.IDComputer);
+    //        lblThoiGianConLai.setText(conLaiMin + " phút");
+    //
+    //        double chiPhiGio = C2_ChiPhiGio.getChiPhiGio(CN_BienToanCuc.IDComputer, usedMin);
+    //        lblChiPhiGio.setText(formatTien(chiPhiGio) + " đ");
+    //
+    //        System.out.println("[AutoUpdate] Đã cập nhật thông tin máy");
+    //    }
 
     private void LoadThongTinMay() {
         lblTaiKhoan.setText(
