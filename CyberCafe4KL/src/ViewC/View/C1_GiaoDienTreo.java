@@ -1,5 +1,6 @@
 package ViewC.View;
 
+import Controller.DBConnection;
 import ViewC.Code.CN_LoginMay;
 import ViewC.Code.CN_BienToanCuc;
 import ViewC.Code.CN_LayTenMayTheoIP;
@@ -7,6 +8,9 @@ import ViewC.Code.CN_LayTenMayTheoIP;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -48,6 +52,35 @@ public class C1_GiaoDienTreo extends JFrame {
         bgPanel.add(panelLogin);
         KhoiTaoLogin(panelLogin);
 
+        Timer timerCheckStatus = new Timer(5000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String tenMay = CN_BienToanCuc.TenMay; // ✅ lấy từ biến chuẩn
+
+                    Connection conn = DBConnection.getConnection();
+                    String sql = "SELECT ComputerStatus FROM Computer WHERE NameComputer = ?";
+                    PreparedStatement ps = conn.prepareStatement(sql);
+                    ps.setString(1, tenMay);
+                    ResultSet rs = ps.executeQuery();
+
+                    if (rs.next()) {
+                        int status = rs.getInt("ComputerStatus");
+                        if (status == 2) {
+                            ((Timer) e.getSource()).stop(); // Dừng chính Timer này
+                            dispose(); // đóng GiaoDiệnCho
+                            new C1_GiaoDienBaoTri().setVisible(true); // ✅ hiện GiaoDiệnBảoTrì
+                        }
+                    }
+
+                    conn.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        timerCheckStatus.start();
+
         // Click nền để hiện login
         bgPanel.addMouseListener(new MouseAdapter() {
             @Override
@@ -64,15 +97,28 @@ public class C1_GiaoDienTreo extends JFrame {
             this.setExtendedState(JFrame.MAXIMIZED_BOTH);
             this.setVisible(true);
         }
+
+        // Nếu đăng xuất về lại mà mất tên máy thì khôi phục lại
+        if (CN_BienToanCuc.TenMay == null || CN_BienToanCuc.TenMay.isEmpty()) {
+            CN_BienToanCuc.TenMay = ViewC.Code.CN_XacDinhMayClient.getTenMayClient();
+        }
+
     }
 
     private void CapNhatThoiGian() {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+
         dongHo = new Timer(1000, e -> {
+            // Nếu tên máy đang trống hoặc null -> lấy lại từ IP
+            if (CN_BienToanCuc.TenMay == null || CN_BienToanCuc.TenMay.isEmpty()) {
+                CN_BienToanCuc.TenMay = ViewC.Code.CN_XacDinhMayClient.getTenMayClient();
+            }
+
             String timeStr = sdf.format(new Date());
-            String tenMay = CN_BienToanCuc.TenMay.equals("") ? "MÁY ???" : CN_BienToanCuc.TenMay;
+            String tenMay = CN_BienToanCuc.TenMay != null ? CN_BienToanCuc.TenMay : "MÁY ???";
             lblMay.setText(tenMay + ", " + timeStr);
         });
+
         dongHo.start();
     }
 
@@ -109,23 +155,26 @@ public class C1_GiaoDienTreo extends JFrame {
             String user = txtUser.getText().trim();
             String pass = new String(txtPass.getPassword());
 
-            boolean ketQua = CN_LoginMay.loginMay(user, pass);
+            // Nếu nhập sai tài khoản so với người đang dùng trước đó
+            if (!user.equalsIgnoreCase(CN_BienToanCuc.TenTaiKhoan)) {
+                showFullScreenDialog("Chỉ tài khoản '" + CN_BienToanCuc.TenTaiKhoan + "' mới có thể mở khóa máy");
+                resetFormLogin();
+                return;
+            }
 
-            // Luôn reset form login dù đúng hay sai
+            String ketQua = CN_LoginMay.loginMay(user, pass);
             resetFormLogin();
 
-            if (ketQua) {
+            if (ketQua.equals("OK")) {
                 if (timer15s != null) {
                     timer15s.stop();
                 }
                 panelLogin.setVisible(false);
-
-                showFullScreenDialog("Đăng nhập thành công!");
-
                 new C2_Menu().setVisible(true);
+                C2_Chat.showChat();
                 C1_GiaoDienTreo.this.dispose();
             } else {
-                showFullScreenDialog("Sai tài khoản hoặc máy không hợp lệ!");
+                showFullScreenDialog(ketQua);
             }
         });
 
@@ -171,7 +220,8 @@ public class C1_GiaoDienTreo extends JFrame {
     }
 
     private void showFullScreenDialog(String message) {
-        JWindow dialog = new JWindow(this);
+        JDialog dialog = new JDialog(this, "Thông báo", true); // dùng true để modal (chắn tương tác)
+        dialog.setUndecorated(true); // giống JWindow
         dialog.setLayout(new BorderLayout());
 
         JPanel content = new JPanel(new BorderLayout());
@@ -188,6 +238,13 @@ public class C1_GiaoDienTreo extends JFrame {
         btn.setBackground(new Color(0, 200, 200));
         btn.setForeground(Color.BLACK);
         btn.addActionListener(e -> dialog.dispose());
+
+        // Gán ENTER và ESC để đóng dialog
+        dialog.getRootPane().setDefaultButton(btn); // ENTER = OK
+        dialog.getRootPane().registerKeyboardAction(e -> dialog.dispose(),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW
+        );
 
         content.add(lbl, BorderLayout.CENTER);
         content.add(btn, BorderLayout.SOUTH);
