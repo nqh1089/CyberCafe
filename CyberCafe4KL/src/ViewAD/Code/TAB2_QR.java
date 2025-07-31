@@ -24,6 +24,9 @@ public class TAB2_QR extends javax.swing.JFrame {
     private JTable tblChiTiet;
     private AD_TAB2_Order formOrder;
 
+    private String tenTaiKhoanNap;
+    private int soTienNap;
+
     public TAB2_QR(String maHD, String nguoiTao, int tongTienSP, int giamGia, int thanhToan,
             JTable tblChiTiet, AD_TAB2_Order formOrder) {
         initComponents();
@@ -37,6 +40,17 @@ public class TAB2_QR extends javax.swing.JFrame {
 
         this.setResizable(false);
         AnhQR();
+    }
+
+    public TAB2_QR(String maHD, String nguoiTao, int tongTienSP, int giamGia, int thanhToan,
+            JTable tblChiTiet, AD_TAB2_Order formOrder,
+            String tenTaiKhoanNap, int soTienNap) {
+
+        this(maHD, nguoiTao, tongTienSP, giamGia, thanhToan, tblChiTiet, formOrder);
+
+        // Gán thêm thông tin Gói nạp
+        this.tenTaiKhoanNap = tenTaiKhoanNap;
+        this.soTienNap = soTienNap;
     }
 
     private void AnhQR() {
@@ -173,6 +187,26 @@ public class TAB2_QR extends javax.swing.JFrame {
 
     private void btnDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoneActionPerformed
         if (LuuHoaDonVaoDB()) {
+            // Nếu có yêu cầu nạp tiền thì thực hiện sau khi lưu thành công
+            if (tenTaiKhoanNap != null && !tenTaiKhoanNap.trim().isEmpty() && soTienNap > 0) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    String sqlUpdate = "UPDATE Account SET Balance = Balance + ? WHERE NameAccount = ?";
+                    PreparedStatement ps = conn.prepareStatement(sqlUpdate);
+                    ps.setInt(1, soTienNap);
+                    ps.setString(2, tenTaiKhoanNap.trim());
+                    int rows = ps.executeUpdate();
+                    ps.close();
+
+                    if (rows > 0) {
+                        JOptionPane.showMessageDialog(this, "Đã nạp " + soTienNap + " VNĐ vào tài khoản " + tenTaiKhoanNap);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Lỗi khi nạp tiền!");
+                    }
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this, "Lỗi khi nạp tiền: " + e.getMessage());
+                }
+            }
+
             JOptionPane.showMessageDialog(this, "Đã lưu hóa đơn thành công.");
             if (formOrder != null) {
                 formOrder.resetSauKhiThanhToan();
