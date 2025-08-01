@@ -59,11 +59,11 @@ END
 INSERT INTO LogAccess (IDComputer, ThoiGianBatDau, IDAccount)
 VALUES (5, DATEADD(MINUTE, -20, GETDATE()), 200); -- dùng từ 20 phút trước
 
--- Tạo đơn hàng
+-- Tạo đơn hàng (kèm tên máy vào GhiChu)
 IF NOT EXISTS (SELECT * FROM OrderFood WHERE IDOrder = 1)
 BEGIN
-    INSERT INTO OrderFood (IDOrder, IDAccount)
-    VALUES (1, 200);
+    INSERT INTO OrderFood (IDOrder, IDAccount, Note)
+    VALUES (1, 200, N'Máy 05');
 END
 
 -- Lấy ID món Sting & Mì đặc biệt
@@ -75,6 +75,7 @@ INSERT INTO OrderDetail (IDOrder, IDFood, Quantity, TotalPrice)
 VALUES 
 (1, @idSting, 1, 12000),
 (1, @idMiDB, 2, 20000);
+
 
 
 
@@ -130,3 +131,4 @@ VALUES
 (N'btnSend', 'Send.png', N'btnSend');
 
 SELECT * FROM Assets_Anh
+

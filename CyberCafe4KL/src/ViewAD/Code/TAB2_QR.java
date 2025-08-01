@@ -2,6 +2,7 @@ package ViewAD.Code;
 
 import Controller.DBConnection;
 import ViewAD.View.AD_TAB2_Order;
+import ViewC.Code.CN_BienToanCuc;
 import java.awt.BorderLayout;
 import java.awt.Image;
 import java.sql.Connection;
@@ -102,60 +103,85 @@ public class TAB2_QR extends javax.swing.JFrame {
     }
 
     private boolean LuuHoaDonVaoDB() {
-        try (Connection conn = DBConnection.getConnection()) {
-            if (conn == null) {
+    try (Connection conn = DBConnection.getConnection()) {
+        if (conn == null) {
+            return false;
+        }
+
+        // Lấy IDAccount từ tên tài khoản
+        int idAccount;
+
+        // Nếu gọi từ Client (nguoiTao rỗng), lấy Admin đang online
+        if (nguoiTao == null || nguoiTao.trim().isEmpty()) {
+            idAccount = layAdminDangTruc();
+            if (idAccount == -1) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy admin đang trực.");
                 return false;
             }
-
-            // Lấy IDAccount từ tên tài khoản
-            int idAccount;
-
-            // Nếu gọi từ Client (nguoiTao rỗng), lấy Admin đang online
-            if (nguoiTao == null || nguoiTao.trim().isEmpty()) {
-                idAccount = layAdminDangTruc();
-                if (idAccount == -1) {
-                    JOptionPane.showMessageDialog(this, "Không tìm thấy admin đang trực.");
-                    return false;
-                }
-            } else {
-                idAccount = layIDAccount(nguoiTao);
-                if (idAccount == -1) {
-                    JOptionPane.showMessageDialog(this, "Không tìm thấy tài khoản admin: " + nguoiTao);
-                    return false;
-                }
+        } else {
+            idAccount = layIDAccount(nguoiTao);
+            if (idAccount == -1) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy tài khoản admin: " + nguoiTao);
+                return false;
             }
+        }
 
-            // 1. Lưu OrderFood
-            String insertOrder = "INSERT INTO OrderFood (IDOrder, IDAccount, OrderTime) VALUES (?, ?, ?)";
-            PreparedStatement ps1 = conn.prepareStatement(insertOrder);
+        // Lấy tên máy nếu là phía Client
+        String tenMay = "";
+        if (nguoiTao == null || nguoiTao.trim().isEmpty()) {
+            try {
+                tenMay = ViewC.Code.CN_BienToanCuc.getTenMayClient();
+                if (tenMay == null || tenMay.isEmpty()) {
+                    ViewC.Code.CN_LayTenMayTheoIP.ganThongTinMay();
+                    tenMay = ViewC.Code.CN_BienToanCuc.getTenMayClient();
+                }
+            } catch (Exception ex) {
+                tenMay = "Máy khách";
+            }
+        }
+
+        // 1. Lưu OrderFood (nếu có tên máy thì thêm vào Note)
+        String insertOrder;
+        PreparedStatement ps1;
+        if (!tenMay.isEmpty()) {
+            insertOrder = "INSERT INTO OrderFood (IDOrder, IDAccount, OrderTime, Note) VALUES (?, ?, ?, ?)";
+            ps1 = conn.prepareStatement(insertOrder);
             ps1.setInt(1, Integer.parseInt(maHD.replace("HĐ", "")));
             ps1.setInt(2, idAccount);
             ps1.setString(3, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            ps1.executeUpdate();
-
-            // 2. Lưu OrderDetail
-            String insertDetail = "INSERT INTO OrderDetail (IDOrder, IDFood, Quantity, TotalPrice) VALUES (?, ?, ?, ?)";
-            PreparedStatement ps2 = conn.prepareStatement(insertDetail);
-
-            for (int i = 0; i < tblChiTiet.getRowCount(); i++) {
-                int idFood = Integer.parseInt(tblChiTiet.getValueAt(i, 0).toString()); // cột 0: ID sản phẩm
-                int quantity = Integer.parseInt(tblChiTiet.getValueAt(i, 3).toString().replace(".", "")); // cột 3: số lượng
-                int total = Integer.parseInt(tblChiTiet.getValueAt(i, 4).toString().replace(".", "")); // cột 4: thành tiền
-
-                ps2.setInt(1, Integer.parseInt(maHD.replace("HĐ", "")));
-                ps2.setInt(2, idFood);
-                ps2.setInt(3, quantity);
-                ps2.setInt(4, total);
-                ps2.addBatch();
-            }
-
-            ps2.executeBatch();
-            return true;
-        } catch (Exception e) {
-            System.out.println("Lỗi lưu hóa đơn: " + e.getMessage());
-            return false;
+            ps1.setString(4, tenMay);
+        } else {
+            insertOrder = "INSERT INTO OrderFood (IDOrder, IDAccount, OrderTime) VALUES (?, ?, ?)";
+            ps1 = conn.prepareStatement(insertOrder);
+            ps1.setInt(1, Integer.parseInt(maHD.replace("HĐ", "")));
+            ps1.setInt(2, idAccount);
+            ps1.setString(3, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         }
+        ps1.executeUpdate();
+
+        // 2. Lưu OrderDetail
+        String insertDetail = "INSERT INTO OrderDetail (IDOrder, IDFood, Quantity, TotalPrice) VALUES (?, ?, ?, ?)";
+        PreparedStatement ps2 = conn.prepareStatement(insertDetail);
+
+        for (int i = 0; i < tblChiTiet.getRowCount(); i++) {
+            int idFood = Integer.parseInt(tblChiTiet.getValueAt(i, 0).toString()); // cột 0: ID sản phẩm
+            int quantity = Integer.parseInt(tblChiTiet.getValueAt(i, 3).toString().replace(".", "")); // cột 3: số lượng
+            int total = Integer.parseInt(tblChiTiet.getValueAt(i, 4).toString().replace(".", "")); // cột 4: thành tiền
+
+            ps2.setInt(1, Integer.parseInt(maHD.replace("HĐ", "")));
+            ps2.setInt(2, idFood);
+            ps2.setInt(3, quantity);
+            ps2.setInt(4, total);
+            ps2.addBatch();
+        }
+
+        ps2.executeBatch();
+        return true;
+    } catch (Exception e) {
+        System.out.println("Lỗi lưu hóa đơn: " + e.getMessage());
+        return false;
     }
+}
 
     private int layIDAccount(String tenTK) {
         try (Connection conn = DBConnection.getConnection()) {
@@ -250,6 +276,21 @@ public class TAB2_QR extends javax.swing.JFrame {
 
     private void btnDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoneActionPerformed
         if (LuuHoaDonVaoDB()) {
+            // 🔔 In ra console để theo dõi máy vừa gửi Order (giúp Admin đọc được từ DB)
+            try {
+                String tenMay = ViewC.Code.CN_BienToanCuc.getTenMayClient();
+                if (tenMay == null || tenMay.isEmpty()) {
+                    // Nếu chưa gán biến toàn cục thì lấy lại từ IP
+                    ViewC.Code.CN_LayTenMayTheoIP.ganThongTinMay();
+                    tenMay = ViewC.Code.CN_BienToanCuc.getTenMayClient();
+                }
+
+                String gio = java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
+                System.out.println("[Thông báo] Đã gửi thông báo order từ " + tenMay + " lúc " + gio);
+            } catch (Exception ex) {
+                System.out.println("[Thông báo] Không thể xác định tên máy client.");
+            }
+
             // Nếu có yêu cầu nạp tiền thì thực hiện sau khi lưu thành công
             if (tenTaiKhoanNap != null && !tenTaiKhoanNap.trim().isEmpty() && soTienNap > 0) {
                 try (Connection conn = DBConnection.getConnection()) {

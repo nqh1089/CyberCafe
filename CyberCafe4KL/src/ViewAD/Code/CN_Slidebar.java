@@ -97,6 +97,18 @@ public class CN_Slidebar {
             }
         });
 
+        lblTB.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                CN_Dropdown.initThongBaoIfNeeded(currentFrame, lblTB);
+            }
+        });
+
+//        lblTB.addMouseListener(new MouseAdapter() {
+//            public void mouseClicked(MouseEvent e) {
+//                System.out.println("Chức năng đang hoàn thiện");
+//            }
+//        });
         lblDX.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 int x = JOptionPane.showConfirmDialog(currentFrame, "Bạn chắc chắn muốn đăng xuất?", "Xác nhận", JOptionPane.YES_NO_OPTION);
@@ -125,10 +137,13 @@ public class CN_Slidebar {
                         ex.printStackTrace();
                     }
 
-                    // Reset biến đăng nhập
+                    // Reset các thông tin phiên
+                    CN_Dropdown.resetSession(); // clear HashSet thông báo
                     CN_TaiKhoanDangNhap.setTenTaiKhoan("");
-                    System.out.println("[Đăng xuất] Đã reset biến CN_TaiKhoanDangNhap");
+                    CN_TaiKhoanDangNhap.setThoiGianDangNhap(null);
+                    System.out.println("[Đăng xuất] Đã reset phiên và biến đăng nhập");
 
+                    // Quay lại form đăng nhập
                     currentFrame.dispose();
                     new AD_LoginForm().setVisible(true);
                 }

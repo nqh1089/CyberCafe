@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
+import java.sql.Timestamp;
 
 public class AD_LoginForm extends javax.swing.JFrame {
 
@@ -224,10 +225,14 @@ public class AD_LoginForm extends javax.swing.JFrame {
                     psUpdate.executeUpdate();
                     psUpdate.close();
 
-                    // Lưu thông tin đăng nhập
+                    // ✅ KHÔNG GHI LOGACCESS CHO ADMIN/BOSS
+                    // -> vì không có máy cụ thể → tránh lỗi NULL
+                    // Lưu thông tin đăng nhập vào session
+                    CN_TaiKhoanDangNhap.setIDTaiKhoan(adminId);
                     CN_TaiKhoanDangNhap.setTenTaiKhoan(name);
+                    CN_TaiKhoanDangNhap.setThoiGianDangNhap(new Timestamp(System.currentTimeMillis()));
 
-                    // Khởi động server nếu chưa có
+                    // ✅ Khởi động server nếu chưa có
                     if (CN_ChatAdmin.ncChatServer == null || !CN_ChatAdmin.ncChatServer.isServerRunning()) {
                         CN_ChatAdmin.ncChatServer = new NC_ChatServer();
                         CN_ChatAdmin.ncChatServer.setAdminAccountId(adminId);
@@ -241,7 +246,7 @@ public class AD_LoginForm extends javax.swing.JFrame {
                     // Mở giao diện chính
                     new ViewAD.View.AD_TAB1_DatMay().setVisible(true);
                     new ViewAD.View.AD_Chat().setVisible(true);
-                    this.dispose();
+                    this.dispose(); 
 
                 } else {
                     JOptionPane.showMessageDialog(this, "Tài khoản không có quyền truy cập.");
