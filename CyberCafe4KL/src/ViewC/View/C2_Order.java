@@ -1,13 +1,112 @@
 package ViewC.View;
 
+import Controller.DBConnection;
+import Model.Products;
+import ViewAD.Code.CN_SetupTable;
+import ViewAD.Code.CN_TaiKhoanDangNhap;
+import ViewAD.Code.TAB2_CardSP;
+import ViewAD.Code.TAB2_QR;
+import static ViewC.View.C2_Chat.instance;
+import java.awt.GridLayout;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
 public class C2_Order extends javax.swing.JFrame {
 
     public static C2_Order instance;
+    private List<Products> danhSachSanPham;
 
     public C2_Order() {
         initComponents();
         instance = this;
 
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        danhSachSanPham = getAllProducts();
+        hienThiSanPham(danhSachSanPham);
+
+        ((DefaultTableModel) tableOrder.getModel()).setRowCount(0);
+
+        String[] columns = {"ID", "Tên SP", "Đơn giá", "Số lượng", "Thành tiền"};
+        CN_SetupTable.SetTable(tableOrder, jScrollPane4, columns);
+        tableOrder.getColumnModel().getColumn(0).setMinWidth(0);
+        tableOrder.getColumnModel().getColumn(0).setMaxWidth(0);
+        tableOrder.getColumnModel().getColumn(0).setWidth(0);
+
+        jTextField1.setEditable(false);
+        jTextField2.setEditable(false);
+        jTextField3.setEditable(false);
+    }
+
+    public List<Products> getAllProducts() {
+        List<Products> danhSach = new ArrayList<>();
+        String sql = "SELECT IDFood, NameFood, Price, Category, ImageFood, Available FROM FoodDrink WHERE Available = 1";
+
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Products sp = new Products();
+                sp.setId(rs.getInt("IDFood"));
+                sp.setTenSP(rs.getString("NameFood"));
+                sp.setGia(rs.getInt("Price"));
+                sp.setLoaiSP(rs.getString("Category"));
+                sp.setHinhAnh(rs.getString("ImageFood"));
+                sp.setTrangThai(rs.getInt("Available"));
+                danhSach.add(sp);
+            }
+        } catch (Exception e) {
+            System.out.println("Lỗi lấy sản phẩm: " + e.getMessage());
+        }
+
+        return danhSach;
+    }
+
+    private void hienThiSanPham(List<Products> ds) {
+        pnlSP.removeAll();
+        pnlSP.setLayout(new GridLayout(0, 2, 10, 10));
+
+        for (Products sp : ds) {
+            JPanel card = TAB2_CardSP.taoCard(sp, tableOrder, jTextField1, jTextField2, jTextField3);
+            pnlSP.add(card);
+        }
+
+        pnlSP.revalidate();
+        pnlSP.repaint();
+    }
+
+    private void HienThongTinHoaDon() {
+        jTextField1.setEditable(false);
+        jTextField2.setEditable(false);
+        jTextField3.setEditable(false);
+
+        // Hiển thị ngày giờ hiện tại
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        lblNgayGio.setText(now.format(fmt));
+    }
+
+    public void resetSauKhiThanhToan() {
+        ((DefaultTableModel) tableOrder.getModel()).setRowCount(0);
+        jTextField1.setText("0");
+        jTextField2.setText("0");
+        jTextField3.setText("0");
+        danhSachSanPham = getAllProducts();
+        hienThiSanPham(danhSachSanPham);
+    }
+
+    public static void showOrder() {
+        if (instance == null) {
+            instance = new C2_Order();
+        }
+        instance.setVisible(true);
+        instance.setState(JFrame.NORMAL); // Nếu đang thu nhỏ thì bật lại
+        instance.toFront(); // Đưa ra trước các cửa sổ khác
     }
 
     @SuppressWarnings("unchecked")
@@ -326,11 +425,105 @@ public class C2_Order extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void btnThanhToanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThanhToanActionPerformed
+        if (tableOrder.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Hóa đơn trống. Vui lòng chọn sản phẩm để thanh toán!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
+        boolean coGoiNap = false;
+        int soTienNap = 0;
+        String tenTaiKhoanNap = null;
+        int maHDMoi = -1;
+
+        try (Connection con = DBConnection.getConnection()) {
+
+            // 1. Kiểm tra xem có Gói nạp không
+            for (int i = 0; i < tableOrder.getRowCount(); i++) {
+                int idFood = Integer.parseInt(tableOrder.getValueAt(i, 0).toString());
+                String sql = "SELECT Category, Price FROM FoodDrink WHERE IDFood = ?";
+                PreparedStatement ps = con.prepareStatement(sql);
+                ps.setInt(1, idFood);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    String loai = rs.getString("Category");
+                    if ("Gói nạp".equalsIgnoreCase(loai)) {
+                        coGoiNap = true;
+                        int price = rs.getInt("Price");
+                        int quantity = Integer.parseInt(tableOrder.getValueAt(i, 3).toString());
+                        soTienNap += price * quantity;
+                    }
+                }
+                rs.close();
+                ps.close();
+            }
+
+            // 2. Nếu có Gói nạp thì yêu cầu nhập tài khoản cần nạp
+            if (coGoiNap) {
+                tenTaiKhoanNap = JOptionPane.showInputDialog(this, "Nhập tên tài khoản muốn nạp:");
+                if (tenTaiKhoanNap == null || tenTaiKhoanNap.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Chưa nhập tên tài khoản. Dừng thanh toán.");
+                    return;
+                }
+
+                String sqlCheck = "SELECT COUNT(*) FROM Account WHERE NameAccount = ?";
+                PreparedStatement psCheck = con.prepareStatement(sqlCheck);
+                psCheck.setString(1, tenTaiKhoanNap.trim());
+                ResultSet rsCheck = psCheck.executeQuery();
+                rsCheck.next();
+                int count = rsCheck.getInt(1);
+                rsCheck.close();
+                psCheck.close();
+
+                if (count == 0) {
+                    JOptionPane.showMessageDialog(this, "Tên tài khoản không tồn tại. Dừng thanh toán.");
+                    return;
+                }
+            }
+
+            // 3. Lấy mã hóa đơn mới từ DB (dự phòng)
+            String sqlMaHD = "SELECT ISNULL(MAX(IDOrder), 0) + 1 AS NewID FROM OrderFood";
+            PreparedStatement psMa = con.prepareStatement(sqlMaHD);
+            ResultSet rsMa = psMa.executeQuery();
+            if (rsMa.next()) {
+                maHDMoi = rsMa.getInt("NewID");
+            }
+            rsMa.close();
+            psMa.close();
+
+            // 4. Lấy thông tin thanh toán từ form
+            int tongTienSP = Integer.parseInt(jTextField1.getText().replace(" ", "").trim());
+            int giamGia = Integer.parseInt(jTextField2.getText().replace(" ", "").trim());
+            int thanhToan = Integer.parseInt(jTextField3.getText().replace(" ", "").trim());
+
+            // 5. Gọi form QR (giống như bên Admin TAB2_QR)
+            String nguoiTao = CN_TaiKhoanDangNhap.getTenTaiKhoan();
+            if (coGoiNap) {
+                new TAB2_QR(String.valueOf(maHDMoi), nguoiTao, tongTienSP, giamGia, thanhToan, tableOrder, this, tenTaiKhoanNap, soTienNap).setVisible(true);
+            } else {
+                new TAB2_QR(String.valueOf(maHDMoi), nguoiTao, tongTienSP, giamGia, thanhToan, tableOrder, this).setVisible(true);
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi xử lý thanh toán: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_btnThanhToanActionPerformed
 
     private void cbxLoaiSPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxLoaiSPActionPerformed
+        String loai = cbxLoaiSP.getSelectedItem().toString();
+        if (loai.equals("Tất cả")) {
+            hienThiSanPham(danhSachSanPham);
+            return;
+        }
 
+        List<Products> loc = new ArrayList<>();
+        for (Products sp : danhSachSanPham) {
+            if (sp.getLoaiSP().equalsIgnoreCase(loai)) {
+                loc.add(sp);
+            }
+        }
+
+        hienThiSanPham(loc);
     }//GEN-LAST:event_cbxLoaiSPActionPerformed
     public static void main(String args[]) {
 

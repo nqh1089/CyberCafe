@@ -216,6 +216,14 @@ public class AD_LoginForm extends javax.swing.JFrame {
                 }
 
                 if (role.equalsIgnoreCase("ADMIN") || role.equalsIgnoreCase("BOSS")) {
+
+                    // ✅ Cập nhật trạng thái online cho tài khoản
+                    String sqlUpdateOnline = "UPDATE Account SET OnlineStatus = 1 WHERE IDAccount = ?";
+                    PreparedStatement psUpdate = conn.prepareStatement(sqlUpdateOnline);
+                    psUpdate.setInt(1, adminId);
+                    psUpdate.executeUpdate();
+                    psUpdate.close();
+
                     // Lưu thông tin đăng nhập
                     CN_TaiKhoanDangNhap.setTenTaiKhoan(name);
 

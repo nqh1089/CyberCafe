@@ -7,6 +7,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import ViewAD.Code.CN_TaiKhoanDangNhap;
+import Controller.DBConnection;
 
 public class CN_Slidebar {
 
@@ -97,11 +101,40 @@ public class CN_Slidebar {
             public void mouseClicked(MouseEvent e) {
                 int x = JOptionPane.showConfirmDialog(currentFrame, "Bạn chắc chắn muốn đăng xuất?", "Xác nhận", JOptionPane.YES_NO_OPTION);
                 if (x == JOptionPane.YES_OPTION) {
+                    String tenTK = CN_TaiKhoanDangNhap.getTenTaiKhoan();
+                    System.out.println("[Đăng xuất] Tài khoản: " + tenTK);
+
+                    try (Connection conn = DBConnection.getConnection()) {
+                        if (conn != null && tenTK != null && !tenTK.trim().isEmpty()) {
+                            String sql = "UPDATE Account SET OnlineStatus = 0 WHERE NameAccount = ?";
+                            PreparedStatement ps = conn.prepareStatement(sql);
+                            ps.setString(1, tenTK.trim());
+                            int rows = ps.executeUpdate();
+                            ps.close();
+
+                            if (rows > 0) {
+                                System.out.println("[Đăng xuất] Đã cập nhật OnlineStatus = 0 cho tài khoản: " + tenTK);
+                            } else {
+                                System.out.println("[Đăng xuất] Không tìm thấy tài khoản để cập nhật: " + tenTK);
+                            }
+                        } else {
+                            System.out.println("[Đăng xuất] Không đủ thông tin để cập nhật trạng thái online.");
+                        }
+                    } catch (Exception ex) {
+                        System.out.println("[Đăng xuất] Lỗi khi cập nhật OnlineStatus: " + ex.getMessage());
+                        ex.printStackTrace();
+                    }
+
+                    // Reset biến đăng nhập
+                    CN_TaiKhoanDangNhap.setTenTaiKhoan("");
+                    System.out.println("[Đăng xuất] Đã reset biến CN_TaiKhoanDangNhap");
+
                     currentFrame.dispose();
                     new AD_LoginForm().setVisible(true);
                 }
             }
         });
+
     }
 
     // Hàm gán icon + text + kích thước

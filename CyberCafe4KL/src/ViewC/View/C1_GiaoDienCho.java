@@ -66,9 +66,9 @@ public class C1_GiaoDienCho extends JFrame {
                     if (rs.next()) {
                         int status = rs.getInt("ComputerStatus");
                         if (status == 2) {
-                            ((Timer) e.getSource()).stop(); // ✅ dừng chính Timer này
-                            dispose(); // ✅ đóng GiaoDiệnChờ
-                            new C1_GiaoDienBaoTri().setVisible(true); // ✅ hiện GiaoDiệnBảoTrì
+                            ((Timer) e.getSource()).stop(); // dừng chính Timer này
+                            dispose(); // đóng GiaoDienCho
+                            new C1_GiaoDienBaoTri().setVisible(true); // hiện GiaoDienBaoTri
                         }
                     }
 
@@ -173,7 +173,7 @@ public class C1_GiaoDienCho extends JFrame {
             }
         });
 
-        // Nếu gõ phím → reset timer 15s
+        // Nếu gõ phím -> reset timer 15s
         KeyAdapter resetTimer = new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -215,8 +215,8 @@ public class C1_GiaoDienCho extends JFrame {
     }
 
     private void showFullScreenDialog(String message) {
-        JDialog dialog = new JDialog(this, "Thông báo", true); // dùng true để modal (chắn tương tác)
-        dialog.setUndecorated(true); // giống JWindow
+        JDialog dialog = new JDialog(this, "Thông báo", true);
+        dialog.setUndecorated(true);
         dialog.setLayout(new BorderLayout());
 
         JPanel content = new JPanel(new BorderLayout());

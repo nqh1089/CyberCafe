@@ -212,7 +212,7 @@ public class C2_Menu extends JFrame {
                 C2_Chat.showChat();
                 break;
             case "order":
-                JOptionPane.showMessageDialog(this, "Chức năng Order đang phát triển");
+                C2_Order.showOrder();
                 break;
             case "dangxuat":
                 CN_LogoutMay.logoutMay();

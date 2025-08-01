@@ -27,6 +27,7 @@ public class TAB2_QR extends javax.swing.JFrame {
     private String tenTaiKhoanNap;
     private int soTienNap;
 
+    // Constructor dành cho Admin (k có Gói nạp)
     public TAB2_QR(String maHD, String nguoiTao, int tongTienSP, int giamGia, int thanhToan,
             JTable tblChiTiet, AD_TAB2_Order formOrder) {
         initComponents();
@@ -42,6 +43,7 @@ public class TAB2_QR extends javax.swing.JFrame {
         AnhQR();
     }
 
+    // Constructor dành cho Admin (có Gói nạp)
     public TAB2_QR(String maHD, String nguoiTao, int tongTienSP, int giamGia, int thanhToan,
             JTable tblChiTiet, AD_TAB2_Order formOrder,
             String tenTaiKhoanNap, int soTienNap) {
@@ -49,6 +51,36 @@ public class TAB2_QR extends javax.swing.JFrame {
         this(maHD, nguoiTao, tongTienSP, giamGia, thanhToan, tblChiTiet, formOrder);
 
         // Gán thêm thông tin Gói nạp
+        this.tenTaiKhoanNap = tenTaiKhoanNap;
+        this.soTienNap = soTienNap;
+    }
+
+    // Constructor dành cho Client (không có Gói nạp)
+    public TAB2_QR(String maHD, String nguoiTao, int tongTienSP, int giamGia, int thanhToan,
+            JTable tblChiTiet, ViewC.View.C2_Order formClient) {
+
+        this(maHD, nguoiTao, tongTienSP, giamGia, thanhToan, tblChiTiet,
+                new AD_TAB2_Order() {
+            @Override
+            public void resetSauKhiThanhToan() {
+                formClient.resetSauKhiThanhToan(); // Gọi lại form client
+            }
+        });
+    }
+
+    // Constructor dành cho Client (có Gói nạp)
+    public TAB2_QR(String maHD, String nguoiTao, int tongTienSP, int giamGia, int thanhToan,
+            JTable tblChiTiet, ViewC.View.C2_Order formClient,
+            String tenTaiKhoanNap, int soTienNap) {
+
+        this(maHD, nguoiTao, tongTienSP, giamGia, thanhToan, tblChiTiet,
+                new AD_TAB2_Order() {
+            @Override
+            public void resetSauKhiThanhToan() {
+                formClient.resetSauKhiThanhToan(); // Gọi lại form client
+            }
+        });
+
         this.tenTaiKhoanNap = tenTaiKhoanNap;
         this.soTienNap = soTienNap;
     }
@@ -76,10 +108,21 @@ public class TAB2_QR extends javax.swing.JFrame {
             }
 
             // Lấy IDAccount từ tên tài khoản
-            int idAccount = layIDAccount(nguoiTao);
-            if (idAccount == -1) {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy tài khoản.");
-                return false;
+            int idAccount;
+
+            // Nếu gọi từ Client (nguoiTao rỗng), lấy Admin đang online
+            if (nguoiTao == null || nguoiTao.trim().isEmpty()) {
+                idAccount = layAdminDangTruc();
+                if (idAccount == -1) {
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy admin đang trực.");
+                    return false;
+                }
+            } else {
+                idAccount = layIDAccount(nguoiTao);
+                if (idAccount == -1) {
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy tài khoản admin: " + nguoiTao);
+                    return false;
+                }
             }
 
             // 1. Lưu OrderFood
@@ -125,6 +168,26 @@ public class TAB2_QR extends javax.swing.JFrame {
             }
         } catch (Exception e) {
             System.out.println("Lỗi lấy IDAccount: " + e.getMessage());
+        }
+        return -1;
+    }
+
+    private int layAdminDangTruc() {
+        try (Connection conn = DBConnection.getConnection()) {
+            String sql = "SELECT TOP 1 IDAccount FROM Account "
+                    + "WHERE (RoleAccount = 'ADMIN' OR RoleAccount = 'BOSS') "
+                    + "AND OnlineStatus = 1 AND AccountStatus = 1";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int id = rs.getInt("IDAccount");
+                System.out.println("[Lấy admin trực] IDAccount: " + id);
+                return id;
+            } else {
+                System.out.println("[Lấy admin trực] Không tìm thấy ai đang trực.");
+            }
+        } catch (Exception e) {
+            System.out.println("Lỗi lấy admin đang trực: " + e.getMessage());
         }
         return -1;
     }
