@@ -86,10 +86,7 @@ Timer timerCheckBack = new Timer(5000, new ActionListener() {
         try {
             String tenMay = CN_BienToanCuc.TenMay;
 
-            Connection conn = DriverManager.getConnection(
-                "jdbc:sqlserver://localhost:1433;databaseName=CyberCafe4KL;encrypt=true;trustServerCertificate=true",
-                "sa", "1234"
-            );
+            Connection conn = Controller.DBConnection.getConnection();
 
             String sql = "SELECT ComputerStatus FROM Computer WHERE NameComputer = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -132,34 +129,34 @@ timerCheckBack.start();
         dongHo.start();
     }
 
-    private void showFullScreenDialog(String message) {
-        JWindow dialog = new JWindow(this);
-        dialog.setLayout(new BorderLayout());
-
-        JPanel content = new JPanel(new BorderLayout());
-        content.setBackground(new Color(40, 40, 60));
-        content.setBorder(BorderFactory.createLineBorder(Color.CYAN, 2));
-
-        JLabel lbl = new JLabel(message, SwingConstants.CENTER);
-        lbl.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        lbl.setForeground(Color.WHITE);
-        lbl.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        JButton btn = new JButton("OK");
-        btn.setFocusPainted(false);
-        btn.setBackground(new Color(0, 200, 200));
-        btn.setForeground(Color.BLACK);
-        btn.addActionListener(e -> dialog.dispose());
-
-        content.add(lbl, BorderLayout.CENTER);
-        content.add(btn, BorderLayout.SOUTH);
-
-        dialog.setContentPane(content);
-        dialog.setSize(350, 150);
-        dialog.setLocationRelativeTo(this);
-        dialog.setAlwaysOnTop(true);
-        dialog.setVisible(true);
-    }
+//    private void showFullScreenDialog(String message) {
+//        JWindow dialog = new JWindow(this);
+//        dialog.setLayout(new BorderLayout());
+//
+//        JPanel content = new JPanel(new BorderLayout());
+//        content.setBackground(new Color(40, 40, 60));
+//        content.setBorder(BorderFactory.createLineBorder(Color.CYAN, 2));
+//
+//        JLabel lbl = new JLabel(message, SwingConstants.CENTER);
+//        lbl.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+//        lbl.setForeground(Color.WHITE);
+//        lbl.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+//
+//        JButton btn = new JButton("OK");
+//        btn.setFocusPainted(false);
+//        btn.setBackground(new Color(0, 200, 200));
+//        btn.setForeground(Color.BLACK);
+//        btn.addActionListener(e -> dialog.dispose());
+//
+//        content.add(lbl, BorderLayout.CENTER);
+//        content.add(btn, BorderLayout.SOUTH);
+//
+//        dialog.setContentPane(content);
+//        dialog.setSize(350, 150);
+//        dialog.setLocationRelativeTo(this);
+//        dialog.setAlwaysOnTop(true);
+//        dialog.setVisible(true);
+//    }
 
     class BackgroundPanel extends JPanel {
 

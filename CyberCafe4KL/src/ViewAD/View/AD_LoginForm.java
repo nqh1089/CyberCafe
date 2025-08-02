@@ -218,21 +218,21 @@ public class AD_LoginForm extends javax.swing.JFrame {
 
                 if (role.equalsIgnoreCase("ADMIN") || role.equalsIgnoreCase("BOSS")) {
 
-                    // ✅ Cập nhật trạng thái online cho tài khoản
+                    // Cập nhật trạng thái online cho tài khoản
                     String sqlUpdateOnline = "UPDATE Account SET OnlineStatus = 1 WHERE IDAccount = ?";
                     PreparedStatement psUpdate = conn.prepareStatement(sqlUpdateOnline);
                     psUpdate.setInt(1, adminId);
                     psUpdate.executeUpdate();
                     psUpdate.close();
 
-                    // ✅ KHÔNG GHI LOGACCESS CHO ADMIN/BOSS
-                    // -> vì không có máy cụ thể → tránh lỗi NULL
+                    // KHÔNG GHI LOGACCESS CHO ADMIN/BOSS
+                    // -> vì không có máy cụ thể -> tránh lỗi NULL
                     // Lưu thông tin đăng nhập vào session
                     CN_TaiKhoanDangNhap.setIDTaiKhoan(adminId);
                     CN_TaiKhoanDangNhap.setTenTaiKhoan(name);
                     CN_TaiKhoanDangNhap.setThoiGianDangNhap(new Timestamp(System.currentTimeMillis()));
 
-                    // ✅ Khởi động server nếu chưa có
+                    // Khởi động server nếu chưa có
                     if (CN_ChatAdmin.ncChatServer == null || !CN_ChatAdmin.ncChatServer.isServerRunning()) {
                         CN_ChatAdmin.ncChatServer = new NC_ChatServer();
                         CN_ChatAdmin.ncChatServer.setAdminAccountId(adminId);
@@ -240,7 +240,7 @@ public class AD_LoginForm extends javax.swing.JFrame {
                         new Thread(CN_ChatAdmin.ncChatServer).start();
                     }
 
-                    // Đặt ID Admin luôn (phòng khi server đã chạy)
+                    // Đặt ID Admin (phòng khi server đã chạy)
                     CN_ChatAdmin.SetAdminInfo(adminId, name);
 
                     // Mở giao diện chính

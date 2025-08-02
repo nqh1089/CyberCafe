@@ -4,6 +4,7 @@ import Controller.DBConnection;
 import ViewC.Code.CN_LoginMay;
 import ViewC.Code.CN_BienToanCuc;
 import ViewC.Code.CN_LayTenMayTheoIP;
+import ViewC.Code.CN_LogoutMay;
 
 import javax.swing.*;
 import java.awt.*;
@@ -57,7 +58,7 @@ public class C1_GiaoDienCho extends JFrame {
                 try {
                     String tenMay = CN_BienToanCuc.TenMay; // ✅ lấy từ biến chuẩn
 
-                    Connection conn = DBConnection.getConnection();
+                    Connection conn=DBConnection.getConnection();
                     String sql = "SELECT ComputerStatus FROM Computer WHERE NameComputer = ?";
                     PreparedStatement ps = conn.prepareStatement(sql);
                     ps.setString(1, tenMay);
@@ -66,9 +67,11 @@ public class C1_GiaoDienCho extends JFrame {
                     if (rs.next()) {
                         int status = rs.getInt("ComputerStatus");
                         if (status == 2) {
-                            ((Timer) e.getSource()).stop(); // dừng chính Timer này
-                            dispose(); // đóng GiaoDienCho
-                            new C1_GiaoDienBaoTri().setVisible(true); // hiện GiaoDienBaoTri
+                            ((Timer) e.getSource()).stop(); // ✅ dừng chính Timer này
+                            dispose(); // ✅ đóng GiaoDiệnChờ
+                            CN_LogoutMay.logoutMay();
+                            CN_LogoutMay.closeAllClientForms();
+                            new C1_GiaoDienBaoTri().setVisible(true); // ✅ hiện GiaoDiệnBảoTrì
                         }
                     }
 
@@ -154,26 +157,28 @@ public class C1_GiaoDienCho extends JFrame {
             String user = txtUser.getText().trim();
             String pass = new String(txtPass.getPassword());
 
-            String ketQua = CN_LoginMay.loginMay(user, pass);
+            boolean ketQua = CN_LoginMay.loginMay(user, pass);
 
             // Luôn reset form login dù đúng hay sai
             resetFormLogin();
 
-            if (ketQua.equals("OK")) {
+            if (ketQua) {
                 if (timer15s != null) {
                     timer15s.stop();
                 }
                 panelLogin.setVisible(false);
-//                showFullScreenDialog("Đăng nhập thành công!");
+
+                showFullScreenDialog("Đăng nhập thành công!");
+
                 new C2_Menu().setVisible(true);
                 C2_Chat.showChat();
                 C1_GiaoDienCho.this.dispose();
             } else {
-                showFullScreenDialog(ketQua); // Hiển thị lỗi cụ thể
+                showFullScreenDialog("Sai tài khoản hoặc máy không hợp lệ!");
             }
         });
 
-        // Nếu gõ phím -> reset timer 15s
+        // Nếu gõ phím → reset timer 15s
         KeyAdapter resetTimer = new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -215,8 +220,7 @@ public class C1_GiaoDienCho extends JFrame {
     }
 
     private void showFullScreenDialog(String message) {
-        JDialog dialog = new JDialog(this, "Thông báo", true);
-        dialog.setUndecorated(true);
+        JWindow dialog = new JWindow(this);
         dialog.setLayout(new BorderLayout());
 
         JPanel content = new JPanel(new BorderLayout());
@@ -233,13 +237,6 @@ public class C1_GiaoDienCho extends JFrame {
         btn.setBackground(new Color(0, 200, 200));
         btn.setForeground(Color.BLACK);
         btn.addActionListener(e -> dialog.dispose());
-
-        // Gán ENTER và ESC để đóng dialog
-        dialog.getRootPane().setDefaultButton(btn); // ENTER = OK
-        dialog.getRootPane().registerKeyboardAction(e -> dialog.dispose(),
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                JComponent.WHEN_IN_FOCUSED_WINDOW
-        );
 
         content.add(lbl, BorderLayout.CENTER);
         content.add(btn, BorderLayout.SOUTH);

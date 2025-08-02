@@ -162,19 +162,24 @@ public class C1_GiaoDienTreo extends JFrame {
                 return;
             }
 
-            String ketQua = CN_LoginMay.loginMay(user, pass);
+            boolean ketQua = CN_LoginMay.loginMay(user, pass);
+
+            // Luôn reset form login dù đúng hay sai
             resetFormLogin();
 
-            if (ketQua.equals("OK")) {
+            if (ketQua) {
                 if (timer15s != null) {
                     timer15s.stop();
                 }
                 panelLogin.setVisible(false);
+
+                showFullScreenDialog("Đăng nhập thành công!");
+
                 new C2_Menu().setVisible(true);
                 C2_Chat.showChat();
                 C1_GiaoDienTreo.this.dispose();
             } else {
-                showFullScreenDialog(ketQua);
+                showFullScreenDialog("Sai tài khoản hoặc máy không hợp lệ!");
             }
         });
 

@@ -122,7 +122,7 @@ public class CN_LogoutMay {
         System.out.println("Lỗi khi đăng xuất: " + e.getMessage());
     }
 }
-    private static void closeAllClientForms() {
+    public static void closeAllClientForms() {
         try {
             if (C2_Menu.instance != null) {
                 if (C2_Menu.instance.timer != null) {
