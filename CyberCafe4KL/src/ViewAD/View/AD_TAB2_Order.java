@@ -3,6 +3,7 @@ package ViewAD.View;
 import Controller.DAO;
 import Controller.DBConnection;
 import Model.Products;
+import ViewAD.Code.CN_ChanDongX;
 import ViewAD.Code.CN_SetupTable;
 import ViewAD.Code.CN_Slidebar;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
@@ -12,6 +13,8 @@ import ViewC.Code.CN_BienToanCuc;
 import java.sql.Connection;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.ArrayList;
 import javax.swing.*;
@@ -48,6 +51,8 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         tableOrder.getColumnModel().getColumn(0).setMinWidth(0);
         tableOrder.getColumnModel().getColumn(0).setMaxWidth(0);
         tableOrder.getColumnModel().getColumn(0).setWidth(0);
+        
+         CN_ChanDongX.ChanDongX(this);
     }
 
     public List<Products> getAllProducts() {
@@ -144,7 +149,6 @@ public class AD_TAB2_Order extends javax.swing.JFrame {
         // Reset thông tin hóa đơn: ngày giờ, mã HD mới, nhân viên
         HienThongTinHoaDon();
     }
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

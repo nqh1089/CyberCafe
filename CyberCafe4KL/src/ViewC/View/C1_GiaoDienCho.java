@@ -56,7 +56,7 @@ public class C1_GiaoDienCho extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    String tenMay = CN_BienToanCuc.TenMay; // ✅ lấy từ biến chuẩn
+                    String tenMay = CN_BienToanCuc.TenMay; // lấy từ biến chuẩn
 
                     Connection conn=DBConnection.getConnection();
                     String sql = "SELECT ComputerStatus FROM Computer WHERE NameComputer = ?";
@@ -67,11 +67,11 @@ public class C1_GiaoDienCho extends JFrame {
                     if (rs.next()) {
                         int status = rs.getInt("ComputerStatus");
                         if (status == 2) {
-                            ((Timer) e.getSource()).stop(); // ✅ dừng chính Timer này
-                            dispose(); // ✅ đóng GiaoDiệnChờ
+                            ((Timer) e.getSource()).stop(); // dừng chính Timer này
+                            dispose(); // đóng GiaoDiệnChờ
                             CN_LogoutMay.logoutMay();
                             CN_LogoutMay.closeAllClientForms();
-                            new C1_GiaoDienBaoTri().setVisible(true); // ✅ hiện GiaoDiệnBảoTrì
+                            new C1_GiaoDienBaoTri().setVisible(true); // hiện GiaoDiệnBảoTrì
                         }
                     }
 

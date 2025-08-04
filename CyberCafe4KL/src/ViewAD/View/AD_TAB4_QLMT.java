@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 
 import Controller.DBConnection;
+import ViewAD.Code.CN_ChanDongX;
 import ViewAD.Code.CN_Slidebar;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.TAB4_LoadMayTinh;
@@ -23,6 +24,9 @@ public class AD_TAB4_QLMT extends javax.swing.JFrame {
 
     public AD_TAB4_QLMT() {
         initComponents();
+        
+         CN_ChanDongX.ChanDongX(this);
+         
         CN_Slidebar.SetSlidebar(
                 lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan,
                 lblDMK, lblDX, lblChat, lblTB, this

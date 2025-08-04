@@ -14,6 +14,10 @@ import java.sql.DriverManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import Controller.DBConnection;
+import ViewAD.Code.CN_ChanDongX;
+import ViewC.Code.CN_BienToanCuc;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -22,6 +26,9 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
     public AD_TAB1_DatMay() {
 //        this.setUndecorated(true); // Bỏ viền & thanh tiêu đề
         initComponents();
+
+        CN_ChanDongX.ChanDongX(this);
+        
         CN_Slidebar.SetSlidebar(
                 lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan,
                 lblDMK, lblDX, lblChat, lblTB, this

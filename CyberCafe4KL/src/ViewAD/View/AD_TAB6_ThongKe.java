@@ -1,5 +1,6 @@
 package ViewAD.View;
 
+import ViewAD.Code.CN_ChanDongX;
 import ViewAD.Code.CN_Slidebar;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.TAB6_TongLuotTruyCap;
@@ -13,6 +14,8 @@ public class AD_TAB6_ThongKe extends javax.swing.JFrame {
 
     public AD_TAB6_ThongKe() {
         initComponents();
+        
+         CN_ChanDongX.ChanDongX(this);
 
         CN_Slidebar.SetSlidebar(
                 lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan,

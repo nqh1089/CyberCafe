@@ -1,6 +1,7 @@
 package ViewAD.View;
 
 import Controller.DBConnection;
+import ViewAD.Code.CN_ChanDongX;
 import ViewAD.Code.CN_SetupTable;
 import ViewAD.Code.CN_Slidebar;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
@@ -19,6 +20,9 @@ public class AD_TAB7_QLNV extends javax.swing.JFrame {
 
     public AD_TAB7_QLNV() {
         initComponents();
+        
+         CN_ChanDongX.ChanDongX(this);
+         
         CN_Slidebar.SetSlidebar(
                 lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan,
                 lblDMK, lblDX, lblChat, lblTB, this

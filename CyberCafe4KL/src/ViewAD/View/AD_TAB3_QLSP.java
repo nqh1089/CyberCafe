@@ -1,13 +1,17 @@
 package ViewAD.View;
 
 import Controller.DBConnection;
+import ViewAD.Code.CN_ChanDongX;
 import ViewAD.Code.CN_SetupTable;
 import ViewAD.Code.CN_Slidebar;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.TAB3_ThemSP;
 import ViewAD.Code.TAB3_LoadTT;
+import ViewC.Code.CN_BienToanCuc;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,6 +24,11 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
 
     public AD_TAB3_QLSP() {
         initComponents();
+        
+         CN_ChanDongX.ChanDongX(this);
+         
+        lblID.setText("Xin chào, " + CN_TaiKhoanDangNhap.getTenTaiKhoan());
+        setTitle("CyberCafe4KL_Quản Lý Sản Phẩm");
 
         CN_Slidebar.SetSlidebar(
                 lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan,

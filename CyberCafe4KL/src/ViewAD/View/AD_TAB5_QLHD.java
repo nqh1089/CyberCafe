@@ -1,5 +1,6 @@
 package ViewAD.View;
 
+import ViewAD.Code.CN_ChanDongX;
 import ViewAD.Code.CN_Slidebar;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
 import ViewAD.Code.TAB5_ChiTietHD;
@@ -13,6 +14,8 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
 
     public AD_TAB5_QLHD() {
         initComponents();
+         CN_ChanDongX.ChanDongX(this);
+         
         CN_Slidebar.SetSlidebar(
                 lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan,
                 lblDMK, lblDX, lblChat, lblTB, this
