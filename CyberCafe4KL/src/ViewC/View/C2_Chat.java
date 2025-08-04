@@ -25,6 +25,7 @@ public class C2_Chat extends javax.swing.JFrame {
         setResizable(false);
         // k cho đóng form (Vô hiệu hoá nút X)
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        LoadGiaoDienGocTrenBenPhai(); //Load giao dien góc trên bên phải
 
         String iconPath = "src/Assets/img/Send.png";
         ImageIcon icon = new ImageIcon(iconPath);
@@ -149,6 +150,13 @@ public class C2_Chat extends javax.swing.JFrame {
 
     private void updateConnectionStatus(String status) {
         SwingUtilities.invokeLater(() -> System.out.println("Trạng thái: " + status));
+    }
+
+    private void LoadGiaoDienGocTrenBenPhai() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = screenSize.width - this.getWidth();
+        int y = 0;
+        this.setLocation(x, y);
     }
 
     @SuppressWarnings("unchecked")

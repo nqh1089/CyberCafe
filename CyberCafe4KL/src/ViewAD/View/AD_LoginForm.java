@@ -20,6 +20,7 @@ public class AD_LoginForm extends javax.swing.JFrame {
         setTitle("CyberCafe4KL");
 
         getRootPane().setDefaultButton(btnLogin); // Gán enter cho phím login
+        this.setLocationRelativeTo(null); // Set hiển giữa màn hình
     }
 
     @SuppressWarnings("unchecked")

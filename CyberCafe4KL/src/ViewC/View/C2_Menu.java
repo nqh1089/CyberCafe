@@ -33,6 +33,7 @@ public class C2_Menu extends JFrame {
 
         this.setResizable(false); // Không cho phóng to
         chanDongX(); // Không cho tắt giao diện khi đang đăng nhập
+        LoadGiaoDienGocTrenBenPhai(); //Load giao dien góc trên bên phải
 
         // 60 giây load lại tt 1 lần
         Timer timer = new Timer(60_000, e -> CapNhatThongTinDongBo());
@@ -246,6 +247,13 @@ public class C2_Menu extends JFrame {
                 }
             }
         });
+    }
+
+    private void LoadGiaoDienGocTrenBenPhai() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = screenSize.width - this.getWidth();
+        int y = 0;
+        this.setLocation(x, y);
     }
 
     @SuppressWarnings("unchecked")

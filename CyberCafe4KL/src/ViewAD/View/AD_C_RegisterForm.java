@@ -15,6 +15,7 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
         initComponents();
 //        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        this.setLocationRelativeTo(null); // Set hiển giữa màn hình
     }
 
     @SuppressWarnings("unchecked")

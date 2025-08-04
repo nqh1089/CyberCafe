@@ -3,7 +3,7 @@ package ViewC.View;
 import Controller.DBConnection;
 import ViewC.Code.CN_LoginMay;
 import ViewC.Code.CN_BienToanCuc;
-import ViewC.Code.CN_LayTenMayTheoIP;
+import ViewC.Code.CN_LayTenMayTheoIP;       
 import ViewC.Code.CN_LogoutMay;
 
 import javax.swing.*;

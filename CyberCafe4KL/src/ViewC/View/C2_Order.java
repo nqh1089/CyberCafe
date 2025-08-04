@@ -43,6 +43,8 @@ public class C2_Order extends javax.swing.JFrame {
         jTextField1.setEditable(false);
         jTextField2.setEditable(false);
         jTextField3.setEditable(false);
+        
+        this.setLocationRelativeTo(null); // Set hiển giữa màn hình
     }
 
     public List<Products> getAllProducts() {

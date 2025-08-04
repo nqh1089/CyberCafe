@@ -2,6 +2,7 @@ package ViewAD.View;
 
 import Controller.DBConnection;
 import ViewAD.Code.CN_TaiKhoanDangNhap;
+import static ViewC.View.C2_Chat.instance;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,10 +10,17 @@ import javax.swing.JOptionPane;
 
 public class AD_ChangePW extends javax.swing.JFrame {
 
+    public static AD_ChangePW instance;
+
     public AD_ChangePW() {
         initComponents();
         this.setResizable(false); // Không cho phóng to
         setTitle("CyberCafe4KL");
+        
+        this.setLocationRelativeTo(null); // Set hiển giữa màn hình
+
+        instance = this;
+
     }
 
     @SuppressWarnings("unchecked")
