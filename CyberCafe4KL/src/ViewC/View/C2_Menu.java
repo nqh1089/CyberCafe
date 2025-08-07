@@ -2,6 +2,7 @@ package ViewC.View;
 
 import Controller.DBConnection;
 import ViewAD.View.AD_ChangePW;
+import ViewC.Code.C2_ChiPhiDichVu;
 import ViewC.Code.C2_ChiPhiGio;
 import ViewC.Code.CN_BienToanCuc;
 import ViewC.Code.C2_SetImage;
@@ -96,6 +97,36 @@ public class C2_Menu extends JFrame {
             // 4. Thời gian còn lại (tính toán lại)
             conLaiMin = C2_ThoiGianConLai.getThoiGianConLaiPhut(CN_BienToanCuc.IDAccount, CN_BienToanCuc.IDComputer);
 
+            // 5. Chi phí dịch vụ (Lấy tổng tiền từ các đơn hàng kể từ thời điểm bắt đầu sử dụng máy)
+            Timestamp thoiGianBatDau = null;
+            double chiPhiDichVu = 0.0;
+            String chiPhiDichVuStr = "0 đ";
+
+            try {
+                String sqlBatDau = "SELECT TOP 1 StartTime FROM ComputerUsage "
+                        + "WHERE IDComputer = ? AND IDAccount = ? AND EndTime IS NULL "
+                        + "ORDER BY StartTime DESC";
+                PreparedStatement psBatDau = conn.prepareStatement(sqlBatDau);
+                psBatDau.setInt(1, CN_BienToanCuc.IDComputer);
+                psBatDau.setInt(2, CN_BienToanCuc.IDAccount);
+                ResultSet rsBatDau = psBatDau.executeQuery();
+
+                if (rsBatDau.next()) {
+                    thoiGianBatDau = rsBatDau.getTimestamp("StartTime");
+
+                    // Gọi đúng theo tên máy
+                    String tenMay = CN_BienToanCuc.TenMay;
+                    chiPhiDichVu = C2_ChiPhiDichVu.layTongTienOrderClient(tenMay, thoiGianBatDau);
+                    chiPhiDichVuStr = formatTien(chiPhiDichVu) + " đ";
+                }
+                
+                rsBatDau.close();
+                psBatDau.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                chiPhiDichVuStr = "Lỗi";
+            }
+
             // Cập nhật giao diện
             lblTrangThai.setText(trangThai);
             lblGioBatDau.setText(gioBatDauStr);
@@ -103,6 +134,7 @@ public class C2_Menu extends JFrame {
             lblChiPhiGio.setText(chiPhiGioStr);
             lblSoDu.setText(formatTien(soDu) + " đ");
             lblThoiGianConLai.setText(conLaiMin + " phút");
+            lblChiPhiDichVu.setText(chiPhiDichVuStr);
 
             // In log theo thời gian thực
             // In log chi tiết
@@ -111,8 +143,8 @@ public class C2_Menu extends JFrame {
                     + " | BatDau: " + gioBatDauStr
                     + " | SuDung: " + usedMin + " phút"
                     + " | ConLai: " + conLaiMin + " phút"
-                    + " | ChiPhiGioChoi: " + chiPhiGioStr);
-//                    + " | ChiPhiDichVu: " + chiPhiDichVuStr);
+                    + " | ChiPhiGioChoi: " + chiPhiGioStr
+                    + " | ChiPhiDichVu: " + chiPhiDichVuStr);
 
             conn.close();
 
@@ -153,7 +185,7 @@ public class C2_Menu extends JFrame {
         lblThoiGianSD.setText("-- phút");
         lblThoiGianConLai.setText("-- phút");
         lblChiPhiGio.setText("0 đ");
-        lblChiPhiDV.setText("0 đ");
+        lblChiPhiDichVu.setText("0 đ");
         lblSoDu.setText("-- đ"); // Mặc định
 
         try {
@@ -306,7 +338,7 @@ public class C2_Menu extends JFrame {
         lblThoiGianSD = new javax.swing.JLabel();
         lblThoiGianConLai = new javax.swing.JLabel();
         lblChiPhiGio = new javax.swing.JLabel();
-        lblChiPhiDV = new javax.swing.JLabel();
+        lblChiPhiDichVu = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         lblTaiKhoan = new javax.swing.JLabel();
         pnlMainCN = new javax.swing.JPanel();
@@ -376,10 +408,10 @@ public class C2_Menu extends JFrame {
         lblChiPhiGio.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblChiPhiGio.setText("jLabel12");
 
-        lblChiPhiDV.setBackground(new java.awt.Color(255, 255, 255));
-        lblChiPhiDV.setForeground(new java.awt.Color(255, 255, 255));
-        lblChiPhiDV.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblChiPhiDV.setText("jLabel13");
+        lblChiPhiDichVu.setBackground(new java.awt.Color(255, 255, 255));
+        lblChiPhiDichVu.setForeground(new java.awt.Color(255, 255, 255));
+        lblChiPhiDichVu.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblChiPhiDichVu.setText("jLabel13");
 
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("Tài khoản:");
@@ -416,7 +448,7 @@ public class C2_Menu extends JFrame {
                     .addComponent(lblGioBatDau, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lblThoiGianSD, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lblThoiGianConLai, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblChiPhiDV, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblChiPhiDichVu, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblChiPhiGio, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblTaiKhoan, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(49, Short.MAX_VALUE))
@@ -447,7 +479,7 @@ public class C2_Menu extends JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(pnlTTMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
-                            .addComponent(lblChiPhiDV)))
+                            .addComponent(lblChiPhiDichVu)))
                     .addGroup(pnlTTMLayout.createSequentialGroup()
                         .addComponent(lblSoDu)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -582,7 +614,7 @@ public class C2_Menu extends JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel lblChiPhiDV;
+    private javax.swing.JLabel lblChiPhiDichVu;
     private javax.swing.JLabel lblChiPhiGio;
     private javax.swing.JLabel lblGioBatDau;
     private javax.swing.JLabel lblSoDu;

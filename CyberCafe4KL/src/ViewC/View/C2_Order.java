@@ -49,6 +49,8 @@ public class C2_Order extends javax.swing.JFrame {
         jTextField1.setText("0");
         jTextField2.setText("0");
         jTextField3.setText("0");
+        
+        HienThongTinHoaDon();
 
     }
 

@@ -148,7 +148,7 @@
                               <Component id="lblGioBatDau" alignment="0" max="32767" attributes="0"/>
                               <Component id="lblThoiGianSD" alignment="0" max="32767" attributes="0"/>
                               <Component id="lblThoiGianConLai" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
-                              <Component id="lblChiPhiDV" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
+                              <Component id="lblChiPhiDichVu" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
                               <Component id="lblChiPhiGio" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
                               <Component id="lblTaiKhoan" alignment="1" min="-2" pref="90" max="-2" attributes="0"/>
                           </Group>
@@ -183,7 +183,7 @@
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="lblChiPhiDV" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="lblChiPhiDichVu" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
@@ -334,7 +334,7 @@
                     <Property name="text" type="java.lang.String" value="jLabel12"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="lblChiPhiDV">
+                <Component class="javax.swing.JLabel" name="lblChiPhiDichVu">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="ff" green="ff" red="ff" type="rgb"/>
