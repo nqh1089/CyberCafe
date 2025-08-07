@@ -78,11 +78,12 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
         int tongTien = 0;
 
         try (Connection conn = DBConnection.getConnection()) {
-            int idHD = Integer.parseInt(maHD.replace("HD", ""));
+            int idHD = Integer.parseInt(maHD.replaceAll("[^0-9]", ""));
 
             // Lấy thông tin đơn hàng
+            // Lấy thông tin đơn hàng
             PreparedStatement ps1 = conn.prepareStatement(
-                    "SELECT ofd.OrderTime, A.NameAccount FROM OrderFood ofd "
+                    "SELECT ofd.OrderTime, A.NameAccount, ofd.Note FROM OrderFood ofd "
                     + "JOIN Account A ON ofd.IDAccount = A.IDAccount WHERE ofd.IDOrder = ?"
             );
             ps1.setInt(1, idHD);
@@ -93,9 +94,16 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
                 String ngayTao = new java.text.SimpleDateFormat("dd-MM-yyyy HH:mm").format(orderTime);
 
                 String tenNV = rs1.getString("NameAccount");
+                String tenMay = rs1.getString("Note");
+
                 lblID1.setText("Mã hóa đơn: HD" + idHD);
                 lblID.setText("Ngày tạo: " + ngayTao);
                 lblID3.setText("NVBH: " + tenNV);
+
+                // Nếu có Note là tên máy thì set vào tiêu đề
+                if (tenMay != null && !tenMay.trim().isEmpty()) {
+                    lblTitle.setText("THÔNG TIN HÓA ĐƠN " + tenMay.trim());
+                }
             }
 
             // Lấy chi tiết món
@@ -139,7 +147,7 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        txtSDM = new javax.swing.JLabel();
+        lblTitle = new javax.swing.JLabel();
         lblID = new javax.swing.JLabel();
         lblID1 = new javax.swing.JLabel();
         lblID3 = new javax.swing.JLabel();
@@ -155,11 +163,11 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
 
         jPanel3.setBackground(new java.awt.Color(30, 30, 47));
 
-        txtSDM.setBackground(new java.awt.Color(255, 255, 255));
-        txtSDM.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
-        txtSDM.setForeground(new java.awt.Color(255, 255, 255));
-        txtSDM.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        txtSDM.setText("THÔNG TIN HÓA ĐƠN");
+        lblTitle.setBackground(new java.awt.Color(255, 255, 255));
+        lblTitle.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
+        lblTitle.setForeground(new java.awt.Color(255, 255, 255));
+        lblTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTitle.setText("THÔNG TIN HÓA ĐƠN");
 
         lblID.setBackground(new java.awt.Color(255, 255, 255));
         lblID.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
@@ -209,7 +217,7 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtSDM, javax.swing.GroupLayout.DEFAULT_SIZE, 859, Short.MAX_VALUE)
+                    .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 859, Short.MAX_VALUE)
                     .addComponent(lblID1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lblID, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lblID3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -222,7 +230,7 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(30, 30, 30)
-                .addComponent(txtSDM)
+                .addComponent(lblTitle)
                 .addGap(18, 18, 18)
                 .addComponent(lblID1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -293,7 +301,7 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
     private javax.swing.JLabel lblID1;
     private javax.swing.JLabel lblID3;
     private javax.swing.JLabel lblID4;
+    private javax.swing.JLabel lblTitle;
     private javax.swing.JTable tblCTHD;
-    private javax.swing.JLabel txtSDM;
     // End of variables declaration//GEN-END:variables
 }

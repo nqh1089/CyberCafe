@@ -101,10 +101,14 @@ public class CN_Dropdown {
 
     public static void loadThongBao(JPanel pnlThongBao) {
         try (Connection conn = DBConnection.getConnection()) {
-            if (conn == null) return;
+            if (conn == null) {
+                return;
+            }
 
             Timestamp batDau = CN_TaiKhoanDangNhap.getThoiGianDangNhap();
-            if (batDau == null) batDau = new Timestamp(System.currentTimeMillis());
+            if (batDau == null) {
+                batDau = new Timestamp(System.currentTimeMillis());
+            }
 
             int adminId = CN_TaiKhoanDangNhap.getIDTaiKhoan();
             boolean coThongBaoMoi = false;
@@ -134,7 +138,7 @@ public class CN_Dropdown {
 
                         if (!displayedMessages.contains(key)) {
                             displayedMessages.add(key);
-                            pnlThongBao.add(createThongBaoItem(may, msg, time), 1);
+                            pnlThongBao.add(createThongBaoItem(may, msg, time, ""), 1); // nếu không có mã hóa đơn
                             coThongBaoMoi = true;
                         }
                     }
@@ -143,13 +147,14 @@ public class CN_Dropdown {
 
             // ORDER
             String sqlOrder = """
-                SELECT TOP 20 
-                    ISNULL(NULLIF(RTRIM(LTRIM(O.Note)), ''), 'Máy khách') AS NameComputer, 
-                    O.OrderTime
-                FROM OrderFood O
-                WHERE O.IDAccount = ? AND O.OrderTime >= ?
-                ORDER BY O.OrderTime DESC
-            """;
+    SELECT TOP 20 
+        ISNULL(NULLIF(RTRIM(LTRIM(O.Note)), ''), 'Máy khách') AS NameComputer, 
+        O.OrderTime,
+        O.IDOrder
+    FROM OrderFood O
+    WHERE O.IDAccount = ? AND O.OrderTime >= ?
+    ORDER BY O.OrderTime DESC
+""";
 
             try (PreparedStatement ps = conn.prepareStatement(sqlOrder)) {
                 ps.setInt(1, adminId);
@@ -159,14 +164,16 @@ public class CN_Dropdown {
                     while (rs.next()) {
                         String may = rs.getString("NameComputer");
                         Timestamp orderTime = rs.getTimestamp("OrderTime");
-                        long rawTime = orderTime.getTime();
+                        int idOrder = rs.getInt("IDOrder");
+                        String maHD = "HĐ" + idOrder;
+
                         String time = formatTime(orderTime);
                         String msg = "Order mới";
-                        String key = may + "|" + msg + "|" + rawTime;
+                        String key = may + "|" + msg + "|" + orderTime.getTime();
 
                         if (!displayedMessages.contains(key)) {
                             displayedMessages.add(key);
-                            pnlThongBao.add(createThongBaoItem(may, msg, time), 1);
+                            pnlThongBao.add(createThongBaoItem(may, msg, time, maHD), 1);
                             coThongBaoMoi = true;
                         }
                     }
@@ -183,36 +190,92 @@ public class CN_Dropdown {
         }
     }
 
-    public static JPanel createThongBaoItem(String tenMay, String noiDung, String gioPhut) {
+    public static JPanel createThongBaoItem(String tenMay, String noiDung, String gioPhut, String maHD) {
         JPanel pnlItem = new JPanel(new BorderLayout());
-        pnlItem.setBackground(new Color(54, 54, 74));
-        pnlItem.setBorder(BorderFactory.createEmptyBorder(3, 10, 3, 10));
+        pnlItem.setBackground(new Color(60, 60, 90)); // Màu mặc định mới
+        pnlItem.setMaximumSize(new Dimension(Integer.MAX_VALUE, 65)); // Chiều cao của 1 lbl TB
+        pnlItem.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        pnlItem.putClientProperty("read", false); // Mặc định là chưa đọc
 
-        JLabel lblTitle = new JLabel("🖥 " + tenMay);
+        pnlItem.putClientProperty("maHD", maHD);       // Gán mã hóa đơn (HĐxxx)
+        pnlItem.putClientProperty("noiDung", noiDung); // Để phân biệt Order
+
+        // Label tên máy
+        JLabel lblTitle = new JLabel(tenMay);
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 14));
         lblTitle.setForeground(Color.CYAN);
 
-        JLabel lblDetail = new JLabel("• " + noiDung + "    " + gioPhut);
+        // Label nội dung
+        JLabel lblDetail = new JLabel("• " + noiDung);
         lblDetail.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         lblDetail.setForeground(new Color(200, 200, 200));
 
+        // Box chứa title + detail
         Box box = Box.createVerticalBox();
         box.add(lblTitle);
         box.add(lblDetail);
 
-        pnlItem.add(box, BorderLayout.CENTER);
+        JPanel pnlTop = new JPanel(new BorderLayout());
+        pnlTop.setOpaque(false);
+        pnlTop.add(box, BorderLayout.CENTER);
+
+        // Label thời gian
+        JLabel lblTime = new JLabel(gioPhut);
+        lblTime.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        lblTime.setForeground(Color.LIGHT_GRAY);
+        lblTime.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
+
+        JPanel pnlBottom = new JPanel(new BorderLayout());
+        pnlBottom.setOpaque(false);
+        pnlBottom.add(lblTime, BorderLayout.EAST);
+
+        pnlItem.add(pnlTop, BorderLayout.CENTER);
+        pnlItem.add(pnlBottom, BorderLayout.SOUTH);
+
+        // Màu theo yêu cầu
+        Color bgDefault = new Color(60, 60, 90);   // Chưa đọc
+        Color bgHover = new Color(30, 30, 47);     // Hover
+        Color bgRead = new Color(50, 50, 70);      // Đã đọc
+
+        pnlItem.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                pnlItem.setBackground(bgHover);
+                pnlItem.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                boolean isRead = Boolean.TRUE.equals(pnlItem.getClientProperty("read"));
+                pnlItem.setBackground(isRead ? bgRead : bgDefault);
+                pnlItem.setCursor(Cursor.getDefaultCursor());
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                pnlItem.setBackground(bgRead);
+                pnlItem.putClientProperty("read", true);
+
+                String noiDung = (String) pnlItem.getClientProperty("noiDung");
+                if ("Order mới".equals(noiDung) && e.getClickCount() == 2) {
+                    String maHD = (String) pnlItem.getClientProperty("maHD");
+                    if (maHD != null && !maHD.isEmpty()) {
+                        new TAB5_ChiTietHD(maHD).setVisible(true);
+                    }
+                }
+            }
+        });
+
         return pnlItem;
     }
 
     private static String formatTime(Timestamp timestamp) {
-        if (timestamp == null) return "--:--";
+        if (timestamp == null) {
+            return "--:--";
+        }
         return new SimpleDateFormat("HH:mm").format(timestamp);
     }
 }
-
-
-
-
 
 //package ViewAD.Code;
 //
