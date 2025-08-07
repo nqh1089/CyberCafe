@@ -238,46 +238,93 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
             return;
         }
 
-        // Lấy tên admin đang đăng nhập từ CN_TaiKhoanDangNhap
-        String adminName = ViewAD.Code.CN_TaiKhoanDangNhap.getTenTaiKhoan();
-
-        int idAccountAdmin = -1;  // Khai báo biến ở đây!
-
+        // Kiểm tra trùng thông tin trong DB trước khi mở QR
         try (Connection conn = Controller.DBConnection.getConnection()) {
-            String sql = "SELECT IDAccount FROM Account WHERE NameAccount = ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, adminName);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                idAccountAdmin = rs.getInt("IDAccount");
+            if (conn == null) {
+                JOptionPane.showMessageDialog(this, "Không thể kết nối cơ sở dữ liệu.");
+                return;
             }
-            rs.close();
-            ps.close();
+
+            // Tên tài khoản
+            String sqlCheckName = "SELECT 1 FROM Account WHERE NameAccount = ?";
+            PreparedStatement psName = conn.prepareStatement(sqlCheckName);
+            psName.setString(1, name);
+            ResultSet rsName = psName.executeQuery();
+            if (rsName.next()) {
+                JOptionPane.showMessageDialog(this, "Tên tài khoản đã tồn tại.");
+                rsName.close();
+                psName.close();
+                return;
+            }
+            rsName.close();
+            psName.close();
+
+            // Số điện thoại
+            String sqlCheckPhone = "SELECT 1 FROM Account WHERE PhoneNumber = ?";
+            PreparedStatement psPhone = conn.prepareStatement(sqlCheckPhone);
+            psPhone.setString(1, phone);
+            ResultSet rsPhone = psPhone.executeQuery();
+            if (rsPhone.next()) {
+                JOptionPane.showMessageDialog(this, "Số điện thoại đã tồn tại.");
+                rsPhone.close();
+                psPhone.close();
+                return;
+            }
+            rsPhone.close();
+            psPhone.close();
+
+            // CCCD
+            String sqlCheckCCCD = "SELECT 1 FROM Account WHERE CCCD = ?";
+            PreparedStatement psCCCD = conn.prepareStatement(sqlCheckCCCD);
+            psCCCD.setString(1, cccd);
+            ResultSet rsCCCD = psCCCD.executeQuery();
+            if (rsCCCD.next()) {
+                JOptionPane.showMessageDialog(this, "CCCD đã tồn tại.");
+                rsCCCD.close();
+                psCCCD.close();
+                return;
+            }
+            rsCCCD.close();
+            psCCCD.close();
+
+            // Lấy ID admin đang đăng nhập
+            String adminName = ViewAD.Code.CN_TaiKhoanDangNhap.getTenTaiKhoan();
+            int idAccountAdmin = -1;
+
+            String sqlAdmin = "SELECT IDAccount FROM Account WHERE NameAccount = ?";
+            PreparedStatement psAdmin = conn.prepareStatement(sqlAdmin);
+            psAdmin.setString(1, adminName);
+            ResultSet rsAdmin = psAdmin.executeQuery();
+            if (rsAdmin.next()) {
+                idAccountAdmin = rsAdmin.getInt("IDAccount");
+            }
+            rsAdmin.close();
+            psAdmin.close();
+
+            if (idAccountAdmin == -1) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy ID của tài khoản Admin đang đăng nhập.");
+                return;
+            }
+
+            // Mọi thứ ổn -> mở form QR
+            RG_QR qrForm = new RG_QR(
+                    null,
+                    name,
+                    (int) balance,
+                    0,
+                    (int) balance,
+                    phone,
+                    gender,
+                    cccd,
+                    idAccountAdmin,
+                    this
+            );
+            qrForm.setVisible(true);
+
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi lấy ID Admin: " + e.getMessage());
-            return;
+            JOptionPane.showMessageDialog(this, "Lỗi khi kiểm tra dữ liệu: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        if (idAccountAdmin == -1) {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy ID của tài khoản Admin đang đăng nhập.");
-            return;
-        }
-
-        RG_QR qrForm = new RG_QR(
-                null,
-                name,
-                (int) balance,
-                0,
-                (int) balance,
-                phone,
-                gender,
-                cccd,
-                idAccountAdmin,
-                this
-        );
-        qrForm.setVisible(true);
-
-
     }//GEN-LAST:event_btnRegisterActionPerformed
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {

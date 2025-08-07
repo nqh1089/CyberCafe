@@ -950,6 +950,7 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
     }//GEN-LAST:event_btnMessageActionPerformed
 
     private void btnLockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLockActionPerformed
+        
         try {
             int idMay = Integer.parseInt(lblTenMay.getText().replaceAll("[^0-9]", ""));
             Connection conn = DBConnection.getConnection();
@@ -959,18 +960,18 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
             int result = ps.executeUpdate();
 
             if (result > 0) {
-                JOptionPane.showMessageDialog(this, "✅ Máy đã được chuyển sang chế độ bảo trì/khóa.");
+                JOptionPane.showMessageDialog(this, "Máy đã được chuyển sang chế độ bảo trì/khóa.");
                 // Gợi ý: gọi lại hàm load sơ đồ máy nếu có
                 // loadDanhSachMay(); 
             } else {
-                JOptionPane.showMessageDialog(this, "⚠️ Không tìm thấy máy để cập nhật.");
+                JOptionPane.showMessageDialog(this, "Không tìm thấy máy để cập nhật.");
             }
 
             conn.close();
 
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "❌ Đã xảy ra lỗi khi cập nhật trạng thái máy");
+            JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi khi cập nhật trạng thái máy");
         }
     }//GEN-LAST:event_btnLockActionPerformed
 
