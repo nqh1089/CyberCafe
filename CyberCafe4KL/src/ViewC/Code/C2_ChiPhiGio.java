@@ -8,8 +8,9 @@ import Controller.DBConnection;
 
 public class C2_ChiPhiGio {
 
-    public static double getChiPhiGio(int idComputer, long soPhut) {
-        double chiPhi = 0;
+    // Hàm lấy đơn giá theo máy
+    public static double getGiaTheoMay(int idComputer) {
+        double pricePerMin = 0;
 
         try (Connection conn = DBConnection.getConnection()) {
             String sql = "SELECT PricePerMinute FROM Computer WHERE IDComputer = ?";
@@ -18,18 +19,22 @@ public class C2_ChiPhiGio {
 
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                double pricePerMin = rs.getDouble("PricePerMinute");
-                chiPhi = soPhut * pricePerMin;
+                pricePerMin = rs.getDouble("PricePerMinute");
             }
 
             rs.close();
             ps.close();
 
         } catch (Exception e) {
-            System.out.println("Lỗi C2_ChiPhiGio: " + e.getMessage());
+            System.out.println("Lỗi getGiaTheoMay: " + e.getMessage());
         }
 
-        return chiPhi;
+        return pricePerMin;
     }
 
+    // Hàm tính chi phí thực tế
+    public static double getChiPhiGio(int idComputer, long soPhut) {
+        double pricePerMin = getGiaTheoMay(idComputer);
+        return soPhut * pricePerMin;
+    }
 }

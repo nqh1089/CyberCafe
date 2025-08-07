@@ -6,6 +6,7 @@ import ViewC.Code.C2_ChiPhiGio;
 import ViewC.Code.CN_BienToanCuc;
 import ViewC.Code.C2_SetImage;
 import ViewC.Code.C2_ClientIcons;
+import ViewC.Code.C2_SoDuKhaDung;
 import ViewC.Code.C2_ThoiGianConLai;
 import ViewC.Code.C2_ThoiGianSuDung;
 import ViewC.Code.CN_LogoutMay;
@@ -43,61 +44,90 @@ public class C2_Menu extends JFrame {
     private void CapNhatThongTinDongBo() {
         try {
             Connection conn = DBConnection.getConnection();
-            if (conn != null) {
-                // 1. Trạng thái và giờ bắt đầu
-                String sqlUsage = "SELECT TOP 1 StartTime FROM ComputerUsage "
-                        + "WHERE IDComputer = ? AND IDAccount = ? AND EndTime IS NULL "
-                        + "ORDER BY StartTime DESC";
-                PreparedStatement psUsage = conn.prepareStatement(sqlUsage);
-                psUsage.setInt(1, CN_BienToanCuc.IDComputer);
-                psUsage.setInt(2, CN_BienToanCuc.IDAccount);
-                ResultSet rsUsage = psUsage.executeQuery();
-
-                if (rsUsage.next()) {
-                    Timestamp startTime = rsUsage.getTimestamp("StartTime");
-                    lblTrangThai.setText("Đang sử dụng");
-                    lblGioBatDau.setText(new SimpleDateFormat("HH:mm:ss").format(startTime));
-
-                    long usedMin = Duration.between(startTime.toInstant(), Instant.now()).toMinutes();
-                    lblThoiGianSD.setText(usedMin + " phút");
-
-                    double chiPhiGio = C2_ChiPhiGio.getChiPhiGio(CN_BienToanCuc.IDComputer, usedMin);
-                    lblChiPhiGio.setText(formatTien(chiPhiGio) + " đ");
-                } else {
-                    lblTrangThai.setText("Chưa sử dụng");
-                    lblGioBatDau.setText("--:--");
-                }
-
-                rsUsage.close();
-                psUsage.close();
-
-                // 2. Số dư khả dụng
-                String sqlBal = "SELECT Balance FROM Account WHERE IDAccount = ?";
-                PreparedStatement psBal = conn.prepareStatement(sqlBal);
-                psBal.setInt(1, CN_BienToanCuc.IDAccount);
-                ResultSet rsBal = psBal.executeQuery();
-                if (rsBal.next()) {
-                    lblSoDu.setText(formatTien(rsBal.getDouble("Balance")) + " đ");
-                }
-                rsBal.close();
-                psBal.close();
-
-                // 3. Thời gian sử dụng
-                long usedMin = C2_ThoiGianSuDung.getThoiGianSuDungPhut(CN_BienToanCuc.IDComputer, CN_BienToanCuc.IDAccount);
-                lblThoiGianSD.setText(usedMin + " phút");
-
-                // 4. Thời gian còn lại
-                long conLaiMin = C2_ThoiGianConLai.getThoiGianConLaiPhut(CN_BienToanCuc.IDAccount, CN_BienToanCuc.IDComputer);
-                lblThoiGianConLai.setText(conLaiMin + " phút");
-                System.out.println("[AutoUpdate] Đã cập nhật thông tin máy");
-                conn.close();
-            } else {
+            if (conn == null) {
                 System.out.println("Không thể kết nối DB khi CapNhatThongTinDongBo");
+                return;
             }
+
+            // Default values
+            String trangThai = "Chưa sử dụng";
+            String gioBatDauStr = "--:--";
+            String thoiGianSDStr = "-- phút";
+            String chiPhiGioStr = "-- đ";
+
+            long usedMin = 0;
+            double chiPhiGio = 0.0;
+            double soDu = 0.0;
+            long conLaiMin = 0;
+
+            // 1. Trạng thái sử dụng, giờ bắt đầu và thời gian đã dùng
+            String sql = "SELECT TOP 1 StartTime FROM ComputerUsage "
+                    + "WHERE IDComputer = ? AND IDAccount = ? AND EndTime IS NULL "
+                    + "ORDER BY StartTime DESC";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, CN_BienToanCuc.IDComputer);
+            ps.setInt(2, CN_BienToanCuc.IDAccount);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                Timestamp startTime = rs.getTimestamp("StartTime");
+                Instant start = startTime.toInstant();
+                Instant now = Instant.now();
+                usedMin = Duration.between(start, now).toMinutes();
+
+                trangThai = "Đang sử dụng";
+                gioBatDauStr = new SimpleDateFormat("HH:mm:ss").format(startTime);
+                thoiGianSDStr = usedMin + " phút";
+
+                chiPhiGio = C2_ChiPhiGio.getChiPhiGio(CN_BienToanCuc.IDComputer, usedMin);
+                chiPhiGioStr = formatTien(chiPhiGio) + " đ";
+            }
+
+            rs.close();
+            ps.close();
+
+            // 2. Số dư khả dụng
+            soDu = C2_SoDuKhaDung.getSoDuKhaDung(CN_BienToanCuc.IDAccount);
+
+            // 3. Thời gian sử dụng chính thức từ DB (override usedMin nếu cần)
+            usedMin = C2_ThoiGianSuDung.getThoiGianSuDungPhut(CN_BienToanCuc.IDComputer, CN_BienToanCuc.IDAccount);
+            thoiGianSDStr = usedMin + " phút";
+
+            // 4. Thời gian còn lại (tính toán lại)
+            conLaiMin = C2_ThoiGianConLai.getThoiGianConLaiPhut(CN_BienToanCuc.IDAccount, CN_BienToanCuc.IDComputer);
+
+            // Cập nhật giao diện
+            lblTrangThai.setText(trangThai);
+            lblGioBatDau.setText(gioBatDauStr);
+            lblThoiGianSD.setText(thoiGianSDStr);
+            lblChiPhiGio.setText(chiPhiGioStr);
+            lblSoDu.setText(formatTien(soDu) + " đ");
+            lblThoiGianConLai.setText(conLaiMin + " phút");
+
+            // In log theo thời gian thực
+            // In log chi tiết
+            String currentTime = new SimpleDateFormat("HH:mm:ss").format(new java.util.Date());
+            System.out.println("[" + currentTime + "] - Đã cập nhật thông tin máy | SoDu: " + soDu
+                    + " | BatDau: " + gioBatDauStr
+                    + " | SuDung: " + usedMin + " phút"
+                    + " | ConLai: " + conLaiMin + " phút"
+                    + " | ChiPhiGioChoi: " + chiPhiGioStr);
+//                    + " | ChiPhiDichVu: " + chiPhiDichVuStr);
+
+            conn.close();
+
         } catch (Exception e) {
             System.out.println("Lỗi CapNhatThongTinDongBo: " + e.getMessage());
+            e.printStackTrace();
         }
     }
+
+//    // In log chi tiết
+//                String currentTime = new SimpleDateFormat("HH:mm:ss").format(new java.util.Date());
+//                System.out.println("[" + currentTime + "] - Đã cập nhật thông tin máy | SoDu: " + soDu
+//                        + " | ConLai: " + conLaiMin + " phút | TrangThai: " + trangThai
+//                        + " | GioBatDau: " + gioBatDauStr + " | ThoiGianSD: " + usedMin + " phút"
+//                        + " | ChiPhiGio: " + chiPhiGioStr);
     //    private void CapNhatThongTinDongBo() {
     //        long usedMin = C2_ThoiGianSuDung.getThoiGianSuDungPhut(CN_BienToanCuc.IDComputer, CN_BienToanCuc.IDAccount);
     //        lblThoiGianSD.setText(usedMin + " phút");
@@ -110,7 +140,6 @@ public class C2_Menu extends JFrame {
     //
     //        System.out.println("[AutoUpdate] Đã cập nhật thông tin máy");
     //    }
-
     private void LoadThongTinMay() {
         lblTaiKhoan.setText(
                 CN_BienToanCuc.TenTaiKhoan.equals("") ? "--" : CN_BienToanCuc.TenTaiKhoan
