@@ -43,8 +43,13 @@ public class C2_Order extends javax.swing.JFrame {
         jTextField1.setEditable(false);
         jTextField2.setEditable(false);
         jTextField3.setEditable(false);
-        
+
         this.setLocationRelativeTo(null); // Set hiển giữa màn hình
+
+        jTextField1.setText("0");
+        jTextField2.setText("0");
+        jTextField3.setText("0");
+
     }
 
     public List<Products> getAllProducts() {
@@ -493,9 +498,13 @@ public class C2_Order extends javax.swing.JFrame {
             psMa.close();
 
             // 4. Lấy thông tin thanh toán từ form
-            int tongTienSP = Integer.parseInt(jTextField1.getText().replace(" ", "").trim());
-            int giamGia = Integer.parseInt(jTextField2.getText().replace(" ", "").trim());
-            int thanhToan = Integer.parseInt(jTextField3.getText().replace(" ", "").trim());
+            String rawTongTien = jTextField1.getText().replaceAll("[^0-9]", ""); // [^0-9] = tất cả ký tự không phải là số
+            String rawGiamGia = jTextField2.getText().replaceAll("[^0-9]", "");
+            String rawThanhToan = jTextField3.getText().replaceAll("[^0-9]", "");
+
+            int tongTienSP = Integer.parseInt(rawTongTien);
+            int giamGia = Integer.parseInt(rawGiamGia);
+            int thanhToan = Integer.parseInt(rawThanhToan);
 
             // 5. Gọi form QR (giống như bên Admin TAB2_QR)
             String nguoiTao = CN_TaiKhoanDangNhap.getTenTaiKhoan();

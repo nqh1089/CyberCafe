@@ -276,7 +276,7 @@ public class TAB2_QR extends javax.swing.JFrame {
 
     private void btnDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoneActionPerformed
         if (LuuHoaDonVaoDB()) {
-            // 🔔 In ra console để theo dõi máy vừa gửi Order (giúp Admin đọc được từ DB)
+            // In ra console để theo dõi máy vừa gửi Order (giúp Admin đọc được từ DB)
             try {
                 String tenMay = ViewC.Code.CN_BienToanCuc.getTenMayClient();
                 if (tenMay == null || tenMay.isEmpty()) {
