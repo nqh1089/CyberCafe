@@ -162,7 +162,7 @@ public class C1_GiaoDienTreo extends JFrame {
                 return;
             }
 
-            boolean ketQua = CN_LoginMay.loginMay(user, pass);
+            boolean ketQua = CN_LoginMay.loginMaytreo(user, pass);
 
             // Luôn reset form login dù đúng hay sai
             resetFormLogin();

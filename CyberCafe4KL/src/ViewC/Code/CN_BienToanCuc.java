@@ -36,6 +36,7 @@ public class CN_BienToanCuc {
      * khi chưa có phiên đăng nhập nào được tạo.
      */
     public static int LogAccessID = -1;
+    public static long TongThoiGianPhut;
 
     // ✅ Hàm public để lấy tên máy hiện tại từ các class khác
     public static String getTenMayClient() {

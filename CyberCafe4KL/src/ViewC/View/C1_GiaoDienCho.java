@@ -176,7 +176,7 @@ public class C1_GiaoDienCho extends JFrame {
         
                 C1_GiaoDienCho.this.dispose();
             } else {
-                showFullScreenDialog("Sai tài khoản hoặc máy không hợp lệ!");
+                showFullScreenDialog("Sai tài khoản/máy không hợp lệ/hết tiền!");
             }
         });
 

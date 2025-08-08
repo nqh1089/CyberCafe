@@ -950,55 +950,33 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
     }//GEN-LAST:event_btnMessageActionPerformed
 //lockbutton update
     private void btnLockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLockActionPerformed
-        try {
+      try (Connection conn = DBConnection.getConnection()) {
         int idMay = Integer.parseInt(lblTenMay.getText().replaceAll("[^0-9]", ""));
+        
+        // Đăng xuất tài khoản đang ngồi máy
+        conn.prepareStatement(
+            "UPDATE Account SET OnlineStatus = 0, CurrentComputerID = NULL WHERE CurrentComputerID = " + idMay
+        ).executeUpdate();
 
-        try (Connection conn = DBConnection.getConnection()) {
-            conn.setAutoCommit(false);
+        // Chuyển máy sang bảo trì
+        int rows = conn.prepareStatement(
+            "UPDATE Computer SET ComputerStatus = 2 WHERE IDComputer = " + idMay
+        ).executeUpdate();
 
-            int affectedAccounts = 0;
-            int affectedComputers = 0;
-
-            // 1) Logout account đang ngồi máy này (nếu có)
-            //    Đổi tên cột nếu DB của bạn khác: OnlineStatus / CurrentComputerID
-            String sqlLogoutAcc = "UPDATE Account SET OnlineStatus = 0, CurrentComputerID = NULL WHERE CurrentComputerID = ?";
-            try (PreparedStatement psAcc = conn.prepareStatement(sqlLogoutAcc)) {
-                psAcc.setInt(1, idMay);
-                affectedAccounts = psAcc.executeUpdate();
-            }
-
-            // 2) Chuyển máy sang chế độ bảo trì (2)
-            String sqlLockComp = "UPDATE Computer SET ComputerStatus = 2 WHERE IDComputer = ?";
-            try (PreparedStatement psComp = conn.prepareStatement(sqlLockComp)) {
-                psComp.setInt(1, idMay);
-                affectedComputers = psComp.executeUpdate();
-            }
-
-            conn.commit();
-
-            if (affectedComputers > 0) {
-                String msg = "Máy đã chuyển sang chế độ bảo trì.";
-                if (affectedAccounts > 0) {
-                    msg += "\nĐã đăng xuất " + affectedAccounts + " tài khoản đang sử dụng máy này.";
-                }
-                JOptionPane.showMessageDialog(this, msg);
-                // loadDanhSachMay(); // nếu có hàm reload sơ đồ/bảng máy
-            } else {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy máy để cập nhật.");
-            }
-        }
+        JOptionPane.showMessageDialog(this, rows > 0 
+            ? "Máy đã chuyển sang chế độ bảo trì và đăng xuất người dùng." 
+            : "Không tìm thấy máy để cập nhật.");
+        
     } catch (Exception e) {
         e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi khi khóa/bảo trì máy.");
+        JOptionPane.showMessageDialog(this, "Lỗi khi khóa/bảo trì máy.");
     }
     }//GEN-LAST:event_btnLockActionPerformed
 
     public static void main(String args[]) {
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new AD_TAB1_DatMay().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new AD_TAB1_DatMay().setVisible(true);
         });
     }
 

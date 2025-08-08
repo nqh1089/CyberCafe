@@ -20,17 +20,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.swing.BorderFactory;
+
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.JWindow;
+
 import javax.swing.SwingConstants;
-import javax.swing.Timer;
+
 import java.sql.*;
 import javax.swing.*;
 import javax.swing.Timer;
@@ -95,7 +93,7 @@ Timer timerCheckBack = new Timer(5000, new ActionListener() {
 
             if (rs.next()) {
                 int status = rs.getInt("ComputerStatus");
-                if (status == 1) {
+                if (status != 2) {
                     ((Timer) e.getSource()).stop(); // Dừng timer
                     dispose(); // Đóng giao diện bảo trì
                     new C1_GiaoDienCho().setVisible(true); // Mở lại giao diện chờ
