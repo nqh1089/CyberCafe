@@ -948,7 +948,7 @@ public class AD_TAB1_DatMay extends javax.swing.JFrame {
     private void btnMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMessageActionPerformed
         AD_Chat.showChat();
     }//GEN-LAST:event_btnMessageActionPerformed
-
+//lockbutton update
     private void btnLockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLockActionPerformed
         try {
         int idMay = Integer.parseInt(lblTenMay.getText().replaceAll("[^0-9]", ""));
