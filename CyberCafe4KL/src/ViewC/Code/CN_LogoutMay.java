@@ -5,6 +5,9 @@ import ViewAD.View.AD_ChangePW;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import javax.swing.SwingUtilities;
+import java.sql.Timestamp;
+import java.sql.ResultSet;
+
 
 import ViewC.View.C1_GiaoDienCho;
 import ViewC.View.C2_Menu;
@@ -17,7 +20,7 @@ public class CN_LogoutMay {
     public static AD_ChangePW instance;
 
     public static void logoutMay() {
-        
+
         try {
             int idComputer = CN_BienToanCuc.IDComputer;
             int idAccount = CN_BienToanCuc.IDAccount;
@@ -53,20 +56,22 @@ public class CN_LogoutMay {
                 psUsage.executeUpdate();
                 psUsage.close();
 
-                // 4. Tính Cost và cập nhật vào ComputerUsage + trừ Balance
+// 4. Tính Cost và cập nhật vào ComputerUsage + trừ Balance
                 String sqlGetCost = """
-                SELECT TOP 1 CU.IDUsage, DATEDIFF(MINUTE, CU.StartTime, CU.EndTime) * C.PricePerMinute AS Cost
-                FROM ComputerUsage CU JOIN Computer C ON CU.IDComputer = C.IDComputer
-                WHERE CU.IDComputer = ? AND CU.IDAccount = ? AND CU.EndTime IS NOT NULL
-                ORDER BY CU.EndTime DESC
-                """;
+SELECT TOP 1 CU.IDUsage, CU.StartTime, DATEDIFF(MINUTE, CU.StartTime, CU.EndTime) * C.PricePerMinute AS Cost
+FROM ComputerUsage CU JOIN Computer C ON CU.IDComputer = C.IDComputer
+WHERE CU.IDComputer = ? AND CU.IDAccount = ? AND CU.EndTime IS NOT NULL
+ORDER BY CU.EndTime DESC
+""";
                 PreparedStatement psCost = conn.prepareStatement(sqlGetCost);
                 psCost.setInt(1, idComputer);
                 psCost.setInt(2, idAccount);
-                var rsCost = psCost.executeQuery();
+                ResultSet rsCost = psCost.executeQuery();
+
                 if (rsCost.next()) {
                     int idUsage = rsCost.getInt("IDUsage");
                     double cost = rsCost.getDouble("Cost");
+                    Timestamp startTime = rsCost.getTimestamp("StartTime");
 
                     // Update lại Cost cho ComputerUsage
                     String sqlUpdateCU = "UPDATE ComputerUsage SET Cost = ? WHERE IDUsage = ?";
@@ -84,7 +89,42 @@ public class CN_LogoutMay {
                     psTruBalance.executeUpdate();
                     psTruBalance.close();
 
-                    System.out.println("Đã tính phí: " + cost + " đ → Trừ vào Balance");
+                    // ✅ Tính tổng tiền dịch vụ
+                    double tongTienDichVu = C2_ChiPhiDichVu.layTongTienOrderClient(CN_BienToanCuc.TenMay, startTime);
+                    double tongHoaDon = cost + tongTienDichVu;
+
+                    // ✅ Lấy ID admin hoặc boss đang trực
+                    int idAdminTruc = -1;
+                    String sqlAdmin = """
+        SELECT TOP 1 IDAccount FROM Account
+        WHERE (RoleAccount = 'ADMIN' OR RoleAccount = 'BOSS')
+        AND OnlineStatus = 1 AND AccountStatus = 1
+    """;
+                    PreparedStatement psAdmin = conn.prepareStatement(sqlAdmin);
+                    ResultSet rsAdmin = psAdmin.executeQuery();
+                    if (rsAdmin.next()) {
+                        idAdminTruc = rsAdmin.getInt("IDAccount");
+                        System.out.println("[Lấy admin trực] IDAccount: " + idAdminTruc);
+                    } else {
+                        System.out.println("[Lấy admin trực] Không tìm thấy ai đang trực.");
+                    }
+                    rsAdmin.close();
+                    psAdmin.close();
+
+                    // ✅ Lưu vào bảng Invoice (nếu có admin trực)
+                    if (idAdminTruc != -1) {
+                        String sqlInsertInvoice = "INSERT INTO Invoice (IDAccount, TotalAmount, Status) VALUES (?, ?, N'Paid')";
+                        PreparedStatement psInvoice = conn.prepareStatement(sqlInsertInvoice);
+                        psInvoice.setInt(1, idAdminTruc);
+                        psInvoice.setDouble(2, tongHoaDon);
+                        psInvoice.executeUpdate();
+                        psInvoice.close();
+
+                        System.out.println("Đã tính phí: " + cost + " đ → Trừ vào Balance");
+                        System.out.println("Đã lưu hóa đơn tổng cộng: " + tongHoaDon + " đ (NV trực ID: " + idAdminTruc + ")");
+                    } else {
+                        System.out.println("Không lưu được hóa đơn vì không có admin trực.");
+                    }
                 }
                 rsCost.close();
                 psCost.close();

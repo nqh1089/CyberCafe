@@ -75,12 +75,17 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) tblCTHD.getModel();
         model.setRowCount(0); // clear bảng
 
+        // ✅ Nếu là hóa đơn máy (HDMxx) thì gọi riêng
+        if (maHD.startsWith("HDM")) {
+            loadHoaDonMay(maHD);
+            return; // Không xử lý tiếp OrderFood
+        }
+
         int tongTien = 0;
 
         try (Connection conn = DBConnection.getConnection()) {
             int idHD = Integer.parseInt(maHD.replaceAll("[^0-9]", ""));
 
-            // Lấy thông tin đơn hàng
             // Lấy thông tin đơn hàng
             PreparedStatement ps1 = conn.prepareStatement(
                     "SELECT ofd.OrderTime, A.NameAccount, ofd.Note FROM OrderFood ofd "
@@ -89,7 +94,6 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
             ps1.setInt(1, idHD);
             ResultSet rs1 = ps1.executeQuery();
             if (rs1.next()) {
-                // Format lại ngày theo dd-MM-yyyy HH:mm
                 Timestamp orderTime = rs1.getTimestamp("OrderTime");
                 String ngayTao = new java.text.SimpleDateFormat("dd-MM-yyyy HH:mm").format(orderTime);
 
@@ -100,13 +104,11 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
                 lblID.setText("Ngày tạo: " + ngayTao);
                 lblID3.setText("NVBH: " + tenNV);
 
-                // Nếu có Note là tên máy thì set vào tiêu đề
                 if (tenMay != null && !tenMay.trim().isEmpty()) {
                     lblTitle.setText("THÔNG TIN HÓA ĐƠN " + tenMay.trim());
                 }
             }
 
-            // Lấy chi tiết món
             PreparedStatement ps2 = conn.prepareStatement(
                     "SELECT FD.NameFood, OD.Quantity, FD.Price AS UnitPrice, OD.TotalPrice "
                     + "FROM OrderDetail OD JOIN FoodDrink FD ON OD.IDFood = FD.IDFood WHERE OD.IDOrder = ?"
@@ -130,10 +132,91 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
 
             lblID4.setText("Tổng tiền thanh toán: " + DinhDangTien(tongTien) + " đ");
 
+            // Nếu không tìm thấy trong OrderFood, thử hiển thị hóa đơn máy
+            if (tblCTHD.getRowCount() == 0) {
+                loadHoaDonMay(maHD);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi khi load dữ liệu hóa đơn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void loadHoaDonMay(String maHD) {
+        DefaultTableModel model = (DefaultTableModel) tblCTHD.getModel();
+        model.setRowCount(0); // Xóa bảng trước khi load mới
+
+        try (Connection conn = DBConnection.getConnection()) {
+            int idHD = Integer.parseInt(maHD.replaceAll("[^0-9]", ""));
+
+            PreparedStatement ps = conn.prepareStatement("""
+    SELECT TOP 1 
+        I.CreateAt, 
+        I.TotalAmount, 
+        A.NameAccount AS AdminName, 
+        CU.StartTime, CU.EndTime, CU.Cost,
+        C.NameComputer, ACC.NameAccount AS UserName
+    FROM Invoice I
+    JOIN Account A ON I.IDAccount = A.IDAccount
+    JOIN ComputerUsage CU ON CU.EndTime IS NOT NULL
+                          AND CU.EndTime = (
+                              SELECT MAX(EndTime)
+                              FROM ComputerUsage
+                              WHERE IDComputer = CU.IDComputer AND EndTime IS NOT NULL
+                          )
+    JOIN Computer C ON CU.IDComputer = C.IDComputer
+    JOIN Account ACC ON CU.IDAccount = ACC.IDAccount
+    WHERE I.IDInvoice = ?
+""");
+
+            ps.setInt(1, idHD);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String ngayTao = new java.text.SimpleDateFormat("dd-MM-yyyy HH:mm")
+                        .format(rs.getTimestamp("CreateAt"));
+                String tenAdmin = rs.getString("AdminName");
+                String tenKH = rs.getString("UserName");
+                String tenMay = rs.getString("NameComputer");
+
+                Timestamp start = rs.getTimestamp("StartTime");
+                Timestamp end = rs.getTimestamp("EndTime");
+
+                double costGioChoi = rs.getDouble("Cost");
+                double tongTien = rs.getDouble("TotalAmount");
+                int tienDV = (int) (tongTien - costGioChoi);
+
+                lblID1.setText("Mã hóa đơn: HD" + idHD);
+                lblID.setText("Ngày tạo: " + ngayTao);
+                lblID3.setText("Trực máy: " + tenAdmin);
+                lblTitle.setText("HÓA ĐƠN MÁY: " + tenMay + " (KH: " + tenKH + ")");
+
+                int stt = 1;
+                model.addRow(new Object[]{
+                    stt++, "Giờ chơi (" + formatTime(start) + " → " + formatTime(end) + ")", 1,
+                    DinhDangTien((int) costGioChoi), DinhDangTien((int) costGioChoi)
+                });
+
+                model.addRow(new Object[]{
+                    stt++, "Dịch vụ đã dùng", 1,
+                    DinhDangTien(tienDV), DinhDangTien(tienDV)
+                });
+
+                lblID4.setText("Tổng tiền thanh toán: " + DinhDangTien((int) tongTien) + " đ");
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn máy phù hợp!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải hóa đơn máy!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private String formatTime(Timestamp ts) {
+        return new java.text.SimpleDateFormat("HH:mm").format(ts);
     }
 
     private String DinhDangTien(int so) {
