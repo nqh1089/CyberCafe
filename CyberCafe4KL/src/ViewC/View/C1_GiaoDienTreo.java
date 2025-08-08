@@ -179,7 +179,12 @@ public class C1_GiaoDienTreo extends JFrame {
                 C2_Chat.showChat();
                 C1_GiaoDienTreo.this.dispose();
             } else {
-                showFullScreenDialog("Sai tài khoản hoặc máy không hợp lệ!");
+                // Hiển thị lỗi chi tiết nếu có
+                if (CN_LoginMay.lastErrorMessage != null && !CN_LoginMay.lastErrorMessage.isEmpty()) {
+                    showFullScreenDialog(CN_LoginMay.lastErrorMessage);
+                } else {
+                    showFullScreenDialog("Sai tài khoản hoặc máy không hợp lệ!");
+                }
             }
         });
 

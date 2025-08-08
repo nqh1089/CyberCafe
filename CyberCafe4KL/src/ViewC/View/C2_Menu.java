@@ -11,6 +11,7 @@ import ViewC.Code.C2_SoDuKhaDung;
 import ViewC.Code.C2_ThoiGianConLai;
 import ViewC.Code.C2_ThoiGianSuDung;
 import ViewC.Code.CN_LogoutMay;
+import ViewC.Code.C_TBThoiGian;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,13 +27,14 @@ import javax.sound.sampled.Clip;
 
 public class C2_Menu extends JFrame {
 
-private boolean warnedLowBalance = false;
-private static final String LOW_BAL_SOUND =
-        "F:\\Java\\PRO230\\CyberCafe4KL\\CyberCafe4KL\\img\\5Phut.WAV";
+    private boolean warnedLowBalance = false;
+    private static final String LOW_BAL_SOUND
+            = "F:\\Java\\PRO230\\CyberCafe4KL\\CyberCafe4KL\\img\\5Phut.WAV";
 
     public static C2_Menu instance;
     public Timer timer;
     private Timer refreshTimer;
+
     public C2_Menu() {
         initComponents();
         instance = this;
@@ -40,28 +42,24 @@ private static final String LOW_BAL_SOUND =
         C2_ClientIcons.LoadIcons(pnlCN);
         C2_SetImage.SetPanelBackgroundTLQL(pnlTLQL);
         addEventHandlers();
-       
 
         this.setResizable(false); // Không cho phóng to
         chanDongX(); // Không cho tắt giao diện khi đang đăng nhập
         LoadGiaoDienGocTrenBenPhai(); //Load giao dien góc trên bên phải
 
-        // 60 giây load lại tt 1 lần
         // 60 giây: refresh dữ liệu nặng
-// 60 giây: refresh dữ liệu nặng
-refreshTimer = new Timer(60_000, e -> CapNhatThongTinDongBo());
-refreshTimer.start();
+        refreshTimer = new Timer(60_000, e -> CapNhatThongTinDongBo());
+        refreshTimer.start();
 
 // Tick nhẹ mỗi 5 giây: kiểm tra số dư & hành động
-timer = new Timer(5_000, e -> checkBalanceAndAct());
-timer.start();
+        timer = new Timer(5_000, e -> C_TBThoiGian.checkBalanceAndAct());
+        timer.start();
 
-// Cập nhật ngay lần đầu (khỏi đợi 60 giây)
-CapNhatThongTinDongBo();
+        // Cập nhật ngay lần đầu (khỏi đợi 60 giây)
+        CapNhatThongTinDongBo();
 
-// Kiểm tra ngay số dư lần đầu
-checkBalanceAndAct();
-
+//        // Kiểm tra ngay số dư lần đầu
+//        checkBalanceAndAct();
     }
 
     private void CapNhatThongTinDongBo() {
@@ -290,129 +288,157 @@ checkBalanceAndAct();
             }
         }
     }
-  /** Tick 5s: tính số dư còn lại theo thời gian thực, cảnh báo/đăng xuất nếu cần */
-private void checkBalanceAndAct() {
-    int idAcc = CN_BienToanCuc.IDAccount;
-    int idComp = CN_BienToanCuc.IDComputer;
-    if (idAcc <= 0 || idComp <= 0) return;
 
-    try (Connection conn = DBConnection.getConnection()) {
-        if (conn == null) return;
-
-        // 1) Balance gốc trong DB
-        double balance = getBalance(conn, idAcc);
-
-        // 2) Số phút đã dùng
-        long usedMin = C2_ThoiGianSuDung.getThoiGianSuDungPhut(idComp, idAcc);
-
-        // 3) Đơn giá / phút của máy
-        double pricePerMinute = getPricePerMinute(conn, idComp); // ví dụ 200
-
-        // 4) Tổng phí giờ chơi tới hiện tại
-        double chiPhiGio = usedMin * pricePerMinute;
-
-        // 5) Tổng phí dịch vụ từ lúc bắt đầu
-        Timestamp startTime = getStartTime(conn, idComp, idAcc);
-        double chiPhiDichVu = 0;
-        if (startTime != null) {
-            chiPhiDichVu = C2_ChiPhiDichVu.layTongTienOrderClient(CN_BienToanCuc.TenMay, startTime);
-        }
-
-        // 6) Số dư còn lại (theo thời gian thực)
-        double remaining = balance - chiPhiGio - chiPhiDichVu;
-
-        // Log để bạn đối chiếu
-        System.out.println(String.format(
-            "[BalanceTick] IDAcc=%d | Bal=%.0f | used=%d' | PPM=%.0f | Gio=%.0f | DV=%.0f | Remain=%.0f",
-            idAcc, balance, usedMin, pricePerMinute, chiPhiGio, chiPhiDichVu, remaining
-        ));
-
-        // 7) Hành động
-        if (remaining <= 0) {
-            System.out.println("[Balance] Hết tiền (remaining <= 0) → Logout máy");
-            try { if (timer != null) timer.stop(); } catch (Exception ignore) {}
-            try { if (refreshTimer != null) refreshTimer.stop(); } catch (Exception ignore) {}
-            CN_LogoutMay.logoutMay();
-            return;
-        }
-
-        if (!warnedLowBalance && remaining <= 1000) {
-            warnedLowBalance = true;
-            playWavAsync(LOW_BAL_SOUND);
-            System.out.println("[Balance] Còn ≤ 1000 → Cảnh báo âm thanh");
-        }
-
-    } catch (Exception ex) {
-        System.out.println("Lỗi checkBalanceAndAct: " + ex.getMessage());
-    }
-}
-
-/** Lấy Balance hiện tại (DB) */
-private double getBalance(Connection conn, int idAccount) throws SQLException {
-    String sql = "SELECT Balance FROM Account WHERE IDAccount = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, idAccount);
-        try (ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) return rs.getDouble("Balance");
-        }
-    }
-    return 0;
-}
-
-/** Lấy PricePerMinute của máy */
-private double getPricePerMinute(Connection conn, int idComputer) throws SQLException {
-    String sql = "SELECT PricePerMinute FROM Computer WHERE IDComputer = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, idComputer);
-        try (ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) return rs.getDouble("PricePerMinute");
-        }
-    }
-    // fallback nếu DB không có
-    return 200.0;
-}
-
-/** Lấy StartTime phiên đang chạy (EndTime IS NULL) */
-private Timestamp getStartTime(Connection conn, int idComputer, int idAccount) throws SQLException {
-    String sql = """
-        SELECT TOP 1 StartTime
-        FROM ComputerUsage
-        WHERE IDComputer = ? AND IDAccount = ? AND EndTime IS NULL
-        ORDER BY StartTime DESC
-    """;
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, idComputer);
-        ps.setInt(2, idAccount);
-        try (ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) return rs.getTimestamp("StartTime");
-        }
-    }
-    return null;
-}
-
-
-
-/** Phát file WAV không chặn EDT. Yêu cầu WAV PCM 16-bit. */
-private static void playWavAsync(String path) {
-    new Thread(() -> {
-        try {
-            File file = new File(path);
-            if (!file.exists()) {
-                System.err.println("[Audio] Không thấy file: " + path);
-                return;
-            }
-            try (AudioInputStream ais = AudioSystem.getAudioInputStream(file)) {
-                Clip clip = AudioSystem.getClip();
-                clip.open(ais);
-                clip.start();
-            }
-        } catch (Exception e) {
-            System.out.println("Lỗi phát âm thanh: " + e.getMessage());
-        }
-    }, "low-balance-alert").start();
-}
-
-
+//    /**
+//     * Tick 5s: tính số dư còn lại theo thời gian thực, cảnh báo/đăng xuất nếu
+//     * cần
+//     */
+//    private void checkBalanceAndAct() {
+//        int idAcc = CN_BienToanCuc.IDAccount;
+//        int idComp = CN_BienToanCuc.IDComputer;
+//        if (idAcc <= 0 || idComp <= 0) {
+//            return;
+//        }
+//
+//        try (Connection conn = DBConnection.getConnection()) {
+//            if (conn == null) {
+//                return;
+//            }
+//
+//            // 1) Balance gốc trong DB
+//            double balance = getBalance(conn, idAcc);
+//
+//            // 2) Số phút đã dùng
+//            long usedMin = C2_ThoiGianSuDung.getThoiGianSuDungPhut(idComp, idAcc);
+//
+//            // 3) Đơn giá / phút của máy
+//            double pricePerMinute = getPricePerMinute(conn, idComp); // ví dụ 200
+//
+//            // 4) Tổng phí giờ chơi tới hiện tại
+//            double chiPhiGio = usedMin * pricePerMinute;
+//
+//            // 5) Tổng phí dịch vụ từ lúc bắt đầu
+//            Timestamp startTime = getStartTime(conn, idComp, idAcc);
+//            double chiPhiDichVu = 0;
+//            if (startTime != null) {
+//                chiPhiDichVu = C2_ChiPhiDichVu.layTongTienOrderClient(CN_BienToanCuc.TenMay, startTime);
+//            }
+//
+//            // 6) Số dư còn lại (theo thời gian thực)
+//            double remaining = balance - chiPhiGio - chiPhiDichVu;
+//
+////            // Log để bạn đối chiếu
+////            System.out.println(String.format(
+////                    "[BalanceTick] IDAcc=%d | Bal=%.0f | used=%d' | PPM=%.0f | Gio=%.0f | DV=%.0f | Remain=%.0f",
+////                    idAcc, balance, usedMin, pricePerMinute, chiPhiGio, chiPhiDichVu, remaining
+////            ));
+//
+//            // 7) Hành động
+//            if (remaining <= 0) {
+//                System.out.println("[Balance] Hết tiền (remaining <= 0) → Logout máy");
+//                try {
+//                    if (timer != null) {
+//                        timer.stop();
+//                    }
+//                } catch (Exception ignore) {
+//                }
+//                try {
+//                    if (refreshTimer != null) {
+//                        refreshTimer.stop();
+//                    }
+//                } catch (Exception ignore) {
+//                }
+//                CN_LogoutMay.logoutMay();
+//                return;
+//            }
+//
+//            if (!warnedLowBalance && remaining <= 1000) {
+//                warnedLowBalance = true;
+//                playWavAsync(LOW_BAL_SOUND);
+//                System.out.println("[Balance] Còn ≤ 1000 → Cảnh báo âm thanh");
+//            }
+//
+//        } catch (Exception ex) {
+//            System.out.println("Lỗi checkBalanceAndAct: " + ex.getMessage());
+//        }
+//    }
+//
+//    /**
+//     * Lấy Balance hiện tại (DB)
+//     */
+//    private double getBalance(Connection conn, int idAccount) throws SQLException {
+//        String sql = "SELECT Balance FROM Account WHERE IDAccount = ?";
+//        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+//            ps.setInt(1, idAccount);
+//            try (ResultSet rs = ps.executeQuery()) {
+//                if (rs.next()) {
+//                    return rs.getDouble("Balance");
+//                }
+//            }
+//        }
+//        return 0;
+//    }
+//
+//    /**
+//     * Lấy PricePerMinute của máy
+//     */
+//    private double getPricePerMinute(Connection conn, int idComputer) throws SQLException {
+//        String sql = "SELECT PricePerMinute FROM Computer WHERE IDComputer = ?";
+//        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+//            ps.setInt(1, idComputer);
+//            try (ResultSet rs = ps.executeQuery()) {
+//                if (rs.next()) {
+//                    return rs.getDouble("PricePerMinute");
+//                }
+//            }
+//        }
+//        // fallback nếu DB không có
+//        return 200.0;
+//    }
+//
+//    /**
+//     * Lấy StartTime phiên đang chạy (EndTime IS NULL)
+//     */
+//    private Timestamp getStartTime(Connection conn, int idComputer, int idAccount) throws SQLException {
+//        String sql = """
+//        SELECT TOP 1 StartTime
+//        FROM ComputerUsage
+//        WHERE IDComputer = ? AND IDAccount = ? AND EndTime IS NULL
+//        ORDER BY StartTime DESC
+//    """;
+//        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+//            ps.setInt(1, idComputer);
+//            ps.setInt(2, idAccount);
+//            try (ResultSet rs = ps.executeQuery()) {
+//                if (rs.next()) {
+//                    return rs.getTimestamp("StartTime");
+//                }
+//            }
+//        }
+//        return null;
+//    }
+//
+//    /**
+//     * Phát file WAV không chặn EDT. Yêu cầu WAV PCM 16-bit.
+//     */
+//    private static void playWavAsync(String path) {
+//        new Thread(() -> {
+//            try {
+//                File file = new File(path);
+//                if (!file.exists()) {
+//                    System.err.println("[Audio] Không thấy file: " + path);
+//                    return;
+//                }
+//                try (AudioInputStream ais = AudioSystem.getAudioInputStream(file)) {
+//                    Clip clip = AudioSystem.getClip();
+//                    clip.open(ais);
+//                    clip.start();
+//                }
+//            } catch (Exception e) {
+//                System.out.println("Lỗi phát âm thanh: " + e.getMessage());
+//            }
+//        }, "low-balance-alert").start();
+//    }
     private void xuLyChucNang(String tenNut) {
         switch (tenNut) {
             case "chat":
@@ -454,8 +480,10 @@ private static void playWavAsync(String path) {
             }
         });
     }
-public void resetLowBalanceWarning() { warnedLowBalance = false; }
 
+//    public void resetLowBalanceWarning() {
+//        warnedLowBalance = false;
+//    }
     private void LoadGiaoDienGocTrenBenPhai() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int x = screenSize.width - this.getWidth();

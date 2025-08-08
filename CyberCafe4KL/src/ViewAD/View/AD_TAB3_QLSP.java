@@ -70,7 +70,6 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
         btnSua = new javax.swing.JButton();
         btnThem = new javax.swing.JButton();
         btnAn = new javax.swing.JButton();
-        btnXoa = new javax.swing.JButton();
         cbxLocSP = new javax.swing.JComboBox<>();
         cbxLocTT = new javax.swing.JComboBox<>();
         pnlCN = new javax.swing.JPanel();
@@ -217,13 +216,6 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
             }
         });
 
-        btnXoa.setText("Xoá");
-        btnXoa.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnXoaActionPerformed(evt);
-            }
-        });
-
         cbxLocSP.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tất cả", "Đồ ăn", "Đồ uống", "Gói nạp" }));
         cbxLocSP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -260,8 +252,6 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cbxLocTT, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnXoa, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
                 .addComponent(btnSua, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -284,8 +274,7 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
                         .addComponent(txtFind, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnThem)
                         .addComponent(btnSua)
-                        .addComponent(btnAn)
-                        .addComponent(btnXoa)))
+                        .addComponent(btnAn)))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE)
                 .addContainerGap())
@@ -489,48 +478,6 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnAnActionPerformed
 
-    private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
-        int row = tblSanPham.getSelectedRow();
-        if (row >= 0) {
-            String maSP = tblSanPham.getValueAt(row, 0).toString();
-            int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xoá sản phẩm này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                try (Connection conn = DBConnection.getConnection()) {
-                    String sql = "DELETE FROM FoodDrink WHERE IDFood = ?";
-                    PreparedStatement stmt = conn.prepareStatement(sql);
-                    stmt.setString(1, maSP);
-                    int rows = stmt.executeUpdate();
-
-                    if (rows > 0) {
-                        //
-                        int maxID = 0;
-                        String maxSql = "SELECT ISNULL(MAX(IDFood), 0) AS MaxID FROM FoodDrink";
-                        PreparedStatement maxStmt = conn.prepareStatement(maxSql);
-                        ResultSet rs = maxStmt.executeQuery();
-                        if (rs.next()) {
-                            maxID = rs.getInt("MaxID");
-                        }
-
-                        // Reset IDENTITY về maxID -> lấy id sp cao nhất trong bảng
-                        String reseedSql = "DBCC CHECKIDENT ('FoodDrink', RESEED, ?)";
-                        PreparedStatement resetStmt = conn.prepareStatement(reseedSql);
-                        resetStmt.setInt(1, maxID);
-                        resetStmt.execute();
-
-                        JOptionPane.showMessageDialog(this, "Đã xoá sản phẩm");
-                        CapNhatBangSanPham();
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Xoá sản phẩm thất bại");
-                    }
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
-                }
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm để xoá");
-        }
-    }//GEN-LAST:event_btnXoaActionPerformed
-
     private void cbxLocSPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxLocSPActionPerformed
         CapNhatBangSanPham();
     }//GEN-LAST:event_cbxLocSPActionPerformed
@@ -560,7 +507,6 @@ public class AD_TAB3_QLSP extends javax.swing.JFrame {
     private javax.swing.JButton btnSua;
     private javax.swing.JButton btnThem;
     private javax.swing.JButton btnTim;
-    private javax.swing.JButton btnXoa;
     private javax.swing.JComboBox<String> cbxLocSP;
     private javax.swing.JComboBox<String> cbxLocTT;
     private javax.swing.JPanel jPanel3;

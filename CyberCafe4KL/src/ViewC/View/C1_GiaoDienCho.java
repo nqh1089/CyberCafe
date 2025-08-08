@@ -3,7 +3,7 @@ package ViewC.View;
 import Controller.DBConnection;
 import ViewC.Code.CN_LoginMay;
 import ViewC.Code.CN_BienToanCuc;
-import ViewC.Code.CN_LayTenMayTheoIP;       
+import ViewC.Code.CN_LayTenMayTheoIP;
 import ViewC.Code.CN_LogoutMay;
 
 import javax.swing.*;
@@ -58,7 +58,7 @@ public class C1_GiaoDienCho extends JFrame {
                 try {
                     String tenMay = CN_BienToanCuc.TenMay; // lấy từ biến chuẩn
 
-                    Connection conn=DBConnection.getConnection();
+                    Connection conn = DBConnection.getConnection();
                     String sql = "SELECT ComputerStatus FROM Computer WHERE NameComputer = ?";
                     PreparedStatement ps = conn.prepareStatement(sql);
                     ps.setString(1, tenMay);
@@ -170,13 +170,18 @@ public class C1_GiaoDienCho extends JFrame {
 
                 showFullScreenDialog("Đăng nhập thành công!");
 
-                //mở lên giao diện sau khi đnhap
+                // mở giao diện sau khi đăng nhập
                 C2_Chat.showChat();
                 new C2_Menu().setVisible(true);
-        
+
                 C1_GiaoDienCho.this.dispose();
             } else {
-                showFullScreenDialog("Sai tài khoản/máy không hợp lệ/hết tiền!");
+                // Hiển thị thông báo lỗi cụ thể từ CN_LoginMay
+                if (CN_LoginMay.lastErrorMessage != null && !CN_LoginMay.lastErrorMessage.isEmpty()) {
+                    showFullScreenDialog(CN_LoginMay.lastErrorMessage);
+                } else {
+                    showFullScreenDialog("Đăng nhập thất bại, vui lòng thử lại.");
+                }
             }
         });
 

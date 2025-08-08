@@ -162,7 +162,7 @@ AS
 	FROM Computer;
 GO
 
--- Tạo lại bảng ComputerUsage
+-- Tạo bảng ComputerUsage
 CREATE TABLE ComputerUsage
 (
 	IDUsage INT IDENTITY(1,1) PRIMARY KEY,

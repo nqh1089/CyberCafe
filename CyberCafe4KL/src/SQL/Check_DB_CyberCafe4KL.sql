@@ -12,6 +12,7 @@ FROM Computer
 ORDER BY IDComputer;
 
 SELECT * FROM Account
+SELECT * FROM Computer
 
 -- Cấu hình máy
 SELECT NameComputer, CPU, RAM, GPU, Monitor, PricePerMinute FROM Computer;
@@ -150,3 +151,48 @@ JOIN Account A ON O.IDAccount = A.IDAccount
 WHERE O.IDAccount = 1
   AND O.OrderTime >= DATEADD(MINUTE, -15, @now)
 ORDER BY O.OrderTime DESC;
+
+
+
+
+SELECT * FROM OrderFood ORDER BY OrderTime DESC
+
+SELECT SUM(od.TotalPrice)
+FROM OrderFood o
+JOIN OrderDetail od ON o.IDOrder = od.IDOrder
+WHERE o.IDAccount = 1 AND o.OrderTime >= '2025-08-08 03:16:13'
+
+
+
+
+SELECT * FROM Account
+
+SELECT TOP 1 IDLog, IDComputer, ThoiGianBatDau, ThoiGianKetThuc, IDAccount
+FROM LogAccess
+ORDER BY IDLog DESC
+
+SELECT 
+    la.IDLog,
+    la.IDComputer,
+    la.IDAccount,
+    la.ThoiGianBatDau,
+    la.ThoiGianKetThuc,
+    ISNULL(SUM(od.TotalPrice), 0) AS TongChiPhiDichVu
+FROM LogAccess la
+LEFT JOIN OrderFood ofd ON 
+    ofd.Note = CONCAT(N'MÁY ', la.IDComputer)
+    AND ofd.OrderTime BETWEEN la.ThoiGianBatDau AND la.ThoiGianKetThuc
+LEFT JOIN OrderDetail od ON od.IDOrder = ofd.IDOrder
+GROUP BY 
+    la.IDLog,
+    la.IDComputer,
+    la.IDAccount,
+    la.ThoiGianBatDau,
+    la.ThoiGianKetThuc
+ORDER BY la.IDLog DESC;
+
+
+
+SELECT * FROM OrderFood
+WHERE Note = N'MÁY 1';
+

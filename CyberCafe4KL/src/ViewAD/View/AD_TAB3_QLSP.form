@@ -244,8 +244,6 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="cbxLocTT" min="-2" pref="149" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
-                          <Component id="btnXoa" min="-2" pref="108" max="-2" attributes="0"/>
-                          <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="btnSua" min="-2" pref="108" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="btnThem" min="-2" pref="108" max="-2" attributes="0"/>
@@ -272,7 +270,6 @@
                                   <Component id="btnThem" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="btnSua" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="btnAn" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="btnXoa" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -416,14 +413,6 @@
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAnActionPerformed"/>
-                  </Events>
-                </Component>
-                <Component class="javax.swing.JButton" name="btnXoa">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Xo&#xe1;"/>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnXoaActionPerformed"/>
                   </Events>
                 </Component>
                 <Component class="javax.swing.JComboBox" name="cbxLocSP">

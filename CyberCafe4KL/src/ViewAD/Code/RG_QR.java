@@ -284,7 +284,7 @@ public class RG_QR extends javax.swing.JFrame {
 
         // 5. Thông báo thành công
         JOptionPane.showMessageDialog(this,
-                "Đăng ký & nạp tiền thành công!\nMã HĐ: " + maHD + "\nMật khẩu: " + password);
+                "Đăng ký & nạp tiền thành công!\nMật khẩu: " + password);
 
         // 6. Đóng form
         this.dispose();

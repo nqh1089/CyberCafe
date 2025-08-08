@@ -37,7 +37,8 @@ INSERT INTO FoodDrink (NameFood, ImageFood, Price, Category, Available) VALUES
 (N'Mì kay', 'fMK.jpg', 9000, N'Đồ ăn', 1),
 
 -- GÓI NẠP THẺ
-(N'Gói nạp 20.000 VNĐ', '20.jpg', 50000, N'Gói nạp', 1),
+-- (N'Gói nạp 6Phut VNĐ', '20.jpg', 20000, N'Gói nạp', 1),
+(N'Gói nạp 20.000 VNĐ', '20.jpg', 20000, N'Gói nạp', 1),
 (N'Gói nạp 50.000 VNĐ', '50.jpg', 50000, N'Gói nạp', 1),
 (N'Gói nạp 100.000 VNĐ', '100.jpg', 100000, N'Gói nạp', 1),
 (N'Gói nạp 200.000 VNĐ', '200.jpg', 200000, N'Gói nạp', 1),
@@ -128,7 +129,8 @@ VALUES
 (N'GiaoDienTreo', 'TreoMay.jpg', N'Giao diện Treo'),
 (N'GiaoDienBT', 'BaoTri.jpg', N'Giao diện Bảo Trì'),
 (N'TLQL', 'imgTLQL.jpg', N'TLQL'),
-(N'btnSend', 'Send.png', N'btnSend');
+(N'btnSend', 'Send.png', N'btnSend'),
+(N'5Phut', '5Phut.wav', N'Voice còn 5 phút'),
+(N'1Phut', '1Phut.wav', N'Voice còn 1 phút');
 
 SELECT * FROM Assets_Anh
-
