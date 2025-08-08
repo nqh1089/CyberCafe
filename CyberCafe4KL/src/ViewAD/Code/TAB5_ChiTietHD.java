@@ -151,24 +151,24 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
             int idHD = Integer.parseInt(maHD.replaceAll("[^0-9]", ""));
 
             PreparedStatement ps = conn.prepareStatement("""
-    SELECT TOP 1 
-        I.CreateAt, 
-        I.TotalAmount, 
-        A.NameAccount AS AdminName, 
-        CU.StartTime, CU.EndTime, CU.Cost,
-        C.NameComputer, ACC.NameAccount AS UserName
-    FROM Invoice I
-    JOIN Account A ON I.IDAccount = A.IDAccount
-    JOIN ComputerUsage CU ON CU.EndTime IS NOT NULL
-                          AND CU.EndTime = (
-                              SELECT MAX(EndTime)
-                              FROM ComputerUsage
-                              WHERE IDComputer = CU.IDComputer AND EndTime IS NOT NULL
-                          )
-    JOIN Computer C ON CU.IDComputer = C.IDComputer
-    JOIN Account ACC ON CU.IDAccount = ACC.IDAccount
-    WHERE I.IDInvoice = ?
-""");
+            SELECT TOP 1 
+                I.CreateAt, 
+                I.TotalAmount, 
+                A.NameAccount AS AdminName, 
+                CU.StartTime, CU.EndTime, CU.Cost,
+                C.NameComputer, ACC.NameAccount AS UserName
+            FROM Invoice I
+            JOIN Account A ON I.IDAccount = A.IDAccount
+            JOIN ComputerUsage CU ON CU.EndTime IS NOT NULL
+                                  AND CU.EndTime = (
+                                      SELECT MAX(EndTime)
+                                      FROM ComputerUsage
+                                      WHERE IDComputer = CU.IDComputer AND EndTime IS NOT NULL
+                                  )
+            JOIN Computer C ON CU.IDComputer = C.IDComputer
+            JOIN Account ACC ON CU.IDAccount = ACC.IDAccount
+            WHERE I.IDInvoice = ?
+        """);
 
             ps.setInt(1, idHD);
             ResultSet rs = ps.executeQuery();
@@ -185,7 +185,6 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
 
                 double costGioChoi = rs.getDouble("Cost");
                 double tongTien = rs.getDouble("TotalAmount");
-                int tienDV = (int) (tongTien - costGioChoi);
 
                 lblID1.setText("Mã hóa đơn: HD" + idHD);
                 lblID.setText("Ngày tạo: " + ngayTao);
@@ -198,10 +197,27 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
                     DinhDangTien((int) costGioChoi), DinhDangTien((int) costGioChoi)
                 });
 
-                model.addRow(new Object[]{
-                    stt++, "Dịch vụ đã dùng", 1,
-                    DinhDangTien(tienDV), DinhDangTien(tienDV)
-                });
+                // ✅ Bổ sung: lấy chi tiết dịch vụ từ OrderDetail
+                PreparedStatement psDV = conn.prepareStatement("""
+                SELECT FD.NameFood, OD.Quantity, FD.Price AS UnitPrice, OD.TotalPrice
+                FROM OrderDetail OD
+                JOIN FoodDrink FD ON OD.IDFood = FD.IDFood
+                WHERE OD.IDOrder = ?
+            """);
+                psDV.setInt(1, idHD);
+                ResultSet rsDV = psDV.executeQuery();
+
+                while (rsDV.next()) {
+                    String tenSP = rsDV.getString("NameFood");
+                    int soLuong = rsDV.getInt("Quantity");
+                    int donGia = rsDV.getInt("UnitPrice");
+                    int thanhTien = rsDV.getInt("TotalPrice");
+
+                    model.addRow(new Object[]{
+                        stt++, tenSP, soLuong,
+                        DinhDangTien(donGia), DinhDangTien(thanhTien)
+                    });
+                }
 
                 lblID4.setText("Tổng tiền thanh toán: " + DinhDangTien((int) tongTien) + " đ");
 
