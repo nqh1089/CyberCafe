@@ -9,13 +9,15 @@ import ViewAD.Code.TAB5_cbxThang;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 public class AD_TAB5_QLHD extends javax.swing.JFrame {
 
     public AD_TAB5_QLHD() {
         initComponents();
-         CN_ChanDongX.ChanDongX(this);
-         
+        CN_ChanDongX.ChanDongX(this);
+
         CN_Slidebar.SetSlidebar(
                 lblDM, lblOrder, lblSP, lblMT, lblHD, lblTKe, lblTKhoan,
                 lblDMK, lblDX, lblChat, lblTB, this
@@ -28,6 +30,12 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
         TAB5_cbxThang.LoadThangCoHD(cbxThang);
         int thangHienTai = TAB5_cbxThang.LaySoThangDangChon(cbxThang);
         TAB5_LoadDuLieuHD.LoadHoaDonTheoThang(thangHienTai, TableHoaDon, lblTSHD, lblTTTD);
+
+        LocTheoLoaiHoaDon();
+        cbxHD.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{
+            "Tất cả", "Hóa đơn Order", "Hóa đơn Máy"
+        }));
+
     }
 
     private void SetTableHoaDon() {
@@ -83,6 +91,31 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
         });
     }
 
+    private void LocTheoLoaiHoaDon() {
+        String loaiChon = cbxHD.getSelectedItem().toString();
+        DefaultTableModel model = (DefaultTableModel) TableHoaDon.getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+
+        sorter.setRowFilter(new RowFilter<DefaultTableModel, Integer>() {
+            @Override
+            public boolean include(Entry<? extends DefaultTableModel, ? extends Integer> entry) {
+                String maHD = entry.getStringValue(0);
+
+                switch (loaiChon) {
+                    case "Tất cả":
+                        return true;
+                    case "Hóa đơn Order":
+                        return maHD.startsWith("HD") && !maHD.startsWith("HDM"); // Order thì mã là "HD..."
+                    case "Hóa đơn Máy":
+                        return maHD.startsWith("HDM");  // Máy thì mã là "HDM..."
+                    default:
+                        return true;
+                }
+            }
+        });
+        TableHoaDon.setRowSorter(sorter);
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -106,6 +139,7 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
         lblTTTD = new javax.swing.JLabel();
         txtTTTD = new javax.swing.JLabel();
         cbxThang = new javax.swing.JComboBox<>();
+        cbxHD = new javax.swing.JComboBox<>();
         pnlCN = new javax.swing.JPanel();
         lblID = new javax.swing.JLabel();
         lblDX = new javax.swing.JLabel();
@@ -278,6 +312,13 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
             }
         });
 
+        cbxHD.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tất cả", "Hoá đơn Order", "Hoá đơn Máy" }));
+        cbxHD.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxHDActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnlSDMLayout = new javax.swing.GroupLayout(pnlSDM);
         pnlSDM.setLayout(pnlSDMLayout);
         pnlSDMLayout.setHorizontalGroup(
@@ -298,10 +339,12 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
                         .addComponent(pnlTTTD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(pnlSDMLayout.createSequentialGroup()
-                .addGap(584, 584, 584)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSDMLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(cbxThang, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(cbxHD, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(512, 512, 512))
         );
         pnlSDMLayout.setVerticalGroup(
             pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -309,7 +352,9 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
                 .addGap(25, 25, 25)
                 .addComponent(txtSDM)
                 .addGap(18, 18, 18)
-                .addComponent(cbxThang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbxThang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbxHD, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
                 .addGroup(pnlSDMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(pnlTSHD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -480,6 +525,10 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
         int thang = TAB5_cbxThang.LaySoThangDangChon(cbxThang);
         TAB5_LoadDuLieuHD.LoadHoaDonTheoThang(thang, TableHoaDon, lblTSHD, lblTTTD);
     }//GEN-LAST:event_cbxThangActionPerformed
+
+    private void cbxHDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxHDActionPerformed
+        LocTheoLoaiHoaDon();
+    }//GEN-LAST:event_cbxHDActionPerformed
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -491,6 +540,7 @@ public class AD_TAB5_QLHD extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable TableHoaDon;
+    private javax.swing.JComboBox<String> cbxHD;
     private javax.swing.JComboBox<String> cbxThang;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;

@@ -75,7 +75,7 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) tblCTHD.getModel();
         model.setRowCount(0); // clear bảng
 
-        // ✅ Nếu là hóa đơn máy (HDMxx) thì gọi riêng
+        // Nếu là hóa đơn máy (HDMxx) thì gọi riêng
         if (maHD.startsWith("HDM")) {
             loadHoaDonMay(maHD);
             return; // Không xử lý tiếp OrderFood

@@ -89,11 +89,11 @@ ORDER BY CU.EndTime DESC
                     psTruBalance.executeUpdate();
                     psTruBalance.close();
 
-                    // ✅ Tính tổng tiền dịch vụ
+                    // Tính tổng tiền dịch vụ
                     double tongTienDichVu = C2_ChiPhiDichVu.layTongTienOrderClient(CN_BienToanCuc.TenMay, startTime);
                     double tongHoaDon = cost + tongTienDichVu;
 
-                    // ✅ Lấy ID admin hoặc boss đang trực
+                    // Lấy ID admin hoặc boss đang trực
                     int idAdminTruc = -1;
                     String sqlAdmin = """
         SELECT TOP 1 IDAccount FROM Account
@@ -111,7 +111,7 @@ ORDER BY CU.EndTime DESC
                     rsAdmin.close();
                     psAdmin.close();
 
-                    // ✅ Lưu vào bảng Invoice (nếu có admin trực)
+                    // Lưu vào bảng Invoice (nếu có admin trực)
                     if (idAdminTruc != -1) {
                         String sqlInsertInvoice = "INSERT INTO Invoice (IDAccount, TotalAmount, Status) VALUES (?, ?, N'Paid')";
                         PreparedStatement psInvoice = conn.prepareStatement(sqlInsertInvoice);
@@ -139,7 +139,7 @@ ORDER BY CU.EndTime DESC
                 conn.close();
             }
 
-            // ✅ Thêm phần xử lý logout + disconnect cho C2_Chat
+            // Thêm phần xử lý logout + disconnect cho C2_Chat
             if (C2_Chat.instance != null && C2_Chat.instance.chatClient != null) {
                 if (C2_Chat.instance.chatClient.isConnected()) {
                     C2_Chat.instance.chatClient.logoutAccount();
