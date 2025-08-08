@@ -1,5 +1,6 @@
 package ViewAD.View;
 
+import Controller.DBConnection;
 import ViewAD.Code.RG_QR;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,6 +41,21 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Lỗi khi load gói nạp: " + e.getMessage());
         }
+    }
+
+    private String layMaHoaDonMoi() {
+        String maHD = null;
+        try (Connection conn = DBConnection.getConnection()) {
+            String sql = "SELECT 'HD' + CAST(NEXT VALUE FOR seq_MaHD AS VARCHAR) AS MaHD";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                maHD = rs.getString("MaHD");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return maHD;
     }
 
     @SuppressWarnings("unchecked")
@@ -266,7 +282,6 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
             return;
         }
 
-        // Kiểm tra trùng thông tin trong DB trước khi mở QR
         try (Connection conn = Controller.DBConnection.getConnection()) {
             if (conn == null) {
                 JOptionPane.showMessageDialog(this, "Không thể kết nối cơ sở dữ liệu.");
@@ -334,9 +349,25 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
                 return;
             }
 
-            // Mọi thứ ổn -> mở form QR
+            // === Lấy mã hóa đơn mới giống TAB2 ===
+            String newMaHD = null;
+            String sqlMaHD = """
+    SELECT CONCAT('HD', RIGHT('000' + CAST(ISNULL(MAX(IDOrder), 0) + 1 AS VARCHAR), 3)) AS NewMaHD
+    FROM OrderFood
+""";
+
+            try (PreparedStatement psMaHD = conn.prepareStatement(sqlMaHD); ResultSet rsMaHD = psMaHD.executeQuery()) {
+                if (rsMaHD.next()) {
+                    newMaHD = rsMaHD.getString("NewMaHD");
+                }
+            }
+            if (newMaHD == null) {
+                newMaHD = "HD001"; // fallback nếu chưa có hóa đơn nào
+            }
+
+            // Mọi thứ ok -> mở form QR, truyền mã hóa đơn mới
             RG_QR qrForm = new RG_QR(
-                    null,
+                    "", // không cần null nữa
                     name,
                     (int) balance,
                     0,

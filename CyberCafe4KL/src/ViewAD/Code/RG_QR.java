@@ -30,7 +30,7 @@ public class RG_QR extends javax.swing.JFrame {
             javax.swing.JFrame parentForm) {
 
         initComponents();
-        this.maHD = (maHD != null && !maHD.isEmpty()) ? maHD : TaoMaHoaDonMoi();
+        this.maHD = maHD;
 
         this.nguoiTao = nguoiTao;
         this.tongTienSP = tongTienSP;
@@ -83,79 +83,61 @@ public class RG_QR extends javax.swing.JFrame {
     private boolean LuuHoaDonVaoDB() {
         try (Connection conn = DBConnection.getConnection()) {
             if (conn == null) {
-                JOptionPane.showMessageDialog(this, "Không thể kết nối cơ sở dữ liệu.");
                 return false;
             }
 
-            if (maHD == null || maHD.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Mã hóa đơn chưa được khởi tạo.");
-                return false;
-            }
-
-            int idOrder = Integer.parseInt(maHD.replace("HĐ", ""));
-            int idAccount = layAdminDangTruc();
-            if (idAccount == -1) {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy admin đang trực.");
-                return false;
-            }
-
-            // Kiểm tra hóa đơn đã tồn tại chưa
-            String checkSQL = "SELECT COUNT(*) FROM OrderFood WHERE IDOrder = ?";
-            PreparedStatement checkStmt = conn.prepareStatement(checkSQL);
-            checkStmt.setInt(1, idOrder);
-            ResultSet rs = checkStmt.executeQuery();
-            if (rs.next() && rs.getInt(1) > 0) {
-                System.out.println("Hóa đơn đã tồn tại, không lưu lại.");
-                return true;
+            // Lấy ID hóa đơn mới
+            int newIDOrder = 1;
+            String sqlMax = "SELECT ISNULL(MAX(IDOrder), 0) + 1 FROM OrderFood";
+            try (PreparedStatement psMax = conn.prepareStatement(sqlMax); ResultSet rsMax = psMax.executeQuery()) {
+                if (rsMax.next()) {
+                    newIDOrder = rsMax.getInt(1);
+                    this.maHD = String.valueOf(newIDOrder); // gán lại để dùng tiếp
+                }
             }
 
             // Thêm vào OrderFood
-            String insertOrder = "INSERT INTO OrderFood (IDOrder, IDAccount, OrderTime, NguoiTao, GiamGia, ThanhToan) VALUES (?, ?, ?, ?, ?, ?)";
-            PreparedStatement ps = conn.prepareStatement(insertOrder);
-            ps.setInt(1, idOrder);
-            ps.setInt(2, idAccount);
-            ps.setString(3, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            ps.setString(4, nguoiTao);
-            ps.setInt(5, giamGia);
-            ps.setInt(6, thanhToan);
-            ps.executeUpdate();
+            String insertOrder = "INSERT INTO OrderFood (IDOrder, IDAccount, OrderTime) VALUES (?, ?, ?)";
+            try (PreparedStatement ps1 = conn.prepareStatement(insertOrder)) {
+                ps1.setInt(1, newIDOrder);
+                ps1.setInt(2, idAccountAdmin);
+                ps1.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+                ps1.executeUpdate();
+            }
 
-            // Thêm chi tiết hóa đơn (gói nạp)
-            String insertDetail = "INSERT INTO OrderFoodDetail (IDOrder, TenSP, SoLuong, DonGia, ThanhTien) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement psDetail = conn.prepareStatement(insertDetail);
-            psDetail.setInt(1, idOrder);
-            psDetail.setString(2, "Gói nạp");
-            psDetail.setInt(3, 1);
-            psDetail.setInt(4, tongTienSP);
-            psDetail.setInt(5, thanhToan);
-            psDetail.executeUpdate();
+            // Tìm IDFood của gói nạp (dựa vào số tiền thanh toán)
+            int idFoodNap = -1;
+            String sqlFood = "SELECT TOP 1 IDFood FROM FoodDrink WHERE Category = N'Gói nạp' AND Price = ?";
+            try (PreparedStatement psFood = conn.prepareStatement(sqlFood)) {
+                psFood.setDouble(1, thanhToan);
+                try (ResultSet rsFood = psFood.executeQuery()) {
+                    if (rsFood.next()) {
+                        idFoodNap = rsFood.getInt("IDFood");
+                    }
+                }
+            }
+
+            // Nếu tìm thấy gói nạp -> thêm vào OrderDetail
+            if (idFoodNap != -1) {
+                String insertDetail = "INSERT INTO OrderDetail (IDOrder, IDFood, Quantity, TotalPrice) VALUES (?, ?, ?, ?)";
+                try (PreparedStatement psDetail = conn.prepareStatement(insertDetail)) {
+                    psDetail.setInt(1, newIDOrder);
+                    psDetail.setInt(2, idFoodNap);
+                    psDetail.setInt(3, 1);
+                    psDetail.setDouble(4, thanhToan);
+                    psDetail.executeUpdate();
+                }
+            } else {
+                System.out.println("Không tìm thấy gói nạp tương ứng với số tiền: " + thanhToan);
+            }
 
             return true;
 
         } catch (Exception e) {
             System.out.println("Lỗi lưu hóa đơn: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
-    }
-    
-
-    private int layAdminDangTruc() {
-        return CN_TaiKhoanDangNhap.getIDTaiKhoan();
-    }
-
-    private String TaoMaHoaDonMoi() {
-        try (Connection conn = DBConnection.getConnection()) {
-            String sql = "SELECT ISNULL(MAX(IDOrder), 0) + 1 AS NewID FROM OrderFood";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                int newID = rs.getInt("NewID");
-                return "HĐ" + newID;
-            }
-        } catch (Exception e) {
-            System.out.println("Lỗi tạo mã hóa đơn: " + e.getMessage());
-        }
-        return "HĐ10001"; // mặc định nếu có lỗi
     }
 
     @SuppressWarnings("unchecked")
@@ -252,61 +234,68 @@ public class RG_QR extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoneActionPerformed
-        if (LuuHoaDonVaoDB()) {
-            try (Connection conn = DBConnection.getConnection()) {
-                if (conn == null) {
-                    JOptionPane.showMessageDialog(this, "Không thể kết nối DB.");
-                    return;
-                }
+        // 1. Lưu hóa đơn trước
+    if (!LuuHoaDonVaoDB()) {
+        JOptionPane.showMessageDialog(this, "Lưu hóa đơn thất bại.");
+        return;
+    }
 
-                CallableStatement cs = conn.prepareCall("{? = call SP_DangKyNhanhClient(?, ?, ?, ?)}");
-                cs.registerOutParameter(1, java.sql.Types.INTEGER);
-                cs.setString(2, nguoiTao);
-                cs.setString(3, phone);
-                cs.setString(4, gender);
-                cs.setString(5, cccd);
-                cs.execute();
-                int result = cs.getInt(1);
+    // 2. Tạo tài khoản khách hàng mới
+    try (Connection conn = DBConnection.getConnection()) {
+        if (conn == null) {
+            JOptionPane.showMessageDialog(this, "Không thể kết nối DB.");
+            return;
+        }
 
-                if (result != 0) {
-                    JOptionPane.showMessageDialog(this, "Tạo tài khoản thất bại. Mã lỗi: " + result);
-                    return;
-                }
+        CallableStatement cs = conn.prepareCall("{? = call SP_DangKyNhanhClient(?, ?, ?, ?)}");
+        cs.registerOutParameter(1, java.sql.Types.INTEGER);
+        cs.setString(2, nguoiTao);
+        cs.setString(3, phone);
+        cs.setString(4, gender);
+        cs.setString(5, cccd);
+        cs.execute();
+        int result = cs.getInt(1);
+        cs.close();
 
-                String sqlUpdate = "UPDATE Account SET Balance = ? WHERE NameAccount = ?";
-                PreparedStatement ps = conn.prepareStatement(sqlUpdate);
-                ps.setDouble(1, thanhToan);
-                ps.setString(2, nguoiTao);
-                ps.executeUpdate();
-                ps.close();
+        if (result != 0) {
+            JOptionPane.showMessageDialog(this, "Tạo tài khoản thất bại. Mã lỗi: " + result);
+            return;
+        }
 
-                String password = "";
-                String sqlPW = "SELECT PWAccount FROM Account WHERE NameAccount = ?";
-                PreparedStatement psPW = conn.prepareStatement(sqlPW);
-                psPW.setString(1, nguoiTao);
-                ResultSet rsPW = psPW.executeQuery();
+        // 3. Cập nhật số dư cho tài khoản vừa tạo
+        String sqlUpdate = "UPDATE Account SET Balance = ? WHERE NameAccount = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sqlUpdate)) {
+            ps.setDouble(1, thanhToan);
+            ps.setString(2, nguoiTao);
+            ps.executeUpdate();
+        }
+
+        // 4. Lấy mật khẩu để hiển thị
+        String password = "";
+        String sqlPW = "SELECT PWAccount FROM Account WHERE NameAccount = ?";
+        try (PreparedStatement psPW = conn.prepareStatement(sqlPW)) {
+            psPW.setString(1, nguoiTao);
+            try (ResultSet rsPW = psPW.executeQuery()) {
                 if (rsPW.next()) {
                     password = rsPW.getString("PWAccount");
                 }
-                rsPW.close();
-                psPW.close();
-
-                JOptionPane.showMessageDialog(this,
-                        "Đăng ký & nạp tiền thành công!\nMật khẩu: " + password);
-
-                this.dispose();            // đóng form QR
-                if (parentForm != null) {  // đóng luôn form Register cha
-                    parentForm.dispose();
-                }
-
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Lỗi xử lý: " + e.getMessage());
-                e.printStackTrace();
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Lưu hóa đơn thất bại.");
         }
 
+        // 5. Thông báo thành công
+        JOptionPane.showMessageDialog(this,
+                "Đăng ký & nạp tiền thành công!\nMã HĐ: " + maHD + "\nMật khẩu: " + password);
+
+        // 6. Đóng form
+        this.dispose();
+        if (parentForm != null) {
+            parentForm.dispose();
+        }
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Lỗi xử lý: " + e.getMessage());
+        e.printStackTrace();
+    }
     }//GEN-LAST:event_btnDoneActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
