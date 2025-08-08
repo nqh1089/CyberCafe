@@ -27,6 +27,7 @@ public class TAB3_ThemSP extends javax.swing.JFrame {
         txtTenCN.setText("THÊM SẢN PHẨM");
         cbxTrangThai.setEnabled(true); // Cho chọn
         cbxTrangThai.setVisible(true); // Set hiện nút
+        this.setLocationRelativeTo(null); // Set hiển giữa màn hình
         this.setResizable(false);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     }

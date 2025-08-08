@@ -254,15 +254,12 @@
                 <Component class="javax.swing.JComboBox" name="cbxBalance">
                   <Properties>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                      <StringArray count="5">
-                        <StringItem index="0" value="20.000"/>
-                        <StringItem index="1" value="50.000"/>
-                        <StringItem index="2" value="100.000"/>
-                        <StringItem index="3" value="200.000"/>
-                        <StringItem index="4" value="500.000"/>
-                      </StringArray>
+                      <StringArray count="0"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbxBalanceActionPerformed"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                   </AuxValues>

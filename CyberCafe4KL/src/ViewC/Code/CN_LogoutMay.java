@@ -8,7 +8,6 @@ import javax.swing.SwingUtilities;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 
-
 import ViewC.View.C1_GiaoDienCho;
 import ViewC.View.C2_Menu;
 import ViewC.View.C2_Chat;
@@ -90,8 +89,8 @@ ORDER BY CU.EndTime DESC
                     psTruBalance.close();
 
                     // Tính tổng tiền dịch vụ
-                    double tongTienDichVu = C2_ChiPhiDichVu.layTongTienOrderClient(CN_BienToanCuc.TenMay, startTime);
-                    double tongHoaDon = cost + tongTienDichVu;
+                    double tongTienDichVu = C2_ChiPhiDichVu.layTongTienOrderClient(CN_BienToanCuc.TenMay, startTime); //Chỉ để hiển thị phần "Đã trừ tiền dịch vụ"
+                    double tongHoaDon = cost; // Chỉ ghi tiền giờ chơi vào bảng Invoice
 
                     // Lấy ID admin hoặc boss đang trực
                     int idAdminTruc = -1;

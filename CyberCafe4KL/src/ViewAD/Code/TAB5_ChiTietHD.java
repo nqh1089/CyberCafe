@@ -13,6 +13,7 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
 
     public TAB5_ChiTietHD() {
         initComponents();
+        this.setLocationRelativeTo(null); // Set hiển giữa màn hình
     }
 
     public TAB5_ChiTietHD(String maHD) {
@@ -130,7 +131,9 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
                 });
             }
 
-            lblID4.setText("Tổng tiền thanh toán: " + DinhDangTien(tongTien) + " đ");
+            lbl4.setText("Tổng tiền thanh toán: " + DinhDangTien(tongTien) + " đ");
+
+            lbl5.setVisible(false); // Ẩn dòng "Đã trừ dịch vụ" nếu là hóa đơn thường
 
             // Nếu không tìm thấy trong OrderFood, thử hiển thị hóa đơn máy
             if (tblCTHD.getRowCount() == 0) {
@@ -144,76 +147,111 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
     }
 
     private void loadHoaDonMay(String maHD) {
-        DefaultTableModel model = (DefaultTableModel) tblCTHD.getModel();
-        model.setRowCount(0); // Xóa bảng trước khi load mới
+    DefaultTableModel model = (DefaultTableModel) tblCTHD.getModel();
+    model.setRowCount(0); // Xóa bảng
 
-        try (Connection conn = DBConnection.getConnection()) {
-            int idHD = Integer.parseInt(maHD.replaceAll("[^0-9]", ""));
+    try (Connection conn = DBConnection.getConnection()) {
+        int idHD = Integer.parseInt(maHD.replaceAll("[^0-9]", ""));
 
-            PreparedStatement ps = conn.prepareStatement("""
-    SELECT TOP 1 
-        I.CreateAt, 
-        I.TotalAmount, 
-        A.NameAccount AS AdminName, 
-        CU.StartTime, CU.EndTime, CU.Cost,
-        C.NameComputer, ACC.NameAccount AS UserName
-    FROM Invoice I
-    JOIN Account A ON I.IDAccount = A.IDAccount
-    JOIN ComputerUsage CU ON CU.EndTime IS NOT NULL
-                          AND CU.EndTime = (
-                              SELECT MAX(EndTime)
-                              FROM ComputerUsage
-                              WHERE IDComputer = CU.IDComputer AND EndTime IS NOT NULL
-                          )
-    JOIN Computer C ON CU.IDComputer = C.IDComputer
-    JOIN Account ACC ON CU.IDAccount = ACC.IDAccount
-    WHERE I.IDInvoice = ?
-""");
+        // Lấy thông tin hóa đơn + phiên chơi gần nhất trước CreateAt
+        PreparedStatement ps = conn.prepareStatement("""
+            SELECT TOP 1 
+                I.CreateAt, 
+                I.TotalAmount, 
+                A.NameAccount AS AdminName, 
+                CU.StartTime, CU.EndTime, CU.Cost,
+                C.NameComputer, ACC.NameAccount AS UserName,
+                ACC.IDAccount AS UserID,
+                C.IDComputer
+            FROM Invoice I
+            JOIN Account A ON I.IDAccount = A.IDAccount
+            JOIN ComputerUsage CU ON CU.EndTime IS NOT NULL 
+                                  AND CU.EndTime <= I.CreateAt
+            JOIN Account ACC ON CU.IDAccount = ACC.IDAccount
+            JOIN Computer C ON CU.IDComputer = C.IDComputer
+            WHERE I.IDInvoice = ?
+            ORDER BY CU.EndTime DESC
+        """);
 
-            ps.setInt(1, idHD);
-            ResultSet rs = ps.executeQuery();
+        ps.setInt(1, idHD);
+        ResultSet rs = ps.executeQuery();
 
-            if (rs.next()) {
-                String ngayTao = new java.text.SimpleDateFormat("dd-MM-yyyy HH:mm")
-                        .format(rs.getTimestamp("CreateAt"));
-                String tenAdmin = rs.getString("AdminName");
-                String tenKH = rs.getString("UserName");
-                String tenMay = rs.getString("NameComputer");
+        if (rs.next()) {
+            String ngayTao = new java.text.SimpleDateFormat("dd-MM-yyyy HH:mm")
+                    .format(rs.getTimestamp("CreateAt"));
+            String tenAdmin = rs.getString("AdminName");
+            String tenKH = rs.getString("UserName");
+            String tenMay = rs.getString("NameComputer");
 
-                Timestamp start = rs.getTimestamp("StartTime");
-                Timestamp end = rs.getTimestamp("EndTime");
+            Timestamp start = rs.getTimestamp("StartTime");
+            Timestamp end = rs.getTimestamp("EndTime");
 
-                double costGioChoi = rs.getDouble("Cost");
-                double tongTien = rs.getDouble("TotalAmount");
-                int tienDV = (int) (tongTien - costGioChoi);
+            double costGioChoi = rs.getDouble("Cost");
+            double tongTien = rs.getDouble("TotalAmount");
 
-                lblID1.setText("Mã hóa đơn: HD" + idHD);
-                lblID.setText("Ngày tạo: " + ngayTao);
-                lblID3.setText("Trực máy: " + tenAdmin);
-                lblTitle.setText("HÓA ĐƠN MÁY: " + tenMay + " (KH: " + tenKH + ")");
+            // Gán label thông tin
+            lblID1.setText("Mã hóa đơn: HD" + idHD);
+            lblID.setText("Ngày tạo: " + ngayTao);
+            lblID3.setText("Trực máy: " + tenAdmin);
+            lblTitle.setText("HÓA ĐƠN MÁY: " + tenMay + " (KH: " + tenKH + ")");
 
-                int stt = 1;
+            int stt = 1;
+            model.addRow(new Object[]{
+                stt++, "Giờ chơi (" + formatTime(start) + " → " + formatTime(end) + ")", 1,
+                DinhDangTien((int) costGioChoi), DinhDangTien((int) costGioChoi)
+            });
+
+            // Tính tổng tiền dịch vụ thực tế
+            int tongTienDichVu = 0;
+
+            // Lấy các dịch vụ được order từ máy đó (Note = tên máy), trong thời gian chơi
+            PreparedStatement psDV = conn.prepareStatement("""
+                SELECT FD.NameFood, OD.Quantity, FD.Price AS UnitPrice, OD.TotalPrice
+                FROM OrderFood OFD
+                JOIN OrderDetail OD ON OFD.IDOrder = OD.IDOrder
+                JOIN FoodDrink FD ON OD.IDFood = FD.IDFood
+                WHERE OFD.Note = ? AND OFD.OrderTime BETWEEN ? AND ?
+            """);
+            psDV.setString(1, tenMay); // tên máy trong OrderFood.Note
+            psDV.setTimestamp(2, start);
+            psDV.setTimestamp(3, end);
+            ResultSet rsDV = psDV.executeQuery();
+
+            while (rsDV.next()) {
+                String tenSP = rsDV.getString("NameFood");
+                int soLuong = rsDV.getInt("Quantity");
+                int donGia = rsDV.getInt("UnitPrice");
+                int thanhTien = rsDV.getInt("TotalPrice");
+
+                tongTienDichVu += thanhTien;
+
                 model.addRow(new Object[]{
-                    stt++, "Giờ chơi (" + formatTime(start) + " → " + formatTime(end) + ")", 1,
-                    DinhDangTien((int) costGioChoi), DinhDangTien((int) costGioChoi)
+                    stt++, tenSP, soLuong,
+                    DinhDangTien(donGia), DinhDangTien(thanhTien)
                 });
-
-                model.addRow(new Object[]{
-                    stt++, "Dịch vụ đã dùng", 1,
-                    DinhDangTien(tienDV), DinhDangTien(tienDV)
-                });
-
-                lblID4.setText("Tổng tiền thanh toán: " + DinhDangTien((int) tongTien) + " đ");
-
-            } else {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn máy phù hợp!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi tải hóa đơn máy!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            // Tổng tiền hiển thị chỉ là giờ chơi
+            lbl4.setText("Tổng tiền thanh toán: " + DinhDangTien((int) costGioChoi) + " đ");
+
+            // Hiển thị phần đã trừ nếu có dịch vụ
+            if (tongTienDichVu > 0) {
+                lbl5.setText("Đã trừ tiền dịch vụ: " + DinhDangTien(tongTienDichVu) + " đ");
+                lbl5.setVisible(true);
+            } else {
+                lbl5.setVisible(false);
+            }
+
+        } else {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn máy phù hợp!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Lỗi khi tải hóa đơn máy!", "Lỗi", JOptionPane.ERROR_MESSAGE);
     }
+}
+
 
     private String formatTime(Timestamp ts) {
         return new java.text.SimpleDateFormat("HH:mm").format(ts);
@@ -236,7 +274,8 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
         lblID3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblCTHD = new javax.swing.JTable();
-        lblID4 = new javax.swing.JLabel();
+        lbl4 = new javax.swing.JLabel();
+        lbl5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -286,11 +325,17 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tblCTHD);
 
-        lblID4.setBackground(new java.awt.Color(255, 255, 255));
-        lblID4.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
-        lblID4.setForeground(new java.awt.Color(204, 255, 255));
-        lblID4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        lblID4.setText("Tổng tiền thanh toán:");
+        lbl4.setBackground(new java.awt.Color(255, 255, 255));
+        lbl4.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        lbl4.setForeground(new java.awt.Color(204, 255, 255));
+        lbl4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        lbl4.setText("-------------------------------------------");
+
+        lbl5.setBackground(new java.awt.Color(255, 255, 255));
+        lbl5.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        lbl5.setForeground(new java.awt.Color(204, 255, 255));
+        lbl5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        lbl5.setText("Tổng tiền giờ chơi:");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -306,7 +351,9 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
                     .addComponent(lblID3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(lblID4, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lbl5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbl4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -322,9 +369,11 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
                 .addComponent(lblID3)
                 .addGap(27, 27, 27)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(lblID4)
-                .addContainerGap(43, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lbl4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lbl5)
+                .addGap(29, 29, 29))
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -380,10 +429,11 @@ public class TAB5_ChiTietHD extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lbl4;
+    private javax.swing.JLabel lbl5;
     private javax.swing.JLabel lblID;
     private javax.swing.JLabel lblID1;
     private javax.swing.JLabel lblID3;
-    private javax.swing.JLabel lblID4;
     private javax.swing.JLabel lblTitle;
     private javax.swing.JTable tblCTHD;
     // End of variables declaration//GEN-END:variables

@@ -24,7 +24,7 @@ public class TAB7_ChiTietNV extends javax.swing.JFrame {
         cbxRole.setEnabled(false);
 
         txtID.setEnabled(false); // Ẩn ID vì ở đây là id đã tự sinh
-
+        this.setLocationRelativeTo(null); // Set hiển giữa màn hình
         setResizable(false);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }

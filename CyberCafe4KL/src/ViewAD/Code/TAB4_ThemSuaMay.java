@@ -16,6 +16,7 @@ public class TAB4_ThemSuaMay extends javax.swing.JFrame {
         initComponents();
         setResizable(false); // Không cho phóng to
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Chỉ đóng form này, k đóng form chính
+        this.setLocationRelativeTo(null); // Set hiển giữa màn hình
 
 
         this.parentForm = parent;

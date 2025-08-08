@@ -30,7 +30,8 @@ public class RG_QR extends javax.swing.JFrame {
             javax.swing.JFrame parentForm) {
 
         initComponents();
-        this.maHD = maHD;
+        this.maHD = (maHD != null && !maHD.isEmpty()) ? maHD : TaoMaHoaDonMoi();
+
         this.nguoiTao = nguoiTao;
         this.tongTienSP = tongTienSP;
         this.giamGia = giamGia;
@@ -49,44 +50,85 @@ public class RG_QR extends javax.swing.JFrame {
 
     private void AnhQR() {
         try {
-            ImageIcon icon = new ImageIcon(getClass().getResource("/Assets/Products/QR.jpg"));
+            String noiDung = "THANHTOAN " + maHD;
+            String qrURL = CN_GenQR.TaoLinkQR(thanhToan, noiDung);
+
+            if (qrURL == null || qrURL.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Không thể tạo link QR.");
+                return;
+            }
+
+            ImageIcon icon = new ImageIcon(new java.net.URL(qrURL));
             Image img = icon.getImage().getScaledInstance(pnlQR.getWidth(), pnlQR.getHeight(), Image.SCALE_SMOOTH);
+
             JLabel lblQR = new JLabel(new ImageIcon(img));
             pnlQR.removeAll();
             pnlQR.setLayout(new BorderLayout());
             pnlQR.add(lblQR, BorderLayout.CENTER);
             pnlQR.revalidate();
             pnlQR.repaint();
+
+            // Hiển thị thông tin dưới QR
+            lblSTK.setText("STK: 0503081089");
+            lblCTK.setText("CHỦ TÀI KHOẢN: NGUYEN QUANG HUY");
+            lblST.setText("SỐ TIỀN: " + (int) thanhToan + " VND");
+            lblND.setText("NỘI DUNG: " + noiDung);
+
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Không thể hiển thị mã QR.");
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi hiển thị mã QR: " + e.getMessage());
         }
     }
 
     private boolean LuuHoaDonVaoDB() {
         try (Connection conn = DBConnection.getConnection()) {
             if (conn == null) {
+                JOptionPane.showMessageDialog(this, "Không thể kết nối cơ sở dữ liệu.");
                 return false;
             }
 
-            int idAccount = idAccountAdmin;
-
-            int newIDOrder = 1;
-            String sqlMax = "SELECT ISNULL(MAX(IDOrder), 0) + 1 FROM OrderFood";
-            PreparedStatement psMax = conn.prepareStatement(sqlMax);
-            ResultSet rsMax = psMax.executeQuery();
-            if (rsMax.next()) {
-                newIDOrder = rsMax.getInt(1);
+            if (maHD == null || maHD.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Mã hóa đơn chưa được khởi tạo.");
+                return false;
             }
-            rsMax.close();
-            psMax.close();
 
-            String insertOrder = "INSERT INTO OrderFood (IDOrder, IDAccount, OrderTime) VALUES (?, ?, ?)";
-            PreparedStatement ps1 = conn.prepareStatement(insertOrder);
-            ps1.setInt(1, newIDOrder);
-            ps1.setInt(2, idAccount);
-            ps1.setString(3, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            ps1.executeUpdate();
-            ps1.close();
+            int idOrder = Integer.parseInt(maHD.replace("HĐ", ""));
+            int idAccount = layAdminDangTruc();
+            if (idAccount == -1) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy admin đang trực.");
+                return false;
+            }
+
+            // Kiểm tra hóa đơn đã tồn tại chưa
+            String checkSQL = "SELECT COUNT(*) FROM OrderFood WHERE IDOrder = ?";
+            PreparedStatement checkStmt = conn.prepareStatement(checkSQL);
+            checkStmt.setInt(1, idOrder);
+            ResultSet rs = checkStmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                System.out.println("Hóa đơn đã tồn tại, không lưu lại.");
+                return true;
+            }
+
+            // Thêm vào OrderFood
+            String insertOrder = "INSERT INTO OrderFood (IDOrder, IDAccount, OrderTime, NguoiTao, GiamGia, ThanhToan) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(insertOrder);
+            ps.setInt(1, idOrder);
+            ps.setInt(2, idAccount);
+            ps.setString(3, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            ps.setString(4, nguoiTao);
+            ps.setInt(5, giamGia);
+            ps.setInt(6, thanhToan);
+            ps.executeUpdate();
+
+            // Thêm chi tiết hóa đơn (gói nạp)
+            String insertDetail = "INSERT INTO OrderFoodDetail (IDOrder, TenSP, SoLuong, DonGia, ThanhTien) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement psDetail = conn.prepareStatement(insertDetail);
+            psDetail.setInt(1, idOrder);
+            psDetail.setString(2, "Gói nạp");
+            psDetail.setInt(3, 1);
+            psDetail.setInt(4, tongTienSP);
+            psDetail.setInt(5, thanhToan);
+            psDetail.executeUpdate();
 
             return true;
 
@@ -95,6 +137,26 @@ public class RG_QR extends javax.swing.JFrame {
             return false;
         }
     }
+    
+
+    private int layAdminDangTruc() {
+        return CN_TaiKhoanDangNhap.getIDTaiKhoan();
+    }
+
+    private String TaoMaHoaDonMoi() {
+        try (Connection conn = DBConnection.getConnection()) {
+            String sql = "SELECT ISNULL(MAX(IDOrder), 0) + 1 AS NewID FROM OrderFood";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int newID = rs.getInt("NewID");
+                return "HĐ" + newID;
+            }
+        } catch (Exception e) {
+            System.out.println("Lỗi tạo mã hóa đơn: " + e.getMessage());
+        }
+        return "HĐ10001"; // mặc định nếu có lỗi
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -102,14 +164,20 @@ public class RG_QR extends javax.swing.JFrame {
 
         pnlMain = new javax.swing.JPanel();
         btnDone = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
         pnlQR = new javax.swing.JPanel();
+        lblSTK = new javax.swing.JLabel();
+        lblCTK = new javax.swing.JLabel();
+        lblST = new javax.swing.JLabel();
+        lblND = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(380, 571));
 
         pnlMain.setBackground(new java.awt.Color(30, 30, 47));
-        pnlMain.setMaximumSize(new java.awt.Dimension(400, 400));
-        pnlMain.setMinimumSize(new java.awt.Dimension(400, 400));
-        pnlMain.setPreferredSize(new java.awt.Dimension(400, 400));
+        pnlMain.setMaximumSize(new java.awt.Dimension(380, 571));
+        pnlMain.setMinimumSize(new java.awt.Dimension(380, 571));
+        pnlMain.setPreferredSize(new java.awt.Dimension(380, 571));
         pnlMain.setRequestFocusEnabled(false);
         pnlMain.setVerifyInputWhenFocusTarget(false);
         pnlMain.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -120,7 +188,14 @@ public class RG_QR extends javax.swing.JFrame {
                 btnDoneActionPerformed(evt);
             }
         });
-        pnlMain.add(btnDone, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 340, 110, -1));
+        pnlMain.add(btnDone, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 480, 110, -1));
+
+        jLabel1.setBackground(new java.awt.Color(153, 255, 255));
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(102, 255, 255));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("QUÉT MÃ ĐỂ THANH TOÁN");
+        pnlMain.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 380, -1));
 
         pnlQR.setMaximumSize(new java.awt.Dimension(340, 340));
         pnlQR.setMinimumSize(new java.awt.Dimension(340, 340));
@@ -136,7 +211,31 @@ public class RG_QR extends javax.swing.JFrame {
             .addGap(0, 340, Short.MAX_VALUE)
         );
 
-        pnlMain.add(pnlQR, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, -1, 290));
+        pnlMain.add(pnlQR, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 300, 270));
+
+        lblSTK.setBackground(new java.awt.Color(153, 255, 255));
+        lblSTK.setForeground(new java.awt.Color(102, 255, 255));
+        lblSTK.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblSTK.setText("STK: ");
+        pnlMain.add(lblSTK, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 360, 300, 20));
+
+        lblCTK.setBackground(new java.awt.Color(153, 255, 255));
+        lblCTK.setForeground(new java.awt.Color(102, 255, 255));
+        lblCTK.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblCTK.setText("CHỦ TÀI KHOẢN");
+        pnlMain.add(lblCTK, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 380, 300, 20));
+
+        lblST.setBackground(new java.awt.Color(153, 255, 255));
+        lblST.setForeground(new java.awt.Color(102, 255, 255));
+        lblST.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblST.setText("SỐ TIỀN:");
+        pnlMain.add(lblST, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 400, 300, 20));
+
+        lblND.setBackground(new java.awt.Color(153, 255, 255));
+        lblND.setForeground(new java.awt.Color(102, 255, 255));
+        lblND.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblND.setText("NỘI DUNG:");
+        pnlMain.add(lblND, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 420, 300, 20));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -146,7 +245,7 @@ public class RG_QR extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnlMain, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(pnlMain, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -207,10 +306,16 @@ public class RG_QR extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Lưu hóa đơn thất bại.");
         }
+
     }//GEN-LAST:event_btnDoneActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDone;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel lblCTK;
+    private javax.swing.JLabel lblND;
+    private javax.swing.JLabel lblST;
+    private javax.swing.JLabel lblSTK;
     private javax.swing.JPanel pnlMain;
     private javax.swing.JPanel pnlQR;
     // End of variables declaration//GEN-END:variables

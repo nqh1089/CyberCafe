@@ -98,7 +98,7 @@ public class TAB5_LoadDuLieuHD {
             rs2.close();
             ps2.close();
 
-            // ✅ Tự động sort theo cột "Ngày tạo" sau khi load xong
+            // Tự động sort theo cột "Ngày tạo" sau khi load xong
             TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 

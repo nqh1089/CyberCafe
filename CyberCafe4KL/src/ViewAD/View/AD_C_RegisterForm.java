@@ -16,6 +16,30 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
 //        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(null); // Set hiển giữa màn hình
+
+        loadGoiNapToComboBox();
+
+    }
+
+    private void loadGoiNapToComboBox() {
+        cbxBalance.removeAllItems(); // Xoá item cũ nếu có
+
+        try (Connection conn = Controller.DBConnection.getConnection()) {
+            String sql = "SELECT Price, NameFood FROM FoodDrink WHERE Category = N'Gói nạp' AND Available = 1 ORDER BY Price ASC";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                double price = rs.getDouble("Price");
+                String name = rs.getString("NameFood");
+                cbxBalance.addItem(String.format("%,d", (int) price) + " - " + name); // Ví dụ: "50,000 - Gói nạp 50.000 VNĐ"
+            }
+
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi load gói nạp: " + e.getMessage());
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -95,7 +119,11 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
 
         cbxGender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nam", "Nữ" }));
 
-        cbxBalance.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "20.000", "50.000", "100.000", "200.000", "500.000" }));
+        cbxBalance.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxBalanceActionPerformed(evt);
+            }
+        });
 
         Balance.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         Balance.setForeground(new java.awt.Color(255, 255, 255));
@@ -220,7 +248,7 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
         String cccd = txtCCCD.getText().trim();
         String gender = cbxGender.getSelectedItem().toString();
 
-        String balanceStr = cbxBalance.getSelectedItem().toString().replace(".", "").replace(",", "");
+        String balanceStr = cbxBalance.getSelectedItem().toString().split("-")[0].trim().replace(".", "").replace(",", "");
         double balance = Double.parseDouble(balanceStr);
 
         if (name.isEmpty() || phone.isEmpty() || cccd.isEmpty()) {
@@ -228,12 +256,12 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
             return;
         }
 
-        if (!cccd.matches("\\d{12}")) {
+        if (!cccd.matches("\\d{1}")) {
             JOptionPane.showMessageDialog(this, "CCCD phải gồm đúng 12 chữ số.");
             return;
         }
 
-        if (!phone.matches("\\d{10}")) {
+        if (!phone.matches("\\d{1}")) {
             JOptionPane.showMessageDialog(this, "Số điện thoại phải gồm đúng 10 chữ số.");
             return;
         }
@@ -326,6 +354,10 @@ public class AD_C_RegisterForm extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_btnRegisterActionPerformed
+
+    private void cbxBalanceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxBalanceActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbxBalanceActionPerformed
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
