@@ -59,7 +59,15 @@ public class TAB2_CardSP {
 
         // === XỬ LÝ CỘNG TRỪ ===
         btnPlus.addActionListener(e -> {
-            int sl = Integer.parseInt(lblSL.getText()) + 1;
+            int sl = Integer.parseInt(lblSL.getText().trim());
+            if (sl >= 99) {
+                JOptionPane.showMessageDialog(null,
+                        "Số lượng tối đa, không thể chọn thêm",
+                        "Cảnh báo",
+                        JOptionPane.WARNING_MESSAGE);
+                return; // không cho tăng nữa
+            }
+            sl++;
             lblSL.setText(String.valueOf(sl));
             capNhatBang(sp, sl, tableOrder);
             capNhatTongTien(tableOrder, jTextField1, jTextField2, jTextField3);
