@@ -1,0 +1,6 @@
+# Chặn folder build của NetBeans
+/CyberCafe/build/
+# Chặn các file class đã biên dịch
+*.class
+# Chặn các thiết lập riêng tư của NetBeans
+/CyberCafe/nbproject/private/

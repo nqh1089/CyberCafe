@@ -1,0 +1,123 @@
+Quy ước:
+
+Port: CyberCafeSocketAdmin_1902
+	- Set size = 1500, 780 (Full màn hình là: 1536, 864)
+	- Font:
+		+ Verdana
+		+ Tiêu đề: Bold, 14
+		+ Tên tab: Bold, 18
+
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int width = screenSize.width;
+        int height = screenSize.height;
+
+        System.out.println("Kích thước màn hình: " + width + " x " + height);
+
+
+Dưới đây là toàn bộ các quy ước đã lưu cho dự án CyberCafe4KL:
+
+1. Cấu trúc class & đặt tên file:
+UI (JFrame): chỉ chứa giao diện kéo-thả, không chứa logic.
+
+Logic TAB1: đặt tên TAB1_TênChứcNăng
+VD: TAB1_LoadSDM, TAB1_ClickMay
+
+Logic dùng chung: CN_TênChứcNăng
+VD: CN_SetImage
+
+Các tab khác: TABx_TênChứcNăng
+
+2. Nguyên tắc xử lý logic:
+Không viết xử lý logic trong file giao diện
+
+Không sửa DB gốc nếu không có yêu cầu
+
+Không dùng biểu tượng trong console/output, chỉ dùng text tiếng Việt không dấu
+
+3. Xử lý dữ liệu:
+Ưu tiên: Load từ DB → Java xử lý → show UI
+
+Không tạo thêm bảng nếu chưa được yêu cầu
+
+Máy không có Order → không hiển thị hóa đơn
+
+4. Comment:
+Viết ngắn gọn, rõ ràng, tiếng Việt
+
+Dùng // ở dòng trên khối code
+
+Ưu tiên ghi chú các khối xử lý phức tạp
+
+5. Giao diện:
+Thiết kế bằng kéo-thả NetBeans
+
+Không dùng setLayout(null) nếu gây lỗi
+
+Giữ nguyên kích thước panel chính
+
+Set ảnh nền sau khi render
+
+6. Icon & ảnh:
+Icon máy: /Assets/Icons/DM/, size 72px
+
+Icon thống kê: size 24px
+
+Ảnh nền: J:/SU25/BL2/img/
+
+Dùng class CN_SetImage.java để set ảnh
+
+7. Socket (Admin - Client):
+Dùng Socket qua Radmin VPN
+
+8. Nút xử lý chính (TAB1):
+“Thanh toán”: hiển thị form + lưu DB
+
+“Tạo tài khoản”: gọi form đăng ký
+
+9. Khi click vào máy:
+Tên máy → lblTenMay
+
+Load trạng thái, giờ bắt đầu, dịch vụ
+
+Máy đang dùng → giờ kết thúc là --:--
+
+Không có Order → không hiển thị dịch vụ
+
+10. Ghi nhớ khác:
+Tên biến rõ nghĩa (lbl..., pnl..., cbx...)
+
+Code sạch, chia nhỏ logic
+
+Chức năng mới → tách class riêng
+
+11. TAB2 - Đặt sản phẩm (admin):
+Tên class giao diện: AD_TAB2_Order
+
+Card sản phẩm dùng class TAB2_CardSP (trong ViewAD.Code)
+
+Ảnh sản phẩm lấy từ: src\Assets\Products
+
+Bảng chứa dữ liệu order: tableOrder
+
+12. Hiển thị card sản phẩm (chuẩn mới):
+Card gồm:
+
+Ảnh trái 120x120
+
+Tên SP, giá SP, nút + - số lượng
+
+Các phần căn trái đều, căn giữa theo chiều dọc
+
+Xử lý trong TAB2_CardSP
+
+Các biến tiền trong AD_TAB2_Order:
+
+jTextField1: Tổng tiền sản phẩm
+
+jTextField2: Tổng tiền giảm
+
+jTextField3: Tổng tiền thanh toán
+
+Các biến này đã truyền vào TAB2_CardSP.taoCard(...)
+
